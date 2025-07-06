@@ -7,6 +7,7 @@ using VaultNotary.Infrastructure;
 using VaultNotary.Web.Authorization;
 using VaultNotary.Web.Configuration;
 using VaultNotary.Web.Middleware;
+using VaultNotary.Web;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,7 +17,8 @@ builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
 
 builder.Services.AddControllers();
-builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 // Configure Auth0 - Skip in Testing environment
 if (!builder.Environment.IsEnvironment("Testing"))
@@ -52,6 +54,33 @@ if (builder.Environment.IsEnvironment("Testing"))
             .RequireAssertion(_ => true)
             .Build();
         options.FallbackPolicy = options.DefaultPolicy;
+        // Register all permission and role policies as no-op
+        options.AddPolicy(Permissions.ReadCustomers, p => p.RequireAssertion(_ => true));
+        options.AddPolicy(Permissions.CreateCustomers, p => p.RequireAssertion(_ => true));
+        options.AddPolicy(Permissions.UpdateCustomers, p => p.RequireAssertion(_ => true));
+        options.AddPolicy(Permissions.DeleteCustomers, p => p.RequireAssertion(_ => true));
+
+        options.AddPolicy(Permissions.ReadDocuments, p => p.RequireAssertion(_ => true));
+        options.AddPolicy(Permissions.CreateDocuments, p => p.RequireAssertion(_ => true));
+        options.AddPolicy(Permissions.UpdateDocuments, p => p.RequireAssertion(_ => true));
+        options.AddPolicy(Permissions.DeleteDocuments, p => p.RequireAssertion(_ => true));
+
+        options.AddPolicy(Permissions.UploadFiles, p => p.RequireAssertion(_ => true));
+        options.AddPolicy(Permissions.DownloadFiles, p => p.RequireAssertion(_ => true));
+        options.AddPolicy(Permissions.DeleteFiles, p => p.RequireAssertion(_ => true));
+
+        options.AddPolicy(Permissions.SearchDocuments, p => p.RequireAssertion(_ => true));
+        options.AddPolicy(Permissions.SearchCustomers, p => p.RequireAssertion(_ => true));
+
+        options.AddPolicy(Permissions.VerifyDocuments, p => p.RequireAssertion(_ => true));
+        options.AddPolicy(Permissions.SignDocuments, p => p.RequireAssertion(_ => true));
+
+        options.AddPolicy(Permissions.AdminAccess, p => p.RequireAssertion(_ => true));
+
+        options.AddPolicy(Roles.Admin, p => p.RequireAssertion(_ => true));
+        options.AddPolicy(Roles.NotaryPublic, p => p.RequireAssertion(_ => true));
+        options.AddPolicy(Roles.User, p => p.RequireAssertion(_ => true));
+        options.AddPolicy(Roles.Viewer, p => p.RequireAssertion(_ => true));
     });
 }
 else
@@ -130,17 +159,19 @@ app.UseSerilogRequestLogging();
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
+
+app.UseRouting();
 app.UseCors("AllowAuth0");
 
 app.UseAuthentication();
 app.UseMiddleware<Auth0PermissionsMiddleware>();
 app.UseAuthorization();
 
-app.UseRouting();
 app.MapControllers();
 
 app.Run();
