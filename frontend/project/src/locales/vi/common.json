@@ -1,0 +1,116 @@
+{
+  "navigation": {
+    "home": "Trang chủ",
+    "newFile": "Tạo hồ sơ mới",
+    "search": "Tra cứu",
+    "customers": "Khách hàng",
+    "reports": "Báo cáo",
+    "settings": "Cài đặt"
+  },
+  "landing": {
+    "title": "Hệ thống quản lý hồ sơ công chứng",
+    "subtitle": "Giải pháp toàn diện cho việc quản lý hồ sơ và khách hàng tại văn phòng công chứng",
+    "loginButton": "Đăng nhập",
+    "features": {
+      "management": "Quản lý hồ sơ hiệu quả",
+      "search": "Tra cứu nhanh chóng",
+      "reports": "Báo cáo chi tiết"
+    }
+  },
+  "fileForm": {
+    "title": "Tạo hồ sơ mới",
+    "fileInfo": "Thông tin hồ sơ",
+    "drafting": "Soạn thảo hồ sơ",
+    "creationDate": "Ngày tạo",
+    "clerk": "Thư ký",
+    "notary": "Công chứng viên",
+    "clientIntro": "Giới thiệu từ",
+    "fileType": "Loại hồ sơ",
+    "fileFee": "Phí hồ sơ",
+    "attachments": "Tài liệu đính kèm",
+    "saveFile": "Lưu hồ sơ",
+    "required": "Bắt buộc"
+  },
+  "customer": {
+    "title": "Thông tin khách hàng",
+    "add": "Thêm khách hàng",
+    "edit": "Sửa thông tin khách hàng",
+    "type": "Loại khách hàng",
+    "individual": "Cá nhân",
+    "organization": "Tổ chức",
+    "fullName": "Họ và tên",
+    "organizationName": "Tên tổ chức",
+    "phone": "Số điện thoại",
+    "email": "Email",
+    "address": "Địa chỉ",
+    "idType": "Loại giấy tờ",
+    "idCard": "CMND/CCCD",
+    "passport": "Hộ chiếu",
+    "idNumber": "Số giấy tờ",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "useExisting": "Sử dụng thông tin có sẵn?"
+  },
+  "search": {
+    "title": "Tra cứu hồ sơ",
+    "searchPlaceholder": "Nhập số CMND/CCCD hoặc mã hồ sơ",
+    "identityPlaceholder": "Số CMND/CCCD",
+    "fileNoPlaceholder": "Mã hồ sơ",
+    "searchButton": "Tìm kiếm",
+    "results": "Kết quả tìm kiếm",
+    "noResults": "Không tìm thấy kết quả",
+    "fileCode": "Mã hồ sơ",
+    "customer": "Khách hàng",
+    "fileType": "Loại hồ sơ",
+    "notaryDate": "Ngày công chứng",
+    "status": "Trạng thái"
+  },
+  "fileTypes": {
+    "hopDong": "Hợp đồng giao dịch",
+    "thuaKe": "Thừa kế",
+    "muaBanXe": "Mua bán xe",
+    "thueNha": "Thuê nhà",
+    "theChap": "Thế chấp",
+    "gopVon": "Góp vốn"
+  },
+  "attachments": {
+    "hoSoCongChung": "Hồ sơ công chứng",
+    "hopDongGiaoDich": "Hợp đồng giao dịch",
+    "giayToTuyThan": "Giấy tờ tùy thân 2 bên",
+    "giayToTaiSan": "Giấy tờ tài sản",
+    "giayToChungMinhQuyen": "Giấy tờ chứng minh quyền sở hữu",
+    "giayChungTu": "Giấy chứng tử người để lại tài sản (SL)",
+    "toTuongTrinh": "Tờ tường trình quan hệ nhân thân",
+    "giayChuQuyen": "Giấy chủ quyền tài sản (SL)",
+    "giayKhaiSinh": "Giấy khai sinh người chết (nếu có, SL)",
+    "giayToChungMinhQuanHe": "Giấy tờ chứng minh quan hệ với người để lại tài sản (SL)",
+    "giayToNguoiThuaKe": "Giấy tờ tùy thân người được thừa kế (SL)",
+    "chungTuNguoiThuaKe": "Chứng tử của người được thừa kế (nếu có, SL)",
+    "uploadFile": "Tải tệp",
+    "quantity": "Số lượng"
+  },
+  "common": {
+    "loading": "Đang tải...",
+    "error": "Có lỗi xảy ra",
+    "success": "Thành công",
+    "confirm": "Xác nhận",
+    "delete": "Xóa",
+    "edit": "Sửa",
+    "view": "Xem",
+    "close": "Đóng",
+    "back": "Quay lại",
+    "next": "Tiếp theo",
+    "previous": "Trước đó",
+    "selectOption": "Chọn tùy chọn..."
+  },
+  "validation": {
+    "required": "Trường này là bắt buộc",
+    "invalidEmail": "Email không hợp lệ",
+    "invalidPhone": "Số điện thoại phải có 10 chữ số",
+    "invalidId": "Số CMND/CCCD phải có 9 hoặc 12 chữ số",
+    "invalidPassport": "Số hộ chiếu không hợp lệ",
+    "idOrPassportRequired": "Phải nhập CMND/CCCD hoặc Hộ chiếu",
+    "minLength": "Tối thiểu {{count}} ký tự",
+    "maxLength": "Tối đa {{count}} ký tự"
+  }
+}
