@@ -34,7 +34,7 @@ export function FileMetaCard() {
                     />
                     {errors.ngayTao && (
                         <p className="text-sm text-red-500 mt-1">
-                            {errors.ngayTao.message}
+                            {(errors.ngayTao as any)?.message || 'Lỗi ngày tạo'}
                         </p>
                     )}
                 </div>
@@ -59,7 +59,7 @@ export function FileMetaCard() {
                         </Select>
                         {errors.thuKy && (
                             <p className="text-sm text-red-500 mt-1">
-                                {errors.thuKy.message}
+                                {(errors.thuKy as any)?.message || 'Lỗi thư ký'}
                             </p>
                         )}
                     </div>
@@ -83,7 +83,7 @@ export function FileMetaCard() {
                         </Select>
                         {errors.congChungVien && (
                             <p className="text-sm text-red-500 mt-1">
-                                {errors.congChungVien.message}
+                                {(errors.congChungVien as any)?.message || 'Lỗi công chứng viên'}
                             </p>
                         )}
                     </div>
@@ -101,7 +101,7 @@ export function FileMetaCard() {
                         />
                         {errors.maGiaoDich && (
                             <p className="text-sm text-red-500 mt-1">
-                                {errors.maGiaoDich.message}
+                                {(errors.maGiaoDich as any)?.message || 'Lỗi mã giao dịch'}
                             </p>
                         )}
                     </div>
@@ -125,7 +125,7 @@ export function FileMetaCard() {
                         </Select>
                         {errors.loaiHoSo && (
                             <p className="text-sm text-red-500 mt-1">
-                                {errors.loaiHoSo.message}
+                                {(errors.loaiHoSo as any)?.message || 'Lỗi loại hồ sơ'}
                             </p>
                         )}
                     </div>

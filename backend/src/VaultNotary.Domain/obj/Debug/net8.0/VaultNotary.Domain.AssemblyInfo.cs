@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("VaultNotary.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+da8365e0ea144d60ca0d1032587df746db9d0571")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+555e316dcdf2534da097bcc9b71d2dfb9ba36b35")]
 [assembly: System.Reflection.AssemblyProductAttribute("VaultNotary.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("VaultNotary.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

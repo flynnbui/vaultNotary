@@ -70,7 +70,7 @@ export function PartiesAccordion() {
 
         if (editingCustomer && 'index' in editingCustomer) {
             // Edit existing customer
-            fieldArray.update(editingCustomer.index, customerData);
+            fieldArray.update(editingCustomer.index ?? 0, customerData);
             toast.success('Đã cập nhật thông tin khách hàng');
         } else {
             // Add new customer
@@ -121,7 +121,7 @@ export function PartiesAccordion() {
     const renderPartySection = (party: PartyKey) => {
         const fieldArray = getFieldArray(party);
         const customers = fieldArray.fields as CustomerSummary[];
-        const hasError = errors?.parties?.[party];
+        const hasError = (errors?.parties as any)?.[party];
 
         return (
             <Card key={party}>
