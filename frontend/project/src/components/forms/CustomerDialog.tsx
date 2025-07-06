@@ -365,7 +365,7 @@ export function CustomerDialog({
                                             <DatePicker
                                                 label="Ngày sinh *"
                                                 value={watch('dateOfBirth')}
-                                                onChange={(date) => setValue('dateOfBirth', date)}
+                                                onChange={(date) => setValue('dateOfBirth', date || new Date())}
                                                 placeholder="Chọn ngày sinh"
                                                 className="w-full"
                                             />

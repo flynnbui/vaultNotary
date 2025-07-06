@@ -65,7 +65,7 @@ export function AttachmentItemInput({ attachment, index }: AttachmentItemInputPr
             <div className="flex items-center space-x-2">
               <Checkbox
                 checked={!!formAttachment?.files?.length}
-                readOnly
+                disabled
               />
               <Label className="text-sm font-medium">
                 {attachment.name}

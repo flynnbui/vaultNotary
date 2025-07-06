@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Layout } from '@/src/components/layout/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
@@ -13,6 +13,7 @@ import { CustomerDialog } from '@/src/components/forms/CustomerDialog';
 import { Users, Search, Plus, Edit, Eye } from 'lucide-react';
 import { toast } from 'sonner';
 import type { CustomerFormData } from '@/src/lib/schemas';
+import { apiService } from '@/src/lib/api';
 import '@/src/lib/i18n';
 
 // Mock customer data
@@ -24,7 +25,7 @@ const mockCustomers: CustomerFormData[] = [
     phone: '0123456789',
     email: 'nguyenvana@email.com',
     address: '123 Đường ABC, Quận 1, TP.HCM',
-    idCard: '123456789'
+    cmndNumber: '123456789'
   },
   {
     id: '2',
@@ -34,7 +35,7 @@ const mockCustomers: CustomerFormData[] = [
     phone: '0987654321',
     email: 'contact@xyz.com',
     address: '456 Đường DEF, Quận 2, TP.HCM',
-    idCard: '987654321'
+    cmndNumber: '987654321'
   },
   {
     id: '3',
@@ -43,7 +44,7 @@ const mockCustomers: CustomerFormData[] = [
     phone: '0555666777',
     email: 'levanc@email.com',
     address: '789 Đường GHI, Quận 3, TP.HCM',
-    passport: 'A1234567'
+    passportNumber: 'A1234567'
   }
 ];
 
@@ -63,7 +64,7 @@ export default function CustomersPage() {
     try {
       setLoading(true);
       const response = await apiService.getCustomers({ search: searchTerm });
-      setCustomers(response.customers || []);
+      setCustomers((response as any).customers || []);
     } catch (error) {
       console.error('Error loading customers:', error);
       toast.error('Không thể tải danh sách khách hàng');
@@ -75,8 +76,9 @@ export default function CustomersPage() {
   const filteredCustomers = customers.filter(customer =>
     customer.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     customer.phone?.includes(searchTerm) ||
-    customer.idNumber?.includes(searchTerm) ||
-    customer.businessName?.toLowerCase().includes(searchTerm.toLowerCase())
+    customer.cmndNumber?.includes(searchTerm) ||
+    customer.passportNumber?.includes(searchTerm) ||
+    customer.organizationName?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleAddCustomer = () => {
@@ -84,12 +86,12 @@ export default function CustomersPage() {
     setShowDialog(true);
   };
 
-  const handleEditCustomer = (customer: CustomerFormData) => {
+  const handleEditCustomer = (customer: any) => {
     setEditingCustomer(customer);
     setShowDialog(true);
   };
 
-  const handleSaveCustomer = (customerData: CustomerFormData) => {
+  const handleSaveCustomer = (customerData: any) => {
     if (editingCustomer) {
       // Update existing customer
       setCustomers(prev => prev.map(c => 
@@ -188,8 +190,8 @@ export default function CustomersPage() {
                       <TableCell>{customer.organizationName || '-'}</TableCell>
                       <TableCell>{customer.phone}</TableCell>
                       <TableCell>{customer.email || '-'}</TableCell>
-                      <TableCell className="font-mono">{customer.idCard || '-'}</TableCell>
-                      <TableCell className="font-mono">{customer.passport || '-'}</TableCell>
+                      <TableCell className="font-mono">{customer.cmndNumber || '-'}</TableCell>
+                      <TableCell className="font-mono">{customer.passportNumber || '-'}</TableCell>
                       <TableCell>
                         <div className="flex gap-2">
                           <Button 
@@ -227,7 +229,7 @@ export default function CustomersPage() {
         <CustomerDialog
           open={showDialog}
           onOpenChange={setShowDialog}
-          customer={editingCustomer}
+          initialData={editingCustomer}
           onSave={handleSaveCustomer}
         />
       </div>
