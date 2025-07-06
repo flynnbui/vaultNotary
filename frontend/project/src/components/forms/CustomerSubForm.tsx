@@ -138,6 +138,31 @@ export function CustomerSubForm() {
                   </div>
                 </div>
 
+                {customerType === 'organization' && (
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                      <Label htmlFor="businessName">Tên doanh nghiệp *</Label>
+                      <Input
+                        id="businessName"
+                        value={watch('businessName') || ''}
+                        onChange={(e) => setValue('businessName', e.target.value)}
+                        placeholder="Nhập tên doanh nghiệp"
+                        className={errors.businessName ? 'border-red-500' : ''}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="businessRegistrationNumber">Số đăng ký kinh doanh *</Label>
+                      <Input
+                        id="businessRegistrationNumber"
+                        value={watch('businessRegistrationNumber') || ''}
+                        onChange={(e) => setValue('businessRegistrationNumber', e.target.value)}
+                        placeholder="Nhập số đăng ký kinh doanh"
+                        className={errors.businessRegistrationNumber ? 'border-red-500' : ''}
+                      />
+                    </div>
+                  </div>
+                )}
+
                 {/* ID Type Selection */}
                 <div className="space-y-4">
                   <div className="flex gap-4">
@@ -178,10 +203,12 @@ export function CustomerSubForm() {
                         </div>
                       </div>
                       <div>
-                        <Label htmlFor="cmndIssueDate">Ngày cấp CMND *</Label>
                         <DatePicker
+                          label="Ngày cấp CMND *"
                           value={watch('cmndIssueDate')}
                           onChange={(date) => setValue('cmndIssueDate', date || undefined)}
+                          placeholder="Chọn ngày cấp"
+                          className="w-full"
                         />
                       </div>
                       <div>
@@ -212,10 +239,12 @@ export function CustomerSubForm() {
                         </div>
                       </div>
                       <div>
-                        <Label htmlFor="passportIssueDate">Ngày cấp Passport *</Label>
                         <DatePicker
+                          label="Ngày cấp Passport *"
                           value={watch('passportIssueDate')}
                           onChange={(date) => setValue('passportIssueDate', date || undefined)}
+                          placeholder="Chọn ngày cấp"
+                          className="w-full"
                         />
                       </div>
                       <div>
@@ -233,35 +262,25 @@ export function CustomerSubForm() {
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
                     <Label htmlFor="fullName">Họ tên Khách hàng *</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        id="fullName"
-                        value={watch('fullName') || ''}
-                        onChange={(e) => setValue('fullName', e.target.value)}
-                        placeholder="Tìm kiếm tên khách hàng"
-                        className={errors.fullName ? 'border-red-500' : ''}
-                      />
-                      <Button type="button" variant="ghost" size="icon">
-                        <Search className="h-4 w-4" />
-                      </Button>
-                    </div>
+                    <Input
+                      id="fullName"
+                      value={watch('fullName') || ''}
+                      onChange={(e) => setValue('fullName', e.target.value)}
+                      placeholder="Nhập họ tên khách hàng"
+                      className={errors.fullName ? 'border-red-500' : ''}
+                    />
                   </div>
 
                   <div>
-                    <Label htmlFor="phone">Số điện thoại *</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        id="phone"
-                        value={phone || ''}
-                        onChange={(e) => setValue('phone', e.target.value)}
-                        onBlur={(e) => handleLookup('phone', e.target.value)}
-                        placeholder="Tìm kiếm số điện thoại"
-                        className={errors.phone ? 'border-red-500' : ''}
-                      />
-                      <Button type="button" variant="ghost" size="icon">
-                        <Search className="h-4 w-4" />
-                      </Button>
-                    </div>
+                    <Label htmlFor="phone">Số điện thoại</Label>
+                    <Input
+                      id="phone"
+                      value={phone || ''}
+                      onChange={(e) => setValue('phone', e.target.value)}
+                      onBlur={(e) => handleLookup('phone', e.target.value)}
+                      placeholder="Nhập số điện thoại"
+                      className={errors.phone ? 'border-red-500' : ''}
+                    />
                   </div>
                 </div>
 
@@ -298,28 +317,16 @@ export function CustomerSubForm() {
                     />
                   </div>
 
-                  <div>
-                    <Label htmlFor="referrer">Người giới thiệu</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        id="referrer"
-                        value={watch('referrer') || ''}
-                        onChange={(e) => setValue('referrer', e.target.value)}
-                        placeholder="Tìm kiếm Người giới thiệu"
-                      />
-                      <Button type="button" variant="ghost" size="icon">
-                        <Search className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="dateOfBirth">Ngày sinh *</Label>
                     <DatePicker
+                      label="Ngày sinh *"
                       value={watch('dateOfBirth')}
                       onChange={(date) => setValue('dateOfBirth', date || undefined)}
+                      placeholder="Chọn ngày sinh"
+                      className="w-full"
                     />
                   </div>
 

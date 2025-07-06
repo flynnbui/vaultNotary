@@ -30,7 +30,8 @@ export const customerSchema = z.object({
   type: z.enum(['individual', 'organization']),
   fullName: z.string().min(1, 'Họ và tên là bắt buộc'),
   organizationName: z.string().optional(),
-  phone: z.string().regex(/^[0-9]{10}$/, 'Số điện thoại phải có 10 chữ số'),
+  businessRegistrationNumber: z.string().optional(),
+  phone: z.string().regex(/^[0-9]{10}$/, 'Số điện thoại phải có 10 chữ số').optional().or(z.literal('')),
   email: z.string().email('Email không hợp lệ').optional().or(z.literal('')),
   address: z.string().min(1, 'Địa chỉ là bắt buộc'),
 }).and(passportOrId).refine(data => {
@@ -41,6 +42,14 @@ export const customerSchema = z.object({
 }, {
   message: 'Tên tổ chức là bắt buộc',
   path: ['organizationName']
+}).refine(data => {
+  if (data.type === 'organization') {
+    return data.businessRegistrationNumber && data.businessRegistrationNumber.length > 0;
+  }
+  return true;
+}, {
+  message: 'Số đăng ký kinh doanh là bắt buộc',
+  path: ['businessRegistrationNumber']
 });
 
 export const extendedCustomerSchema = z.object({
@@ -56,11 +65,28 @@ export const extendedCustomerSchema = z.object({
   permanentAddress: z.string().min(1, 'Địa chỉ thường trú là bắt buộc'),
   currentAddress: z.string().optional(),
   email: z.string().email('Email không hợp lệ').optional().or(z.literal('')),
-  phone: z.string().regex(/^[0-9]{10}$/, 'Số điện thoại phải có 10 chữ số'),
+  phone: z.string().regex(/^[0-9]{10}$/, 'Số điện thoại phải có 10 chữ số').optional().or(z.literal('')),
   dateOfBirth: z.date({ required_error: 'Ngày sinh là bắt buộc' }),
   gender: z.enum(['male', 'female', 'other'], { required_error: 'Giới tính là bắt buộc' }),
-  referrer: z.string().optional(),
-}).and(passportOrId);
+  businessName: z.string().optional(),
+  businessRegistrationNumber: z.string().optional(),
+}).and(passportOrId).refine(data => {
+  if (data.customerType === 'organization') {
+    return data.businessName && data.businessName.length > 0;
+  }
+  return true;
+}, {
+  message: 'Tên doanh nghiệp là bắt buộc',
+  path: ['businessName']
+}).refine(data => {
+  if (data.customerType === 'organization') {
+    return data.businessRegistrationNumber && data.businessRegistrationNumber.length > 0;
+  }
+  return true;
+}, {
+  message: 'Số đăng ký kinh doanh là bắt buộc',
+  path: ['businessRegistrationNumber']
+});
 
 export const partiesSchema = z.object({
   A: z.array(z.object({
@@ -107,17 +133,11 @@ export const fileSchema = z.object({
   ngayTao: z.date(),
   thuKy: z.string().min(1, 'Thư ký là bắt buộc'),
   congChungVien: z.string().min(1, 'Công chứng viên là bắt buộc'),
-  gioiThieu: z.string().optional(),
+  maGiaoDich: z.string().min(1, 'Mã giao dịch là bắt buộc'),
+  moTa: z.string().optional(),
   loaiHoSo: z.string().min(1, 'Loại hồ sơ là bắt buộc'),
-  phiHoSo: z.number().min(0, 'Phí hồ sơ phải lớn hơn 0'),
-  attachments: z.array(z.object({
-    name: z.string(),
-    required: z.boolean(),
-    files: z.array(z.any()).optional(),
-    quantity: z.number().optional()
-  })),
   parties: partiesSchema
-}).and(extendedCustomerSchema);
+});
 
 export const searchSchema = z.object({
   identity: z.string().optional(),

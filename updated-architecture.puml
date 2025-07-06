@@ -1,0 +1,291 @@
+@startuml VaultNotary Updated Architecture with Customer Service
+
+!define FRONTENDCOLOR #61DAFB
+!define BACKENDCOLOR #3498DB
+!define DATACOLOR #2ECC71
+!define SECURITYCOLOR #E74C3C
+!define INFRACOLOR #9B59B6
+!define CACHECOLOR #F39C12
+!define CUSTOMERCOLOR #E67E22
+
+skinparam componentStyle uml2
+skinparam linetype ortho
+skinparam backgroundColor #FFFFFF
+skinparam componentBackgroundColor #F8F9FA
+skinparam component {
+  FontSize 10
+  FontName Arial
+}
+
+title VaultNotary Updated Architecture with Customer Service
+
+' ======================
+' FRONTEND ARCHITECTURE
+' ======================
+
+package "Frontend Layer" as frontend_layer <<FRONTENDCOLOR>> {
+  
+  package "Customer Management UI" as customer_ui {
+    component [Customer Dialog] as customer_dialog
+    component [Parties Accordion] as parties_accordion
+    component [Customer Search] as customer_search
+    component [Customer Profile] as customer_profile
+  }
+  
+  package "Document Management UI" as document_ui {
+    component [File Upload] as file_upload
+    component [Document Search] as doc_search
+    component [Document Viewer] as doc_viewer
+    component [Verification UI] as verification_ui
+  }
+  
+  package "Search & Query UI" as search_ui {
+    component [Identity Search] as identity_search
+    component [Document Search] as document_search
+    component [Advanced Search] as advanced_search
+    component [Search Results] as search_results
+  }
+}
+
+' ======================
+' BACKEND ARCHITECTURE
+' ======================
+
+package "Load Balancer" as lb <<INFRACOLOR>> {
+  component [Nginx/Traefik] as nginx
+}
+
+package "API Gateway" as api_gateway <<BACKENDCOLOR>> {
+  component [Gateway Service] as gateway
+  component [Rate Limiter] as rate_limiter
+  component [Authentication] as auth_middleware
+}
+
+package "Core Services" as core_services <<BACKENDCOLOR>> {
+  
+  package "Customer Service" as customer_service <<CUSTOMERCOLOR>> {
+    component [Customer Controller] as customer_ctrl
+    component [Party Management] as party_mgmt
+    component [Identity Validator] as identity_validator
+    component [Customer Search] as customer_search_svc
+  }
+  
+  package "Document Service" as document_service {
+    component [Document Controller] as doc_ctrl
+    component [Document-Party Linker] as doc_party_linker
+    component [Document Metadata] as doc_metadata
+  }
+  
+  package "File Management Service" as file_service {
+    component [Upload Controller] as upload_ctrl
+    component [Download Controller] as download_ctrl
+    component [File Processing] as file_processing
+  }
+  
+  package "Search Service" as search_service {
+    component [Search Controller] as search_ctrl
+    component [Identity Search] as identity_search_svc
+    component [Document Search] as doc_search_svc
+    component [Cross-Reference Search] as cross_ref_search
+  }
+  
+  package "Verification Service" as verify_service {
+    component [Signature Controller] as signature_ctrl
+    component [Hash Controller] as hash_ctrl
+    component [Verification Controller] as verify_ctrl
+  }
+}
+
+package "Business Logic Layer" as business_logic <<BACKENDCOLOR>> {
+  
+  package "Customer Management" as customer_mgmt <<CUSTOMERCOLOR>> {
+    component [Customer Service] as customer_svc
+    component [Party Relationship] as party_relationship
+    component [Identity Verification] as identity_verification
+    component [Duplicate Detection] as duplicate_detection
+  }
+  
+  package "Document Management" as document_mgmt {
+    component [Document Service] as document_svc
+    component [Party-Document Linking] as party_doc_linking
+    component [Document Categorization] as doc_categorization
+  }
+  
+  package "Search & Query" as search_query {
+    component [Multi-Index Search] as multi_index_search
+    component [Identity Query Builder] as identity_query_builder
+    component [Document Query Builder] as doc_query_builder
+  }
+}
+
+package "Repository Layer" as repository_layer <<DATACOLOR>> {
+  component [Customer Repository] as customer_repo
+  component [Document Repository] as document_repo
+  component [Party-Document Repository] as party_doc_repo
+  component [File Repository] as file_repo
+  component [Search Repository] as search_repo
+}
+
+' ======================
+' DATA & STORAGE LAYER
+' ======================
+
+package "Storage Layer" as storage_layer <<DATACOLOR>> {
+  database "DynamoDB\n(Documents)" as dynamo_docs
+  database "DynamoDB\n(Customers)" as dynamo_customers
+  database "DynamoDB\n(Party-Document Links)" as dynamo_party_docs
+  database "MinIO\n(File Storage)" as minio
+  database "PostgreSQL\n(Users & Audit)" as postgres
+  database "Elasticsearch\n(Full-text Search)" as elasticsearch
+}
+
+package "Cache Layer" as cache_layer <<CACHECOLOR>> {
+  database "Redis\n(Customer Cache)" as redis_customer
+  database "Redis\n(Document Cache)" as redis_document
+  database "Redis\n(Search Cache)" as redis_search
+}
+
+' ======================
+' CONNECTIONS
+' ======================
+
+' Frontend to Backend
+customer_dialog --> nginx : Customer CRUD
+parties_accordion --> nginx : Party Management
+identity_search --> nginx : Identity Search
+doc_search --> nginx : Document Search
+
+' API Gateway
+nginx --> gateway
+gateway --> rate_limiter
+gateway --> auth_middleware
+gateway --> customer_ctrl : /api/customers/*
+gateway --> doc_ctrl : /api/documents/*
+gateway --> search_ctrl : /api/search/*
+gateway --> upload_ctrl : /api/upload/*
+gateway --> verify_ctrl : /api/verify/*
+
+' Controllers to Services
+customer_ctrl --> customer_svc
+customer_ctrl --> party_mgmt
+customer_ctrl --> identity_validator
+
+doc_ctrl --> document_svc
+doc_ctrl --> doc_party_linker
+doc_ctrl --> doc_metadata
+
+search_ctrl --> identity_search_svc
+search_ctrl --> doc_search_svc
+search_ctrl --> cross_ref_search
+
+upload_ctrl --> file_processing
+upload_ctrl --> party_doc_linking
+
+' Services to Repositories
+customer_svc --> customer_repo
+party_relationship --> party_doc_repo
+document_svc --> document_repo
+party_doc_linking --> party_doc_repo
+identity_search_svc --> customer_repo
+doc_search_svc --> document_repo
+cross_ref_search --> party_doc_repo
+
+' Repositories to Storage
+customer_repo --> dynamo_customers
+document_repo --> dynamo_docs
+party_doc_repo --> dynamo_party_docs
+file_repo --> minio
+search_repo --> elasticsearch
+
+' Caching
+customer_repo --> redis_customer
+document_repo --> redis_document
+search_repo --> redis_search
+
+' Cross-service communication
+doc_party_linker --> customer_svc : Validate customers
+party_doc_linking --> customer_svc : Link parties
+identity_search_svc --> doc_search_svc : Cross-reference
+duplicate_detection --> customer_repo : Check duplicates
+
+' ======================
+' DETAILED NOTES
+' ======================
+
+note top of customer_service
+  **Customer Service Endpoints:**
+  POST /api/customers - Create customer
+  GET /api/customers/{id} - Get customer
+  PUT /api/customers/{id} - Update customer
+  GET /api/customers/search?identity={id} - Search by ID
+  GET /api/customers/documents/{identity} - Get documents by ID
+  POST /api/customers/validate - Validate identity
+end note
+
+note top of document_service
+  **Document Service Endpoints:**
+  POST /api/documents - Create document
+  GET /api/documents/{id} - Get document
+  PUT /api/documents/{id}/parties - Link parties
+  GET /api/documents/parties/{partyId} - Get docs by party
+  GET /api/documents/search - Search documents
+end note
+
+note top of search_service
+  **Search Service Endpoints:**
+  GET /api/search/identity/{documentId} - Search by CMND/Passport
+  GET /api/search/business/{registrationNumber} - Search by business reg
+  GET /api/search/documents?party={id} - Documents by party
+  GET /api/search/cross-reference?ids=[...] - Cross-reference search
+end note
+
+note bottom of dynamo_customers
+  **Customer Table Schema:**
+  PK: customerId
+  SK: customerId
+  GSI1: documentId (CMND/CCCD)
+  GSI2: passportId
+  GSI3: businessRegistrationNumber
+  Attributes: fullName, address, phone, email, type
+end note
+
+note bottom of dynamo_party_docs
+  **Party-Document Links:**
+  PK: documentId
+  SK: partyRole#customerId (A#cust123)
+  GSI1: customerId#documentId
+  GSI2: documentId#partyRole
+  Attributes: partyRole, signatureStatus, notaryDate
+end note
+
+note bottom of dynamo_docs
+  **Document Table Schema:**
+  PK: documentId
+  SK: documentId
+  GSI1: sha256Hash
+  GSI2: notaryDate
+  Attributes: fileName, fileSize, contentType,
+  signature, notaryPublic, documentType
+end note
+
+' ======================
+' SEARCH FLOW EXAMPLES
+' ======================
+
+note right of cross_ref_search
+  **Search by Identity Examples:**
+  
+  1. Search by CMND: "123456789"
+     → Find Customer → Get Documents
+  
+  2. Search by Passport: "AB1234567"
+     → Find Customer → Get Documents
+  
+  3. Search by Business Reg: "0123456789"
+     → Find Customer → Get Documents
+  
+  4. Cross-reference search:
+     → Find all documents involving multiple parties
+end note
+
+@enduml

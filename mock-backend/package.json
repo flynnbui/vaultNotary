@@ -1,0 +1,23 @@
+{
+  "name": "vault-notary-mock-backend",
+  "version": "1.0.0",
+  "description": "Mock backend for VaultNotary frontend development",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "uuid": "^9.0.0",
+    "multer": "^1.4.5-lts.1",
+    "body-parser": "^1.20.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": ["mock", "backend", "vault-notary"],
+  "author": "VaultNotary Team",
+  "license": "MIT"
+}

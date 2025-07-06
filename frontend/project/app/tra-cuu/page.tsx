@@ -12,9 +12,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/src/components/ui/badge';
 import { searchSchema, type SearchFormData } from '@/src/lib/schemas';
 import { formatDate } from '@/src/lib/constants';
+import { apiService } from '@/src/lib/api';
 import { Search, FileText, User, Calendar } from 'lucide-react';
 import { toast } from 'sonner';
-import { debounce } from 'lodash';
 import '@/src/lib/i18n';
 
 interface SearchResult {

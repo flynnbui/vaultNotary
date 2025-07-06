@@ -49,17 +49,34 @@ const mockCustomers: CustomerFormData[] = [
 
 export default function CustomersPage() {
   const { t } = useTranslation();
-  const [customers, setCustomers] = useState<CustomerFormData[]>(mockCustomers);
+  const [customers, setCustomers] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
   const [showDialog, setShowDialog] = useState(false);
-  const [editingCustomer, setEditingCustomer] = useState<CustomerFormData | undefined>();
+  const [editingCustomer, setEditingCustomer] = useState<any | undefined>();
+
+  useEffect(() => {
+    loadCustomers();
+  }, []);
+
+  const loadCustomers = async () => {
+    try {
+      setLoading(true);
+      const response = await apiService.getCustomers({ search: searchTerm });
+      setCustomers(response.customers || []);
+    } catch (error) {
+      console.error('Error loading customers:', error);
+      toast.error('Không thể tải danh sách khách hàng');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredCustomers = customers.filter(customer =>
     customer.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    customer.phone.includes(searchTerm) ||
-    customer.idCard?.includes(searchTerm) ||
-    customer.passport?.includes(searchTerm) ||
-    customer.organizationName?.toLowerCase().includes(searchTerm.toLowerCase())
+    customer.phone?.includes(searchTerm) ||
+    customer.idNumber?.includes(searchTerm) ||
+    customer.businessName?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleAddCustomer = () => {

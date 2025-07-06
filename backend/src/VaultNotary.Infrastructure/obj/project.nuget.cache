@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "wvesveelpZA=",
+  "dgSpecHash": "i3vA4aDOhek=",
   "success": true,
   "projectFilePath": "/home/flynn/code/vaultNotary/backend/src/VaultNotary.Infrastructure/VaultNotary.Infrastructure.csproj",
   "expectedPackageFiles": [
@@ -8,12 +8,14 @@
     "/home/flynn/.nuget/packages/awssdk.dynamodbv2/4.0.2.1/awssdk.dynamodbv2.4.0.2.1.nupkg.sha512",
     "/home/flynn/.nuget/packages/awssdk.keymanagementservice/4.0.3.5/awssdk.keymanagementservice.4.0.3.5.nupkg.sha512",
     "/home/flynn/.nuget/packages/awssdk.s3/4.0.4.1/awssdk.s3.4.0.4.1.nupkg.sha512",
-    "/home/flynn/.nuget/packages/microsoft.extensions.configuration.abstractions/9.0.6/microsoft.extensions.configuration.abstractions.9.0.6.nupkg.sha512",
-    "/home/flynn/.nuget/packages/microsoft.extensions.configuration.binder/9.0.6/microsoft.extensions.configuration.binder.9.0.6.nupkg.sha512",
-    "/home/flynn/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/9.0.6/microsoft.extensions.dependencyinjection.abstractions.9.0.6.nupkg.sha512",
-    "/home/flynn/.nuget/packages/microsoft.extensions.options/9.0.6/microsoft.extensions.options.9.0.6.nupkg.sha512",
-    "/home/flynn/.nuget/packages/microsoft.extensions.options.configurationextensions/9.0.6/microsoft.extensions.options.configurationextensions.9.0.6.nupkg.sha512",
-    "/home/flynn/.nuget/packages/microsoft.extensions.primitives/9.0.6/microsoft.extensions.primitives.9.0.6.nupkg.sha512"
+    "/home/flynn/.nuget/packages/microsoft.extensions.configuration.abstractions/8.0.0/microsoft.extensions.configuration.abstractions.8.0.0.nupkg.sha512",
+    "/home/flynn/.nuget/packages/microsoft.extensions.configuration.binder/8.0.0/microsoft.extensions.configuration.binder.8.0.0.nupkg.sha512",
+    "/home/flynn/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/8.0.0/microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
+    "/home/flynn/.nuget/packages/microsoft.extensions.options/8.0.0/microsoft.extensions.options.8.0.0.nupkg.sha512",
+    "/home/flynn/.nuget/packages/microsoft.extensions.options.configurationextensions/8.0.0/microsoft.extensions.options.configurationextensions.8.0.0.nupkg.sha512",
+    "/home/flynn/.nuget/packages/microsoft.extensions.primitives/8.0.0/microsoft.extensions.primitives.8.0.0.nupkg.sha512",
+    "/home/flynn/.nuget/packages/microsoft.netcore.app.ref/8.0.17/microsoft.netcore.app.ref.8.0.17.nupkg.sha512",
+    "/home/flynn/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.17/microsoft.aspnetcore.app.ref.8.0.17.nupkg.sha512"
   ],
   "logs": []
 }
