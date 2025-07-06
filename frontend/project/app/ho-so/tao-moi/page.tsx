@@ -26,7 +26,9 @@ interface CustomerRecord {
   maSoSo: string;
   trangThai: 'Đang xử lý' | 'Hoàn thành' | 'Chờ ký';
   khachHang: string;
-  ccvThuKy: string;
+  khachHangSoGiayTo: string;
+  ccv: string;
+  thuKy: string;
   thoiGianTao: Date;
 }
 
@@ -74,8 +76,10 @@ export default function CustomersPage() {
           id: '1',
           maSoSo: 'HS001',
           trangThai: 'Hoàn thành',
-          khachHang: 'Nguyễn Văn A',
-          ccvThuKy: 'Trần Thị B (CCV)',
+          khachHang: 'Nguyễn Khánh Linh',
+          khachHangSoGiayTo: '001310056551',
+          ccv: 'Trần Thị B',
+          thuKy: 'Nguyễn Văn X',
           thoiGianTao: new Date('2024-01-15T09:30:00')
         },
         {
@@ -83,7 +87,9 @@ export default function CustomersPage() {
           maSoSo: 'HS002',
           trangThai: 'Đang xử lý',
           khachHang: 'Lê Văn C',
-          ccvThuKy: 'Phạm Thị D (Thư ký)',
+          khachHangSoGiayTo: '987654321',
+          ccv: 'Phạm Thị D',
+          thuKy: 'Hoàng Văn Y',
           thoiGianTao: new Date('2024-01-16T14:20:00')
         },
         {
@@ -91,7 +97,9 @@ export default function CustomersPage() {
           maSoSo: 'HS003',
           trangThai: 'Chờ ký',
           khachHang: 'Hoàng Thị E',
-          ccvThuKy: 'Vũ Văn F (CCV)',
+          khachHangSoGiayTo: 'A1234567',
+          ccv: 'Vũ Văn F',
+          thuKy: 'Lê Thị Z',
           thoiGianTao: new Date('2024-01-17T11:45:00')
         },
         {
@@ -99,7 +107,9 @@ export default function CustomersPage() {
           maSoSo: 'HS004',
           trangThai: 'Hoàn thành',
           khachHang: 'Đỗ Văn G',
-          ccvThuKy: 'Ngô Thị H (Thư ký)',
+          khachHangSoGiayTo: '123456789',
+          ccv: 'Ngô Thị H',
+          thuKy: 'Trần Văn A',
           thoiGianTao: new Date('2024-01-18T16:10:00')
         },
         {
@@ -107,7 +117,9 @@ export default function CustomersPage() {
           maSoSo: 'HS005',
           trangThai: 'Đang xử lý',
           khachHang: 'Bùi Thị I',
-          ccvThuKy: 'Lý Văn J (CCV)',
+          khachHangSoGiayTo: '555666777',
+          ccv: 'Lý Văn J',
+          thuKy: 'Phan Thị B',
           thoiGianTao: new Date('2024-01-19T08:15:00')
         },
         {
@@ -115,7 +127,9 @@ export default function CustomersPage() {
           maSoSo: 'HS006',
           trangThai: 'Chờ ký',
           khachHang: 'Trương Văn K',
-          ccvThuKy: 'Đinh Thị L (Thư ký)',
+          khachHangSoGiayTo: '888999000',
+          ccv: 'Đinh Thị L',
+          thuKy: 'Võ Văn C',
           thoiGianTao: new Date('2024-01-20T13:30:00')
         },
         {
@@ -123,7 +137,9 @@ export default function CustomersPage() {
           maSoSo: 'HS007',
           trangThai: 'Hoàn thành',
           khachHang: 'Phan Thị M',
-          ccvThuKy: 'Võ Văn N (CCV)',
+          khachHangSoGiayTo: 'P9876543',
+          ccv: 'Võ Văn N',
+          thuKy: 'Huỳnh Thị D',
           thoiGianTao: new Date('2024-01-21T10:00:00')
         },
         {
@@ -131,16 +147,21 @@ export default function CustomersPage() {
           maSoSo: 'HS008',
           trangThai: 'Đang xử lý',
           khachHang: 'Huỳnh Văn O',
-          ccvThuKy: 'Tôn Thị P (Thư ký)',
+          khachHangSoGiayTo: '111222333',
+          ccv: 'Tôn Thị P',
+          thuKy: 'Ngô Văn E',
           thoiGianTao: new Date('2024-01-22T15:45:00')
-        }
+      
+        },
+       
       ];
 
       // Filter customers based on search term
       const filteredCustomers = mockCustomerRecords.filter(customer =>
         customer.maSoSo.toLowerCase().includes(searchTerm.toLowerCase()) ||
         customer.khachHang.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        customer.ccvThuKy.toLowerCase().includes(searchTerm.toLowerCase())
+        customer.ccv.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        customer.thuKy.toLowerCase().includes(searchTerm.toLowerCase())
       );
 
       setTotalItems(filteredCustomers.length);
@@ -255,7 +276,7 @@ export default function CustomersPage() {
   return (
     <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-     
+       
 
         {/* Header with Create Button */}
         <div className="mb-8">
@@ -389,8 +410,20 @@ export default function CustomersPage() {
                             {customer.trangThai}
                           </Badge>
                         </TableCell>
-                        <TableCell>{customer.khachHang}</TableCell>
-                        <TableCell>{customer.ccvThuKy}</TableCell>
+                        <TableCell>
+                          <div className="space-y-1">
+                            <div className="font-medium">{customer.khachHang}</div>
+                            <div className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
+                              {customer.khachHangSoGiayTo}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="space-y-1">
+                            <div className="text-sm"><span className='font-bold'>CCV:</span> {customer.ccv}</div>
+                            <div className="text-sm"><span className='font-bold'>Thư ký:</span> {customer.thuKy}</div>
+                          </div>
+                        </TableCell>
                         <TableCell>{formatDateTime(customer.thoiGianTao)}</TableCell>
                         <TableCell>
                           <div className="flex gap-2">
