@@ -1,0 +1,1202 @@
+2025-07-06 22:32:22.845 +10:00 [WRN] Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager: No XML encryptor configured. Key {fdbc087c-94fb-4e6d-bc4d-ffe6012e9877} may be persisted to storage in unencrypted form.
+2025-07-06 22:32:22.845 +10:00 [WRN] Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager: No XML encryptor configured. Key {c4cbeb65-9b9e-4031-b0a3-80aab9281b37} may be persisted to storage in unencrypted form.
+2025-07-06 22:32:22.941 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:32:22.941 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:32:22.984 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP POST /api/upload/file-key/verify responded 500 in 42.5021 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.VerifyHash (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:32:22.984 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP GET /api/customers/123 responded 500 in 43.0014 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.GetById (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:32:22.995 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.VerifyHash (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:32:22.995 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.GetById (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:32:23.079 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:32:23.079 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:32:23.083 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP DELETE /api/customers/999 responded 500 in 3.2724 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Delete (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:32:23.083 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP POST /api/upload/file-key/verify responded 500 in 3.5918 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.VerifyHash (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:32:23.083 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Delete (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:32:23.083 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.VerifyHash (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:32:23.113 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:32:23.115 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:32:23.116 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP GET /api/customers/search responded 500 in 2.9295 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.SearchByIdentity (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:32:23.116 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP POST /api/upload/file-key/hash responded 500 in 1.4429 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.ComputeHash (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:32:23.117 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.SearchByIdentity (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:32:23.117 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.ComputeHash (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:32:23.139 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:32:23.142 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:32:23.142 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP POST /api/upload/initiate responded 500 in 3.1596 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.InitiateMultipartUpload (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:32:23.143 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.InitiateMultipartUpload (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:32:23.143 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP POST /api/customers responded 500 in 0.7969 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Create (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:32:23.143 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Create (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:32:23.169 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:32:23.170 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:32:23.172 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP PUT /api/customers/123 responded 500 in 1.1472 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Update (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:32:23.172 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP POST /api/upload/file-key/complete responded 500 in 3.1300 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.CompleteMultipartUpload (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:32:23.172 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Update (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:32:23.172 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.CompleteMultipartUpload (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:32:23.185 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:32:23.185 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:32:23.188 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP POST /api/customers responded 500 in 2.6331 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Create (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:32:23.188 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP POST /api/upload/single responded 500 in 3.0247 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.UploadSingle (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:32:23.188 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Create (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:32:23.188 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.UploadSingle (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:32:23.222 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:32:23.225 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP PUT /api/upload/file-key/part/1 responded 500 in 2.9440 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.UploadPart (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:32:23.226 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.UploadPart (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:32:23.226 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:32:23.227 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP DELETE /api/customers/123 responded 500 in 0.7713 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Delete (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:32:23.227 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Delete (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:32:23.240 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:32:23.240 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:32:23.242 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP POST /api/upload/single responded 500 in 2.7419 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.UploadSingle (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:32:23.242 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP GET /api/customers/999 responded 500 in 2.8444 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.GetById (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:32:23.243 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.UploadSingle (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:32:23.243 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.GetById (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:32:23.266 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:32:23.267 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:32:23.269 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP DELETE /api/upload/file-key responded 500 in 2.9127 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.AbortMultipartUpload (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:32:23.269 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP GET /api/customers/search responded 500 in 2.5761 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.SearchByIdentity (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:32:23.269 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.AbortMultipartUpload (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:32:23.269 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.SearchByIdentity (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:32:23.284 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:32:23.287 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP GET /api/customers responded 500 in 3.2658 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.GetAll (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:32:23.288 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.GetAll (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:32:23.305 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:32:23.309 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP PUT /api/customers/999 responded 500 in 3.4979 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Update (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:32:23.309 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Update (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:33:22.263 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:33:22.263 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:33:22.317 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP GET /api/customers/123 responded 500 in 58.3942 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.GetById (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:33:22.317 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP POST /api/upload/file-key/verify responded 500 in 57.2138 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.VerifyHash (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:33:22.328 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.GetById (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:33:22.328 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.VerifyHash (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:33:22.416 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:33:22.417 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:33:22.420 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP DELETE /api/customers/999 responded 500 in 3.3562 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Delete (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:33:22.420 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP POST /api/upload/file-key/verify responded 500 in 3.8384 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.VerifyHash (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:33:22.420 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Delete (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:33:22.421 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.VerifyHash (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:33:22.451 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:33:22.452 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:33:22.454 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP GET /api/customers/search responded 500 in 3.1690 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.SearchByIdentity (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:33:22.454 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP POST /api/upload/file-key/hash responded 500 in 2.5289 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.ComputeHash (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:33:22.455 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.SearchByIdentity (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:33:22.455 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.ComputeHash (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:33:22.477 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:33:22.480 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP POST /api/upload/initiate responded 500 in 3.2155 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.InitiateMultipartUpload (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:33:22.481 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:33:22.481 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.InitiateMultipartUpload (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:33:22.482 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP POST /api/customers responded 500 in 0.8423 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Create (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:33:22.482 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Create (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:33:22.506 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:33:22.508 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:33:22.509 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP POST /api/upload/file-key/complete responded 500 in 2.9525 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.CompleteMultipartUpload (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:33:22.509 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP PUT /api/customers/123 responded 500 in 1.3766 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Update (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:33:22.510 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.CompleteMultipartUpload (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:33:22.510 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Update (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:33:22.523 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:33:22.524 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:33:22.526 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP POST /api/upload/single responded 500 in 3.1622 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.UploadSingle (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:33:22.527 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP POST /api/customers responded 500 in 2.8822 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Create (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:33:22.527 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.UploadSingle (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:33:22.527 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Create (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:33:22.563 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:33:22.566 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP PUT /api/upload/file-key/part/1 responded 500 in 3.3012 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.UploadPart (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:33:22.567 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.UploadPart (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:33:22.568 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:33:22.569 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP DELETE /api/customers/123 responded 500 in 1.0302 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Delete (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:33:22.569 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Delete (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:33:22.581 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:33:22.584 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:33:22.585 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP POST /api/upload/single responded 500 in 3.1020 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.UploadSingle (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:33:22.585 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP GET /api/customers/999 responded 500 in 0.9263 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.GetById (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:33:22.585 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.UploadSingle (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:33:22.585 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.GetById (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:33:22.612 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:33:22.613 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:33:22.615 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP DELETE /api/upload/file-key responded 500 in 3.0300 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.AbortMultipartUpload (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:33:22.616 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP GET /api/customers/search responded 500 in 2.7174 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.SearchByIdentity (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:33:22.616 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.AbortMultipartUpload (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:33:22.616 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.SearchByIdentity (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:33:22.630 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:33:22.633 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP GET /api/customers responded 500 in 2.8919 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.GetAll (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:33:22.633 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.GetAll (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:33:22.646 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:33:22.649 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP PUT /api/customers/999 responded 500 in 3.1040 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Update (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:33:22.649 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Update (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:34:30.131 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:34:30.131 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:34:30.183 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP POST /api/upload/file-key/verify responded 500 in 56.3576 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.VerifyHash (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:34:30.183 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP GET /api/customers/123 responded 500 in 56.9723 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.GetById (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:34:30.194 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.VerifyHash (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:34:30.194 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.GetById (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:34:30.277 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:34:30.277 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:34:30.280 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP POST /api/upload/file-key/verify responded 500 in 3.7308 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.VerifyHash (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:34:30.280 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP DELETE /api/customers/999 responded 500 in 3.3293 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Delete (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:34:30.281 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.VerifyHash (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:34:30.281 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Delete (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:34:30.310 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:34:30.310 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:34:30.313 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP POST /api/upload/file-key/hash responded 500 in 2.8428 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.ComputeHash (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:34:30.313 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP GET /api/customers/search responded 500 in 3.1683 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.SearchByIdentity (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:34:30.313 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.ComputeHash (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:34:30.313 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.SearchByIdentity (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:34:30.336 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:34:30.339 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:34:30.339 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP POST /api/upload/initiate responded 500 in 3.2569 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.InitiateMultipartUpload (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:34:30.339 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.InitiateMultipartUpload (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:34:30.340 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP POST /api/customers responded 500 in 0.8825 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Create (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:34:30.340 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Create (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:34:30.365 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:34:30.367 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:34:30.368 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP PUT /api/customers/123 responded 500 in 1.1865 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Update (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:34:30.368 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP POST /api/upload/file-key/complete responded 500 in 3.1863 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.CompleteMultipartUpload (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:34:30.368 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Update (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:34:30.368 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.CompleteMultipartUpload (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:34:30.386 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:34:30.386 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:34:30.389 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP POST /api/upload/single responded 500 in 3.7702 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.UploadSingle (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:34:30.389 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP POST /api/customers responded 500 in 3.3562 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Create (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:34:30.390 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.UploadSingle (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:34:30.390 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Create (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:34:30.424 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:34:30.427 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP DELETE /api/customers/123 responded 500 in 3.2486 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Delete (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:34:30.428 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Delete (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:34:30.430 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:34:30.431 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP PUT /api/upload/file-key/part/1 responded 500 in 0.9997 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.UploadPart (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:34:30.431 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.UploadPart (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:34:30.443 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:34:30.446 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:34:30.446 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP GET /api/customers/999 responded 500 in 3.0564 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.GetById (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:34:30.446 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.GetById (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:34:30.446 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP POST /api/upload/single responded 500 in 0.8131 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.UploadSingle (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:34:30.447 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.UploadSingle (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:34:30.471 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:34:30.472 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:34:30.475 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP DELETE /api/upload/file-key responded 500 in 3.1568 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.AbortMultipartUpload (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:34:30.475 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP GET /api/customers/search responded 500 in 2.4898 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.SearchByIdentity (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:34:30.475 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.UploadController.AbortMultipartUpload (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:34:30.475 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.SearchByIdentity (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:34:30.488 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:34:30.491 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP GET /api/customers responded 500 in 3.0506 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.GetAll (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:34:30.492 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.GetAll (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-07-06 22:34:30.506 +10:00 [WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware: Failed to determine the https port for redirect.
+2025-07-06 22:34:30.510 +10:00 [ERR] Serilog.AspNetCore.RequestLoggingMiddleware: HTTP PUT /api/customers/999 responded 500 in 3.2513 ms
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Update (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-07-06 22:34:30.510 +10:00 [ERR] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware: An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Endpoint VaultNotary.Web.Controllers.CustomersController.Update (VaultNotary.Web) contains authorization metadata, but a middleware was not found that supports authorization.
+Configure your application startup by adding app.UseAuthorization() in the application startup code. If there are calls to app.UseRouting() and app.UseEndpoints(...), the call to app.UseAuthorization() must go between them.
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.ThrowMissingAuthMiddlewareException(Endpoint endpoint)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at VaultNotary.Web.Middleware.Auth0PermissionsMiddleware.InvokeAsync(HttpContext context) in /home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/Middleware/Auth0PermissionsMiddleware.cs:line 70
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)

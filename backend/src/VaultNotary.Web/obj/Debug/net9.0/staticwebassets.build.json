@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "/+PHuhqnJSIflnCd8Oord2YS8PAXsgl3xX7E+uNRkbA=",
+  "Source": "VaultNotary.Web",
+  "BasePath": "_content/VaultNotary.Web",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}

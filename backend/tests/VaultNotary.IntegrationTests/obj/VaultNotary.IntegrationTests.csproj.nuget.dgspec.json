@@ -1,0 +1,423 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/flynn/code/vaultNotary/backend/tests/VaultNotary.IntegrationTests/VaultNotary.IntegrationTests.csproj": {}
+  },
+  "projects": {
+    "/home/flynn/code/vaultNotary/backend/src/VaultNotary.Application/VaultNotary.Application.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/flynn/code/vaultNotary/backend/src/VaultNotary.Application/VaultNotary.Application.csproj",
+        "projectName": "VaultNotary.Application",
+        "projectPath": "/home/flynn/code/vaultNotary/backend/src/VaultNotary.Application/VaultNotary.Application.csproj",
+        "packagesPath": "/home/flynn/.nuget/packages/",
+        "outputPath": "/home/flynn/code/vaultNotary/backend/src/VaultNotary.Application/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/flynn/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "/usr/lib/dotnet/library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/home/flynn/code/vaultNotary/backend/src/VaultNotary.Domain/VaultNotary.Domain.csproj": {
+                "projectPath": "/home/flynn/code/vaultNotary/backend/src/VaultNotary.Domain/VaultNotary.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.100"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/9.0.107/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/flynn/code/vaultNotary/backend/src/VaultNotary.Domain/VaultNotary.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/flynn/code/vaultNotary/backend/src/VaultNotary.Domain/VaultNotary.Domain.csproj",
+        "projectName": "VaultNotary.Domain",
+        "projectPath": "/home/flynn/code/vaultNotary/backend/src/VaultNotary.Domain/VaultNotary.Domain.csproj",
+        "packagesPath": "/home/flynn/.nuget/packages/",
+        "outputPath": "/home/flynn/code/vaultNotary/backend/src/VaultNotary.Domain/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/flynn/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "/usr/lib/dotnet/library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.100"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/9.0.107/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/flynn/code/vaultNotary/backend/src/VaultNotary.Infrastructure/VaultNotary.Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/flynn/code/vaultNotary/backend/src/VaultNotary.Infrastructure/VaultNotary.Infrastructure.csproj",
+        "projectName": "VaultNotary.Infrastructure",
+        "projectPath": "/home/flynn/code/vaultNotary/backend/src/VaultNotary.Infrastructure/VaultNotary.Infrastructure.csproj",
+        "packagesPath": "/home/flynn/.nuget/packages/",
+        "outputPath": "/home/flynn/code/vaultNotary/backend/src/VaultNotary.Infrastructure/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/flynn/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "/usr/lib/dotnet/library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/home/flynn/code/vaultNotary/backend/src/VaultNotary.Application/VaultNotary.Application.csproj": {
+                "projectPath": "/home/flynn/code/vaultNotary/backend/src/VaultNotary.Application/VaultNotary.Application.csproj"
+              },
+              "/home/flynn/code/vaultNotary/backend/src/VaultNotary.Domain/VaultNotary.Domain.csproj": {
+                "projectPath": "/home/flynn/code/vaultNotary/backend/src/VaultNotary.Domain/VaultNotary.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.100"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "AWSSDK.DynamoDBv2": {
+              "target": "Package",
+              "version": "[4.0.2.1, )"
+            },
+            "AWSSDK.KeyManagementService": {
+              "target": "Package",
+              "version": "[4.0.3.5, )"
+            },
+            "AWSSDK.S3": {
+              "target": "Package",
+              "version": "[4.0.4.1, )"
+            },
+            "Microsoft.Extensions.Configuration.Abstractions": {
+              "target": "Package",
+              "version": "[9.0.6, )"
+            },
+            "Microsoft.Extensions.DependencyInjection.Abstractions": {
+              "target": "Package",
+              "version": "[9.0.6, )"
+            },
+            "Microsoft.Extensions.Options.ConfigurationExtensions": {
+              "target": "Package",
+              "version": "[9.0.6, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/9.0.107/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/VaultNotary.Web.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/VaultNotary.Web.csproj",
+        "projectName": "VaultNotary.Web",
+        "projectPath": "/home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/VaultNotary.Web.csproj",
+        "packagesPath": "/home/flynn/.nuget/packages/",
+        "outputPath": "/home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/flynn/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "/usr/lib/dotnet/library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/home/flynn/code/vaultNotary/backend/src/VaultNotary.Application/VaultNotary.Application.csproj": {
+                "projectPath": "/home/flynn/code/vaultNotary/backend/src/VaultNotary.Application/VaultNotary.Application.csproj"
+              },
+              "/home/flynn/code/vaultNotary/backend/src/VaultNotary.Infrastructure/VaultNotary.Infrastructure.csproj": {
+                "projectPath": "/home/flynn/code/vaultNotary/backend/src/VaultNotary.Infrastructure/VaultNotary.Infrastructure.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.100"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[9.0.6, )"
+            },
+            "Microsoft.AspNetCore.OpenApi": {
+              "target": "Package",
+              "version": "[9.0.6, )"
+            },
+            "Serilog.AspNetCore": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Serilog.Extensions.Hosting": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Serilog.Settings.Configuration": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Serilog.Sinks.Console": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "Serilog.Sinks.File": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[8.12.1, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/9.0.107/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/flynn/code/vaultNotary/backend/tests/VaultNotary.IntegrationTests/VaultNotary.IntegrationTests.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/flynn/code/vaultNotary/backend/tests/VaultNotary.IntegrationTests/VaultNotary.IntegrationTests.csproj",
+        "projectName": "VaultNotary.IntegrationTests",
+        "projectPath": "/home/flynn/code/vaultNotary/backend/tests/VaultNotary.IntegrationTests/VaultNotary.IntegrationTests.csproj",
+        "packagesPath": "/home/flynn/.nuget/packages/",
+        "outputPath": "/home/flynn/code/vaultNotary/backend/tests/VaultNotary.IntegrationTests/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/flynn/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "/usr/lib/dotnet/library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/VaultNotary.Web.csproj": {
+                "projectPath": "/home/flynn/code/vaultNotary/backend/src/VaultNotary.Web/VaultNotary.Web.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.100"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "FluentAssertions": {
+              "target": "Package",
+              "version": "[8.4.0, )"
+            },
+            "Microsoft.AspNetCore.Mvc.Testing": {
+              "target": "Package",
+              "version": "[9.0.6, )"
+            },
+            "Microsoft.NET.Test.Sdk": {
+              "target": "Package",
+              "version": "[17.12.0, )"
+            },
+            "Moq": {
+              "target": "Package",
+              "version": "[4.20.72, )"
+            },
+            "coverlet.collector": {
+              "target": "Package",
+              "version": "[6.0.2, )"
+            },
+            "xunit": {
+              "target": "Package",
+              "version": "[2.9.2, )"
+            },
+            "xunit.runner.visualstudio": {
+              "target": "Package",
+              "version": "[2.8.2, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/9.0.107/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
