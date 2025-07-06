@@ -10,8 +10,8 @@ import { Button } from '@/src/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/src/components/ui/dialog';
 import { PartiesAccordion } from '@/src/components/forms/PartiesAccordion';
 import { FileMetaCard } from '@/src/components/forms/FileMetaCard';
-import { FileDraftCard } from '@/src/components/forms/FileDraftCard';
 import { fileSchema, type FileFormData } from '@/src/lib/schemas';
+import { apiService } from '@/src/lib/api';
 import { FileText, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import '@/src/lib/i18n';
@@ -26,10 +26,9 @@ export default function NewFilePage() {
       ngayTao: new Date(),
       thuKy: '',
       congChungVien: '',
-      gioiThieu: '',
+      maGiaoDich: '',
+      moTa: '',
       loaiHoSo: '',
-      phiHoSo: 0,
-      attachments: [],
       parties: {
         A: [],
         B: [],
@@ -38,10 +37,16 @@ export default function NewFilePage() {
     }
   });
 
-  const onSubmit = (data: FileFormData) => {
-    console.log('File data:', data);
-    toast.success('Hồ sơ đã được lưu thành công!');
-    setIsDialogOpen(false);
+  const onSubmit = async (data: FileFormData) => {
+    try {
+      await apiService.createFile(data);
+      toast.success('Hồ sơ đã được lưu thành công!');
+      setIsDialogOpen(false);
+      methods.reset();
+    } catch (error) {
+      console.error('Error creating file:', error);
+      toast.error('Có lỗi xảy ra khi lưu hồ sơ. Vui lòng thử lại.');
+    }
   };
 
   const handleCancel = () => {
@@ -78,20 +83,17 @@ export default function NewFilePage() {
                 </Button>
               </DialogTrigger>
               
-              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+              <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Tạo hồ sơ mới</DialogTitle>
                 </DialogHeader>
                                 <FormProvider {...methods}>
                   <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-6 mt-6">
-                    {/* Parties Section */}
-                    <PartiesAccordion />
-                    
                     {/* File Meta Information */}
                     <FileMetaCard />
                     
-                    {/* File Draft Section */}
-                    <FileDraftCard />
+                    {/* Parties Section */}
+                    <PartiesAccordion />
                     
                     {/* Action Buttons */}
                     <div className="flex justify-end gap-4 pt-6 border-t">

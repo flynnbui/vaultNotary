@@ -1,8 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "xRHkyvjqx2M=",
+  "dgSpecHash": "XSPc9b3O0uI=",
   "success": true,
   "projectFilePath": "/home/flynn/code/vaultNotary/backend/src/VaultNotary.Domain/VaultNotary.Domain.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "/home/flynn/.nuget/packages/microsoft.netcore.app.ref/8.0.17/microsoft.netcore.app.ref.8.0.17.nupkg.sha512",
+    "/home/flynn/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.17/microsoft.aspnetcore.app.ref.8.0.17.nupkg.sha512"
+  ],
   "logs": []
 }

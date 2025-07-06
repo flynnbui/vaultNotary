@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useFormContext, useFieldArray } from 'react-hook-form';
 import { motion } from 'framer-motion';
-import { Card, CardContent } from '@/src/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
 import { Button } from '@/src/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/src/components/ui/accordion';
 import { CustomerDialog } from '@/src/components/forms/CustomerDialog';
@@ -124,20 +124,20 @@ export function PartiesAccordion() {
         const hasError = errors?.parties?.[party];
 
         return (
-            <AccordionItem key={party} value={party}>
-                <AccordionTrigger className="text-left">
-                    <div className="flex items-center gap-2">
+            <Card key={party}>
+                <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2">
                         <User className="h-5 w-5 text-orange-600" />
                         <span className="font-semibold">{getPartyLabel(party)}</span>
                         {customers.length > 0 && (
-                            <span className="text-sm text-muted-foreground">({customers.length})</span>
+                            <span className="text-sm text-muted-foreground">({customers.length} khách hàng)</span>
                         )}
                         {hasError && (
                             <span className="text-sm text-red-500">*</span>
                         )}
-                    </div>
-                </AccordionTrigger>
-                <AccordionContent>
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
                     <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -171,23 +171,35 @@ export function PartiesAccordion() {
                             </p>
                         )}
                     </motion.div>
-                </AccordionContent>
-            </AccordionItem>
+                </CardContent>
+            </Card>
         );
     };
 
     return (
         <>
-            <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                    <Users className="h-5 w-5 text-orange-600" />
-                    <h3 className="text-lg font-semibold">Thông tin nhân sự</h3>
-                </div>
+            <Accordion type="single" collapsible defaultValue="parties-info" className="w-full">
+                <AccordionItem value="parties-info">
+                    <AccordionTrigger className="text-lg font-semibold">
+                        <div className="flex items-center gap-2">
+                            <Users className="h-5 w-5 text-orange-600" />
+                            Thông tin các bên
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="space-y-6">
+                        {/* Ben A and Ben B on the same row */}
+                        <div className="grid md:grid-cols-2 gap-6">
+                            {renderPartySection('A')}
+                            {renderPartySection('B')}
+                        </div>
 
-                <Accordion type="single" collapsible defaultValue="A">
-                    {(['A', 'B', 'C'] as PartyKey[]).map(party => renderPartySection(party))}
-                </Accordion>
-            </div>
+                        {/* Ben C takes full width */}
+                        <div className="w-full">
+                            {renderPartySection('C')}
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
 
             <CustomerDialog
                 open={dialogOpen}

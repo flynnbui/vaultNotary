@@ -11,10 +11,12 @@ import { Label } from '@/src/components/ui/label';
 import { Textarea } from '@/src/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/components/ui/select';
 import { Alert, AlertDescription } from '@/src/components/ui/alert';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/src/components/ui/accordion';
 import { DatePicker } from '@/src/components/ui/date-picker';
-import { Search, Info } from 'lucide-react';
+import { Search, Info, User } from 'lucide-react';
 import { toast } from 'sonner';
 import { customerSchema, type CustomerSummary } from '@/src/lib/schemas';
+import { apiService } from '@/src/lib/api';
 
 interface CustomerDialogProps {
     open: boolean;
@@ -51,13 +53,14 @@ export function CustomerDialog({
         passportNumber?: string;
         passportIssueDate?: Date;
         passportIssuePlace?: string;
-        phone: string;
+        phone?: string;
         email?: string;
         permanentAddress: string;
         currentAddress?: string;
-        referrer?: string;
         dateOfBirth: Date;
         gender: 'male' | 'female' | 'other';
+        businessName?: string;
+        businessRegistrationNumber?: string;
     }>({
         resolver: zodResolver(customerSchema),
         defaultValues: {
@@ -97,27 +100,25 @@ export function CustomerDialog({
         }
     }, [open, initialData, setValue, reset]);
 
-    const handleLookup = async (_field: string, value: string) => {
+    const handleLookup = async (field: string, value: string) => {
         if (!value || value.length < 3) return;
 
-        // Simulate API lookup
-        setTimeout(() => {
-            const mockCustomer = {
-                fullName: 'Nguyễn Văn A',
-                cmndNumber: '123456789',
-                cmndIssueDate: new Date('2020-01-15'),
-                cmndIssuePlace: 'CA TP.HCM',
-                phone: '0123456789',
-                email: 'nguyenvana@email.com',
-                permanentAddress: '123 Đường ABC, Quận 1, TP.HCM',
-                currentAddress: '456 Đường XYZ, Quận 3, TP.HCM',
-                dateOfBirth: new Date('1990-05-20'),
-                gender: 'male'
-            };
-
-            setExistingCustomerData(mockCustomer);
-            setShowExistingCustomer(true);
-        }, 500);
+        try {
+            let customer;
+            if (field === 'phone') {
+                customer = await apiService.lookupCustomerByPhone(value);
+            } else {
+                customer = await apiService.lookupCustomerByIdentity(value);
+            }
+            
+            if (customer) {
+                setExistingCustomerData(customer);
+                setShowExistingCustomer(true);
+            }
+        } catch (error) {
+            // Customer not found, which is normal
+            console.log('Customer not found for lookup:', value);
+        }
     };
 
     const handleUseExistingData = () => {
@@ -203,213 +204,231 @@ export function CustomerDialog({
                                 </Select>
                             </div>
                         </div>
-                    </div>
-
-                    {/* ID Type Selection */}
-                    <div className="border-b pb-6">
-                        <h3 className="text-lg font-semibold text-foreground mb-4">Thông tin giấy tờ</h3>
-                        <div className="space-y-4">
-                        <div className="flex gap-4">
-                            <Button
-                                type="button"
-                                variant={idType === 'CMND' ? 'default' : 'outline'}
-                                onClick={() => handleIdTypeChange('CMND')}
-                                className="flex-1"
-                            >
-                                CMND/CCCD
-                            </Button>
-                            <Button
-                                type="button"
-                                variant={idType === 'Passport' ? 'default' : 'outline'}
-                                onClick={() => handleIdTypeChange('Passport')}
-                                className="flex-1"
-                            >
-                                Passport
-                            </Button>
-                        </div>
-
-                        {idType === 'CMND' ? (
-                            <div className="grid md:grid-cols-3 gap-4">
+                        
+                        {watch('customerType') === 'organization' && (
+                            <div className="grid md:grid-cols-2 gap-6 mt-4">
                                 <div>
-                                    <Label htmlFor="cmndNumber">Số CMND *</Label>
-                                    <div className="flex gap-2">
-                                        <Input
-                                            id="cmndNumber"
-                                            {...register('cmndNumber')}
-                                            onBlur={(e) => handleLookup('cmnd', e.target.value)}
-                                            placeholder="Tìm kiếm số CMND"
-                                            className={errors.cmndNumber ? 'border-red-500' : ''}
-                                        />
-                                        <Button type="button" variant="ghost" size="icon">
-                                            <Search className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                </div>
-                                <div>
-                                    <Label htmlFor="cmndIssueDate">Ngày cấp CMND *</Label>
-                                    <DatePicker
-                                        value={watch('cmndIssueDate')}
-                                        onChange={(date) => setValue('cmndIssueDate', date)}
-                                    />
-                                </div>
-                                <div>
-                                    <Label htmlFor="cmndIssuePlace">Nơi cấp CMND *</Label>
+                                    <Label htmlFor="businessName">Tên doanh nghiệp *</Label>
                                     <Input
-                                        id="cmndIssuePlace"
-                                        {...register('cmndIssuePlace')}
-                                    />
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="grid md:grid-cols-3 gap-4">
-                                <div>
-                                    <Label htmlFor="passportNumber">Số Passport *</Label>
-                                    <div className="flex gap-2">
-                                        <Input
-                                            id="passportNumber"
-                                            {...register('passportNumber')}
-                                            onBlur={(e) => handleLookup('passport', e.target.value)}
-                                            placeholder="Tìm kiếm số Passport"
-                                            className={errors.passportNumber ? 'border-red-500' : ''}
-                                        />
-                                        <Button type="button" variant="ghost" size="icon">
-                                            <Search className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                </div>
-                                <div>
-                                    <Label htmlFor="passportIssueDate">Ngày cấp Passport *</Label>
-                                    <DatePicker
-                                        value={watch('passportIssueDate')}
-                                        onChange={(date) => setValue('passportIssueDate', date)}
+                                        id="businessName"
+                                        {...register('businessName')}
+                                        placeholder="Nhập tên doanh nghiệp"
+                                        className={errors.businessName ? 'border-red-500' : ''}
                                     />
                                 </div>
                                 <div>
-                                    <Label htmlFor="passportIssuePlace">Nơi cấp Passport *</Label>
+                                    <Label htmlFor="businessRegistrationNumber">Số đăng ký kinh doanh *</Label>
                                     <Input
-                                        id="passportIssuePlace"
-                                        {...register('passportIssuePlace')}
+                                        id="businessRegistrationNumber"
+                                        {...register('businessRegistrationNumber')}
+                                        placeholder="Nhập số đăng ký kinh doanh"
+                                        className={errors.businessRegistrationNumber ? 'border-red-500' : ''}
                                     />
                                 </div>
                             </div>
                         )}
-                        </div>
                     </div>
 
-                    {/* Personal Information Section */}
-                    <div className="border-b pb-6">
-                        <h3 className="text-lg font-semibold text-foreground mb-4">Thông tin cá nhân</h3>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            <div>
-                                <Label htmlFor="fullName">Họ tên Khách hàng *</Label>
-                                <div className="flex gap-2">
-                                    <Input
-                                        id="fullName"
-                                        {...register('fullName')}
-                                        placeholder="Tìm kiếm tên khách hàng"
-                                        className={errors.fullName ? 'border-red-500' : ''}
-                                    />
-                                    <Button type="button" variant="ghost" size="icon">
-                                        <Search className="h-4 w-4" />
-                                    </Button>
+                    {/* Personal Information Section - Now Collapsible */}
+                    <Accordion type="single" collapsible defaultValue="customer-info" className="w-full">
+                        <AccordionItem value="customer-info">
+                            <AccordionTrigger className="text-lg font-semibold">
+                                <div className="flex items-center gap-2">
+                                    <User className="h-5 w-5 text-orange-600" />
+                                    Thông tin nhân sự
                                 </div>
-                            </div>
+                            </AccordionTrigger>
+                            <AccordionContent className="space-y-6">
+                                {/* ID Type Selection */}
+                                <div className="border-b pb-6">
+                                    <h3 className="text-lg font-semibold text-foreground mb-4">Thông tin giấy tờ</h3>
+                                    <div className="space-y-4">
+                                        <div className="flex gap-4">
+                                            <Button
+                                                type="button"
+                                                variant={idType === 'CMND' ? 'default' : 'outline'}
+                                                onClick={() => handleIdTypeChange('CMND')}
+                                                className="flex-1"
+                                            >
+                                                CMND/CCCD
+                                            </Button>
+                                            <Button
+                                                type="button"
+                                                variant={idType === 'Passport' ? 'default' : 'outline'}
+                                                onClick={() => handleIdTypeChange('Passport')}
+                                                className="flex-1"
+                                            >
+                                                Passport
+                                            </Button>
+                                        </div>
 
-                            <div>
-                                <Label htmlFor="phone">Số điện thoại *</Label>
-                                <div className="flex gap-2">
-                                    <Input
-                                        id="phone"
-                                        {...register('phone')}
-                                        onBlur={(e) => handleLookup('phone', e.target.value)}
-                                        placeholder="Tìm kiếm số điện thoại"
-                                        className={errors.phone ? 'border-red-500' : ''}
-                                    />
-                                    <Button type="button" variant="ghost" size="icon">
-                                        <Search className="h-4 w-4" />
-                                    </Button>
+                                        {idType === 'CMND' ? (
+                                            <div className="grid md:grid-cols-3 gap-4">
+                                                <div>
+                                                    <Label htmlFor="cmndNumber">Số CMND *</Label>
+                                                    <div className="flex gap-2">
+                                                        <Input
+                                                            id="cmndNumber"
+                                                            {...register('cmndNumber')}
+                                                            onBlur={(e) => handleLookup('cmnd', e.target.value)}
+                                                            placeholder="Tìm kiếm số CMND"
+                                                            className={errors.cmndNumber ? 'border-red-500' : ''}
+                                                        />
+                                                        <Button type="button" variant="ghost" size="icon">
+                                                            <Search className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <DatePicker
+                                                        label="Ngày cấp CMND *"
+                                                        value={watch('cmndIssueDate')}
+                                                        onChange={(date) => setValue('cmndIssueDate', date)}
+                                                        placeholder="Chọn ngày cấp"
+                                                        className="w-full"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <Label htmlFor="cmndIssuePlace">Nơi cấp CMND *</Label>
+                                                    <Input
+                                                        id="cmndIssuePlace"
+                                                        {...register('cmndIssuePlace')}
+                                                    />
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="grid md:grid-cols-3 gap-4">
+                                                <div>
+                                                    <Label htmlFor="passportNumber">Số Passport *</Label>
+                                                    <div className="flex gap-2">
+                                                        <Input
+                                                            id="passportNumber"
+                                                            {...register('passportNumber')}
+                                                            onBlur={(e) => handleLookup('passport', e.target.value)}
+                                                            placeholder="Tìm kiếm số Passport"
+                                                            className={errors.passportNumber ? 'border-red-500' : ''}
+                                                        />
+                                                        <Button type="button" variant="ghost" size="icon">
+                                                            <Search className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <DatePicker
+                                                        label="Ngày cấp Passport *"
+                                                        value={watch('passportIssueDate')}
+                                                        onChange={(date) => setValue('passportIssueDate', date)}
+                                                        placeholder="Chọn ngày cấp"
+                                                        className="w-full"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <Label htmlFor="passportIssuePlace">Nơi cấp Passport *</Label>
+                                                    <Input
+                                                        id="passportIssuePlace"
+                                                        {...register('passportIssuePlace')}
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
 
-                        <div className="grid md:grid-cols-2 gap-6 mt-4">
-                            <div>
-                                <Label htmlFor="dateOfBirth">Ngày sinh *</Label>
-                                <DatePicker
-                                    value={watch('dateOfBirth')}
-                                    onChange={(date) => setValue('dateOfBirth', date)}
-                                />
-                            </div>
+                                {/* Personal Information */}
+                                <div className="border-b pb-6">
+                                    <h3 className="text-lg font-semibold text-foreground mb-4">Thông tin cá nhân</h3>
+                                    <div className="grid md:grid-cols-2 gap-6">
+                                        <div>
+                                            <Label htmlFor="fullName">Họ tên Khách hàng *</Label>
+                                            <Input
+                                                id="fullName"
+                                                {...register('fullName')}
+                                                placeholder="Nhập họ tên khách hàng"
+                                                className={errors.fullName ? 'border-red-500' : ''}
+                                            />
+                                        </div>
 
-                            <div>
-                                <Label htmlFor="gender">Giới tính *</Label>
-                                <Select
-                                    value={watch('gender')}
-                                    onValueChange={(value) => setValue('gender', value as any)}
-                                >
-                                    <SelectTrigger className={errors.gender ? 'border-red-500' : ''}>
-                                        <SelectValue placeholder="Chọn giới tính" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="male">Nam</SelectItem>
-                                        <SelectItem value="female">Nữ</SelectItem>
-                                        <SelectItem value="other">Khác</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
+                                        <div>
+                                            <Label htmlFor="phone">Số điện thoại</Label>
+                                            <Input
+                                                id="phone"
+                                                {...register('phone')}
+                                                onBlur={(e) => handleLookup('phone', e.target.value)}
+                                                placeholder="Nhập số điện thoại"
+                                                className={errors.phone ? 'border-red-500' : ''}
+                                            />
+                                        </div>
+                                    </div>
 
-                        <div className="grid md:grid-cols-2 gap-6 mt-4">
-                            <div>
-                                <Label htmlFor="email">Email</Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    {...register('email')}
-                                    className={errors.email ? 'border-red-500' : ''}
-                                />
-                            </div>
+                                    <div className="grid md:grid-cols-2 gap-6 mt-4">
+                                        <div>
+                                            <DatePicker
+                                                label="Ngày sinh *"
+                                                value={watch('dateOfBirth')}
+                                                onChange={(date) => setValue('dateOfBirth', date)}
+                                                placeholder="Chọn ngày sinh"
+                                                className="w-full"
+                                            />
+                                        </div>
 
-                            <div>
-                                <Label htmlFor="referrer">Người giới thiệu</Label>
-                                <div className="flex gap-2">
-                                    <Input
-                                        id="referrer"
-                                        {...register('referrer')}
-                                        placeholder="Tìm kiếm Người giới thiệu"
-                                    />
-                                    <Button type="button" variant="ghost" size="icon">
-                                        <Search className="h-4 w-4" />
-                                    </Button>
+                                        <div>
+                                            <Label htmlFor="gender">Giới tính *</Label>
+                                            <Select
+                                                value={watch('gender')}
+                                                onValueChange={(value) => setValue('gender', value as any)}
+                                            >
+                                                <SelectTrigger className={errors.gender ? 'border-red-500' : ''}>
+                                                    <SelectValue placeholder="Chọn giới tính" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="male">Nam</SelectItem>
+                                                    <SelectItem value="female">Nữ</SelectItem>
+                                                    <SelectItem value="other">Khác</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid md:grid-cols-2 gap-6 mt-4">
+                                        <div>
+                                            <Label htmlFor="email">Email</Label>
+                                            <Input
+                                                id="email"
+                                                type="email"
+                                                {...register('email')}
+                                                className={errors.email ? 'border-red-500' : ''}
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    {/* Address Information Section */}
-                    <div>
-                        <h3 className="text-lg font-semibold text-foreground mb-4">Thông tin địa chỉ</h3>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            <div>
-                                <Label htmlFor="permanentAddress">Địa chỉ thường trú *</Label>
-                                <Textarea
-                                    id="permanentAddress"
-                                    {...register('permanentAddress')}
-                                    className={errors.permanentAddress ? 'border-red-500' : ''}
-                                    rows={3}
-                                />
-                            </div>
+                                {/* Address Information */}
+                                <div>
+                                    <h3 className="text-lg font-semibold text-foreground mb-4">Thông tin địa chỉ</h3>
+                                    <div className="grid md:grid-cols-2 gap-6">
+                                        <div>
+                                            <Label htmlFor="permanentAddress">Địa chỉ thường trú *</Label>
+                                            <Textarea
+                                                id="permanentAddress"
+                                                {...register('permanentAddress')}
+                                                className={errors.permanentAddress ? 'border-red-500' : ''}
+                                                rows={3}
+                                            />
+                                        </div>
 
-                            <div>
-                                <Label htmlFor="currentAddress">Chỗ ở hiện tại</Label>
-                                <Textarea
-                                    id="currentAddress"
-                                    {...register('currentAddress')}
-                                    rows={3}
-                                />
-                            </div>
-                        </div>
-                    </div>
+                                        <div>
+                                            <Label htmlFor="currentAddress">Chỗ ở hiện tại</Label>
+                                            <Textarea
+                                                id="currentAddress"
+                                                {...register('currentAddress')}
+                                                rows={3}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </AccordionContent>
+                        </AccordionItem>
+                    </Accordion>
 
                     <DialogFooter className="flex justify-end gap-4 pt-6 border-t bg-muted/50 rounded-b-lg -mx-6 -mb-6 px-6 py-4">
                         <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
