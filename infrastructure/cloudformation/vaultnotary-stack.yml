@@ -165,21 +165,25 @@ Resources:
       TableName: !Sub 'VaultNotary-Customers-${Environment}'
       BillingMode: !Ref DynamoDBBillingMode
       AttributeDefinitions:
-        - AttributeName: Id
+        - AttributeName: PK
           AttributeType: S
-        - AttributeName: DocumentId
+        - AttributeName: SK
           AttributeType: S
-        - AttributeName: PassportId
+        - AttributeName: GSI1PK
           AttributeType: S
-        - AttributeName: Phone
+        - AttributeName: GSI2PK
+          AttributeType: S
+        - AttributeName: GSI3PK
           AttributeType: S
       KeySchema:
-        - AttributeName: Id
+        - AttributeName: PK
           KeyType: HASH
+        - AttributeName: SK
+          KeyType: RANGE
       GlobalSecondaryIndexes:
-        - IndexName: DocumentIdIndex
+        - IndexName: GSI1
           KeySchema:
-            - AttributeName: DocumentId
+            - AttributeName: GSI1PK
               KeyType: HASH
           Projection:
             ProjectionType: ALL
@@ -188,9 +192,9 @@ Resources:
             - ReadCapacityUnits: 5
               WriteCapacityUnits: 5
             - !Ref AWS::NoValue
-        - IndexName: PassportIdIndex
+        - IndexName: GSI2
           KeySchema:
-            - AttributeName: PassportId
+            - AttributeName: GSI2PK
               KeyType: HASH
           Projection:
             ProjectionType: ALL
@@ -199,9 +203,9 @@ Resources:
             - ReadCapacityUnits: 5
               WriteCapacityUnits: 5
             - !Ref AWS::NoValue
-        - IndexName: PhoneIndex
+        - IndexName: GSI3
           KeySchema:
-            - AttributeName: Phone
+            - AttributeName: GSI3PK
               KeyType: HASH
           Projection:
             ProjectionType: ALL
