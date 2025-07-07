@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using VaultNotary.Application.DTOs;
 using VaultNotary.Application.Services;
 using VaultNotary.Web.Authorization;
+using VaultNotary.Infrastructure.Jobs;
 
 namespace VaultNotary.Web.Controllers;
 
@@ -12,10 +13,12 @@ namespace VaultNotary.Web.Controllers;
 public class UploadController : ControllerBase
 {
     private readonly IFileService _fileService;
+    private readonly IJobQueue _jobQueue;
 
-    public UploadController(IFileService fileService)
+    public UploadController(IFileService fileService, IJobQueue jobQueue)
     {
         _fileService = fileService;
+        _jobQueue = jobQueue;
     }
 
     [HttpPost("single")]
@@ -35,6 +38,20 @@ public class UploadController : ControllerBase
         };
 
         var fileKey = await _fileService.UploadAsync(fileUploadDto);
+        
+        // Publish CompressFileJob for PDF files
+        if (file.ContentType == "application/pdf")
+        {
+            var compressJob = new CompressFileJob
+            {
+                FileKey = fileKey,
+                DocumentId = "", // Will be populated when linked to document
+                FileName = file.FileName
+            };
+            
+            await _jobQueue.PublishAsync(compressJob);
+        }
+        
         return Ok(new { fileKey });
     }
 

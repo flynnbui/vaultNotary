@@ -241,26 +241,20 @@ services:
   # ======================
   background-jobs:
     build:
-      context: ./backend/background-jobs
+      context: ./backend/src/VaultNotary.BackgroundJobs
       dockerfile: Dockerfile
     container_name: vaultnotary-background-jobs
     environment:
-      - NODE_ENV=production
-      - RABBITMQ_URL=amqp://rabbitmq:5672
-      - MINIO_ENDPOINT=minio
-      - MINIO_PORT=9000
-      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
-      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
-      - DYNAMODB_ENDPOINT=http://dynamodb-local:8000
-      - DYNAMODB_REGION=us-east-1
-      - DYNAMODB_ACCESS_KEY=${DYNAMODB_ACCESS_KEY}
-      - DYNAMODB_SECRET_KEY=${DYNAMODB_SECRET_KEY}
-      - CRYPTO_SERVICE_URL=http://crypto-service:8086
+      - DOTNET_ENVIRONMENT=Production
+      - ConnectionStrings__RabbitMQ=amqp://admin:password@rabbitmq:5672
+      - Aws__Region=us-east-1
+      - Aws__AccessKey=${AWS_ACCESS_KEY}
+      - Aws__SecretKey=${AWS_SECRET_KEY}
+      - Aws__S3__BucketName=vaultnotary-files
+      - Aws__S3__FileKeyPrefix=files/
     depends_on:
       - rabbitmq
       - minio
-      - dynamodb-local
-      - crypto-service
     networks:
       - backend-network
     restart: unless-stopped

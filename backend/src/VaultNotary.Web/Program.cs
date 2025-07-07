@@ -20,8 +20,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Configure Auth0 - Skip in Testing environment
-if (!builder.Environment.IsEnvironment("Testing"))
+// Configure Auth0 - Skip in Testing and Test environments
+if (!builder.Environment.IsEnvironment("Testing") && !builder.Environment.IsEnvironment("Test"))
 {
     builder.Services.Configure<Auth0Configuration>(builder.Configuration.GetSection("Auth0"));
     var auth0Config = builder.Configuration.GetSection("Auth0").Get<Auth0Configuration>() ?? new Auth0Configuration();
@@ -45,7 +45,7 @@ else
 }
 
 // Configure Authorization
-if (builder.Environment.IsEnvironment("Testing"))
+if (builder.Environment.IsEnvironment("Testing") || builder.Environment.IsEnvironment("Test"))
 {
     // For testing, allow all requests
     builder.Services.AddAuthorization(options =>
@@ -157,7 +157,7 @@ var app = builder.Build();
 // Configure Serilog request logging
 app.UseSerilogRequestLogging();
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Test"))
 {
     app.UseSwagger();
     app.UseSwaggerUI();

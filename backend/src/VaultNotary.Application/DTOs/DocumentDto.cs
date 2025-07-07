@@ -28,6 +28,33 @@ public class CreateDocumentDto
     public DateTime NotaryDate { get; set; }
 }
 
+public class CreateFileDto
+{
+    public DateTime NgayTao { get; set; }
+    public string ThuKy { get; set; } = string.Empty;
+    public string CongChungVien { get; set; } = string.Empty;
+    public string MaGiaoDich { get; set; } = string.Empty;
+    public string? MoTa { get; set; }
+    public string LoaiHoSo { get; set; } = string.Empty;
+    public PartiesDto Parties { get; set; } = new();
+}
+
+public class PartiesDto
+{
+    public List<PartyMemberDto> A { get; set; } = new();
+    public List<PartyMemberDto> B { get; set; } = new();
+    public List<PartyMemberDto>? C { get; set; }
+}
+
+public class PartyMemberDto
+{
+    public string Id { get; set; } = string.Empty;
+    public string FullName { get; set; } = string.Empty;
+    public string IdType { get; set; } = string.Empty;
+    public string IdNumber { get; set; } = string.Empty;
+    public string Dob { get; set; } = string.Empty;
+}
+
 public class UpdateDocumentDto
 {
     public string FileName { get; set; } = string.Empty;

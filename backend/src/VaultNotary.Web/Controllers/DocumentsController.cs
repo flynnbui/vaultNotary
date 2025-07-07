@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using VaultNotary.Application.DTOs;
 using VaultNotary.Application.Services;
 using VaultNotary.Web.Authorization;
+using VaultNotary.Infrastructure.Jobs;
 
 namespace VaultNotary.Web.Controllers;
 
@@ -12,10 +13,12 @@ namespace VaultNotary.Web.Controllers;
 public class DocumentsController : ControllerBase
 {
     private readonly IDocumentService _documentService;
+    private readonly IJobQueue _jobQueue;
 
-    public DocumentsController(IDocumentService documentService)
+    public DocumentsController(IDocumentService documentService, IJobQueue jobQueue)
     {
         _documentService = documentService;
+        _jobQueue = jobQueue;
     }
 
     [HttpGet]
@@ -106,6 +109,50 @@ public class DocumentsController : ControllerBase
 
         await _documentService.UnlinkPartyAsync(id, customerId);
         return NoContent();
+    }
+
+    [HttpPost("upload")]
+    [HasPermission(Permissions.UploadFiles)]
+    public async Task<ActionResult<string>> UploadDocuments([FromForm] IFormFile file, [FromForm] string fileId)
+    {
+        if (file == null || file.Length == 0)
+            return BadRequest("No file provided");
+
+        if (string.IsNullOrEmpty(fileId))
+            return BadRequest("FileId is required");
+
+        if (!await _documentService.ExistsAsync(fileId))
+            return NotFound("Document not found");
+
+        // Update the document with file information
+        var document = await _documentService.GetByIdAsync(fileId);
+        if (document == null)
+            return NotFound("Document not found");
+
+        var updateDto = new UpdateDocumentDto
+        {
+            FileName = file.FileName,
+            NotaryPublic = document.NotaryPublic,
+            DocumentType = document.DocumentType,
+            NotaryDate = document.NotaryDate
+        };
+
+        await _documentService.UpdateAsync(fileId, updateDto);
+
+        // Publish CompressFileJob for PDF files
+        if (file.ContentType == "application/pdf")
+        {
+            var compressJob = new CompressFileJob
+            {
+                FileKey = $"documents/{fileId}/{file.FileName}",
+                DocumentId = fileId,
+                FileName = file.FileName
+            };
+            
+            await _jobQueue.PublishAsync(compressJob);
+        }
+
+        return Ok(new { fileId, fileName = file.FileName, message = "File uploaded successfully" });
     }
 }
 

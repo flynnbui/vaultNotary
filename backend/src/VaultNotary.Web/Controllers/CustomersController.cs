@@ -98,4 +98,30 @@ public class CustomersController : ControllerBase
         var isValid = await _customerService.ValidateIdentityAsync(identity);
         return Ok(isValid);
     }
+
+    [HttpGet("lookup/identity/{identity}")]
+    [HasPermission(Permissions.ReadCustomers)]
+    public async Task<ActionResult<CustomerDto>> GetByIdentity(string identity)
+    {
+        var customers = await _customerService.SearchByIdentityAsync(identity);
+        var customer = customers.FirstOrDefault();
+        
+        if (customer == null)
+            return NotFound();
+
+        return Ok(customer);
+    }
+
+    [HttpGet("lookup/phone/{phone}")]
+    [HasPermission(Permissions.ReadCustomers)]
+    public async Task<ActionResult<CustomerDto>> GetByPhone(string phone)
+    {
+        var customers = await _customerService.GetAllAsync();
+        var customer = customers.FirstOrDefault(c => c.Phone == phone);
+        
+        if (customer == null)
+            return NotFound();
+
+        return Ok(customer);
+    }
 }
