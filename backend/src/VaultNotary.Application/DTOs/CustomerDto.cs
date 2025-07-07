@@ -13,6 +13,7 @@ public class CustomerDto
     public string? DocumentId { get; set; }
     public string? PassportId { get; set; }
     public string? BusinessRegistrationNumber { get; set; }
+    public string? BusinessName { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }
@@ -27,6 +28,7 @@ public class CreateCustomerDto
     public string? DocumentId { get; set; }
     public string? PassportId { get; set; }
     public string? BusinessRegistrationNumber { get; set; }
+    public string? BusinessName { get; set; }
 }
 
 public class UpdateCustomerDto
@@ -39,4 +41,5 @@ public class UpdateCustomerDto
     public string? DocumentId { get; set; }
     public string? PassportId { get; set; }
     public string? BusinessRegistrationNumber { get; set; }
+    public string? BusinessName { get; set; }
 }

@@ -18,13 +18,11 @@ public class CreatePartyDocumentLinkDto
     public string DocumentId { get; set; } = string.Empty;
     public string CustomerId { get; set; } = string.Empty;
     public PartyRole PartyRole { get; set; }
-    public SignatureStatus SignatureStatus { get; set; }
     public DateTime NotaryDate { get; set; }
 }
 
 public class UpdatePartyDocumentLinkDto
 {
     public PartyRole PartyRole { get; set; }
-    public SignatureStatus SignatureStatus { get; set; }
     public DateTime NotaryDate { get; set; }
 }

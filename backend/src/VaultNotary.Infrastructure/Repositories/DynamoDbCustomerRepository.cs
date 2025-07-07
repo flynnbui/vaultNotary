@@ -171,6 +171,7 @@ public class DynamoDbCustomerRepository : ICustomerRepository
             DocumentId = item.ContainsKey("DocumentId") ? item["DocumentId"].S : null,
             PassportId = item.ContainsKey("PassportId") ? item["PassportId"].S : null,
             BusinessRegistrationNumber = item.ContainsKey("BusinessRegistrationNumber") ? item["BusinessRegistrationNumber"].S : null,
+            BusinessName = item.ContainsKey("BusinessName") ? item["BusinessName"].S : null,
             CreatedAt = DateTime.Parse(item["CreatedAt"].S),
             UpdatedAt = DateTime.Parse(item["UpdatedAt"].S)
         };
@@ -184,26 +185,35 @@ public class DynamoDbCustomerRepository : ICustomerRepository
             { "SK", new AttributeValue { S = customer.Id } },
             { "FullName", new AttributeValue { S = customer.FullName } },
             { "Address", new AttributeValue { S = customer.Address } },
-            { "Phone", new AttributeValue { S = customer.Phone } },
-            { "Email", new AttributeValue { S = customer.Email } },
             { "Type", new AttributeValue { S = customer.Type.ToString() } },
             { "CreatedAt", new AttributeValue { S = customer.CreatedAt.ToString("O") } },
             { "UpdatedAt", new AttributeValue { S = customer.UpdatedAt.ToString("O") } }
         };
-
+        if (!string.IsNullOrEmpty(customer.Phone))
+        {
+            item["Phone"] = new AttributeValue { S = customer.Phone };
+        }
+        if (!string.IsNullOrEmpty(customer.Email))
+        {
+            item["Email"] = new AttributeValue { S = customer.Email };
+        }
+         if (!string.IsNullOrEmpty(customer.BusinessName))
+        {
+            item["BussinessName"] = new AttributeValue { S = customer.BusinessName };
+        }
+       
+       
         if (!string.IsNullOrEmpty(customer.DocumentId))
         {
             item["DocumentId"] = new AttributeValue { S = customer.DocumentId };
             item["GSI1PK"] = new AttributeValue { S = customer.DocumentId };
         }
-
         if (!string.IsNullOrEmpty(customer.PassportId))
         {
             item["PassportId"] = new AttributeValue { S = customer.PassportId };
             item["GSI2PK"] = new AttributeValue { S = customer.PassportId };
         }
-
-        if (!string.IsNullOrEmpty(customer.BusinessRegistrationNumber))
+         if (!string.IsNullOrEmpty(customer.BusinessRegistrationNumber))
         {
             item["BusinessRegistrationNumber"] = new AttributeValue { S = customer.BusinessRegistrationNumber };
             item["GSI3PK"] = new AttributeValue { S = customer.BusinessRegistrationNumber };

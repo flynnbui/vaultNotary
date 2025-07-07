@@ -82,6 +82,7 @@ public class CustomerService : ICustomerService
         customer.DocumentId = updateCustomerDto.DocumentId;
         customer.PassportId = updateCustomerDto.PassportId;
         customer.BusinessRegistrationNumber = updateCustomerDto.BusinessRegistrationNumber;
+         customer.BusinessName = updateCustomerDto.BusinessName;
         customer.UpdatedAt = DateTime.UtcNow;
 
         await _customerRepository.UpdateAsync(customer);
@@ -124,7 +125,6 @@ public class CustomerService : ICustomerService
             var customerByBusiness = await _customerRepository.GetByBusinessRegistrationAsync(createCustomerDto.BusinessRegistrationNumber);
             if (customerByBusiness != null) duplicates.Add(customerByBusiness);
         }
-
         return duplicates.Distinct().Select(MapToDto).ToList();
     }
 
@@ -141,6 +141,7 @@ public class CustomerService : ICustomerService
             DocumentId = customer.DocumentId,
             PassportId = customer.PassportId,
             BusinessRegistrationNumber = customer.BusinessRegistrationNumber,
+            BusinessName = customer.BussinessName,
             CreatedAt = customer.CreatedAt,
             UpdatedAt = customer.UpdatedAt
         };
