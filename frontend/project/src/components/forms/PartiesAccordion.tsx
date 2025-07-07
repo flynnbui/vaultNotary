@@ -1,10 +1,13 @@
 'use client';
 
+import * as React from 'react';
 import { useState } from 'react';
 import { useFormContext, useFieldArray } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
 import { Button } from '@/src/components/ui/button';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/components/ui/table';
+import { Badge } from '@/src/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/src/components/ui/accordion';
 import { CustomerDialog } from '@/src/components/forms/CustomerDialog';
 import { Users, PenLine, Trash2, Plus, User } from 'lucide-react';
@@ -20,6 +23,47 @@ export function PartiesAccordion() {
     const partiesA = useFieldArray({ control, name: 'parties.A' });
     const partiesB = useFieldArray({ control, name: 'parties.B' });
     const partiesC = useFieldArray({ control, name: 'parties.C' });
+
+    // Fake data for demo - remove this in production
+    React.useEffect(() => {
+        // Add fake data to Bên A
+        if (partiesA.fields.length === 0) {
+            partiesA.append([
+                {
+                    id: '1',
+                    fullName: 'Nguyễn Văn Nam',
+                    idType: 'CMND',
+                    idNumber: '123456789',
+                    dob: '1985-05-15',
+                    customerType: 'individual'
+                },
+                {
+                    id: '2',
+                    fullName: 'Trần Thị Lan',
+                    idType: 'CCCD',
+                    idNumber: '987654321',
+                    dob: '1990-12-20',
+                    customerType: 'individual'
+                }
+            ]);
+        }
+
+        // Add fake data to Bên B
+        if (partiesB.fields.length === 0) {
+            partiesB.append([
+                {
+                    id: '3',
+                    fullName: 'Lê Minh Hoàng',
+                    idType: 'Passport',
+                    idNumber: 'A1234567',
+                    dob: '1988-03-10',
+                    customerType: 'organization',
+                    businessName: 'Công ty TNHH ABC',
+                    businessRegistrationNumber: 'MST123456789'
+                }
+            ]);
+        }
+    }, [partiesA, partiesB]);
 
     const getFieldArray = (party: PartyKey) => {
         switch (party) {
@@ -82,40 +126,80 @@ export function PartiesAccordion() {
         setEditingCustomer(null);
     };
 
-    const renderCustomerCard = (customer: CustomerSummary, party: PartyKey, index: number) => (
-        <Card key={customer.id} className="mb-3">
-            <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                        <h4 className="font-semibold text-lg uppercase text-foreground">
-                            {customer.fullName}
-                        </h4>
-                        <p className="text-sm text-muted-foreground">
-                            {customer.idType}: {customer.idNumber} • {formatDate(customer.dob)}
-                        </p>
-                    </div>
-                    <div className="flex gap-2">
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleEditCustomer(party, customer, index)}
-                        >
-                            <PenLine className="h-4 w-4" />
-                        </Button>
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleRemoveCustomer(party, index)}
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                        >
-                            <Trash2 className="h-4 w-4" />
-                        </Button>
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
+    const getCustomerTypeBadge = (customer: CustomerSummary) => {
+        // Check if it's an organization (có businessName hoặc businessRegistrationNumber)
+        const isOrganization = (customer as any).businessName || (customer as any).businessRegistrationNumber;
+        
+        return isOrganization ? (
+            <Badge variant="outline">Tổ chức</Badge>
+        ) : (
+            <Badge variant="secondary">Cá nhân</Badge>
+        );
+    };
+
+    const getOrganizationName = (customer: CustomerSummary) => {
+        return (customer as any).businessName || '-';
+    };
+
+    const renderCustomerTable = (customers: CustomerSummary[], party: PartyKey) => (
+        <div className="rounded-md border">
+            <Table>
+                <TableHeader>
+                    <TableRow className="bg-muted/50">
+                        <TableHead className="font-semibold">Tên khách hàng</TableHead>
+                        <TableHead className="font-semibold">Số CCCD/Passport</TableHead>
+                        <TableHead className="font-semibold">Tổ chức</TableHead>
+                        <TableHead className="font-semibold">Thao tác</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {customers.map((customer, index) => (
+                        <TableRow key={customer.id} className="hover:bg-muted/50">
+                            <TableCell className="font-medium">{customer.fullName}</TableCell>
+                            <TableCell className="font-mono">
+                                {customer.idType}: {customer.idNumber}
+                            </TableCell>
+                            <TableCell>{getOrganizationName(customer)}</TableCell>
+                            <TableCell>
+                                <div className="flex gap-2">
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => handleEditCustomer(party, customer, index)}
+                                        title="Chỉnh sửa"
+                                    >
+                                        <PenLine className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => handleRemoveCustomer(party, index)}
+                                        className="border-red-200 text-red-600 hover:bg-red-50"
+                                        title="Xóa"
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </div>
+    );
+
+    const renderEmptyState = (party: PartyKey) => (
+        <div className="text-center py-8 border-2 border-dashed border-muted rounded-lg">
+            <User className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <h3 className="text-lg font-medium text-foreground mb-2">
+                Chưa có khách hàng
+            </h3>
+            <p className="text-muted-foreground mb-4">
+                Nhấn nút bên dưới để thêm khách hàng cho {getPartyLabel(party)}
+            </p>
+        </div>
     );
 
     const renderPartySection = (party: PartyKey) => {
@@ -144,12 +228,12 @@ export function PartiesAccordion() {
                         transition={{ duration: 0.3 }}
                         className="space-y-4"
                     >
-                        {customers.length > 0 && (
-                            <div className="space-y-3">
-                                {customers.map((customer, index) =>
-                                    renderCustomerCard(customer, party, index)
-                                )}
+                        {customers.length > 0 ? (
+                            <div className="space-y-4">
+                                {renderCustomerTable(customers, party)}
                             </div>
+                        ) : (
+                            renderEmptyState(party)
                         )}
 
                         <Button
@@ -159,7 +243,7 @@ export function PartiesAccordion() {
                             className="w-full"
                         >
                             <Plus className="h-4 w-4 mr-2" />
-                            Thêm khách hàng
+                            {customers.length > 0 ? 'Thêm khách hàng khác' : 'Thêm khách hàng'}
                         </Button>
 
                         {hasError && (
@@ -193,10 +277,7 @@ export function PartiesAccordion() {
                             {renderPartySection('B')}
                         </div>
 
-                        {/* Ben C takes full width */}
-                        <div className="w-full">
-                            {renderPartySection('C')}
-                        </div>
+                        
                     </AccordionContent>
                 </AccordionItem>
             </Accordion>

@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -12,11 +13,264 @@ import { Textarea } from '@/src/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/components/ui/select';
 import { Alert, AlertDescription } from '@/src/components/ui/alert';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/src/components/ui/accordion';
-import { DatePicker } from '@/src/components/ui/date-picker';
-import { Search, Info, User } from 'lucide-react';
+import { Search, Info, User, CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { customerSchema, type CustomerSummary } from '@/src/lib/schemas';
 import { apiService } from '@/src/lib/api';
+
+// Custom DatePicker Component
+interface CustomDatePickerProps {
+    value: Date | null;
+    onChange: (date: Date | null) => void;
+    placeholder?: string;
+    error?: boolean;
+    label?: string;
+    className?: string;
+}
+
+function CustomDatePicker({ value, onChange, placeholder = "Chọn ngày", error = false, label, className }: CustomDatePickerProps) {
+    const [isOpen, setIsOpen] = React.useState(false);
+    const [currentMonth, setCurrentMonth] = React.useState(value || new Date());
+    const [inputValue, setInputValue] = React.useState(
+        value ? formatDate(value) : ''
+    );
+
+    const dropdownRef = React.useRef<HTMLDivElement>(null);
+
+    // Format date as dd/MM/yyyy
+    function formatDate(date: Date): string {
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+
+    // Parse date from dd/MM/yyyy format
+    function parseDate(dateString: string): Date | null {
+        const parts = dateString.split('/');
+        if (parts.length !== 3) return null;
+        
+        const day = parseInt(parts[0]);
+        const month = parseInt(parts[1]) - 1;
+        const year = parseInt(parts[2]);
+        
+        if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
+        if (day < 1 || day > 31 || month < 0 || month > 11 || year < 1900 || year > 2100) return null;
+        
+        const date = new Date(year, month, day);
+        return date.getDate() === day && date.getMonth() === month && date.getFullYear() === year ? date : null;
+    }
+
+    // Get days in month
+    function getDaysInMonth(date: Date): (Date | null)[] {
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const daysInMonth = lastDay.getDate();
+        const startingDayOfWeek = firstDay.getDay();
+        
+        const days: (Date | null)[] = [];
+        
+        for (let i = 0; i < startingDayOfWeek; i++) {
+            days.push(null);
+        }
+        
+        for (let day = 1; day <= daysInMonth; day++) {
+            days.push(new Date(year, month, day));
+        }
+        
+        return days;
+    }
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const inputVal = e.target.value;
+        setInputValue(inputVal);
+        
+        const parsedDate = parseDate(inputVal);
+        if (parsedDate) {
+            onChange(parsedDate);
+            setCurrentMonth(parsedDate);
+        }
+    };
+
+    const handleDateSelect = (date: Date) => {
+        onChange(date);
+        setInputValue(formatDate(date));
+        setIsOpen(false);
+    };
+
+    const navigateMonth = (direction: 'prev' | 'next') => {
+        setCurrentMonth(prev => {
+            const newMonth = new Date(prev);
+            if (direction === 'prev') {
+                newMonth.setMonth(newMonth.getMonth() - 1);
+            } else {
+                newMonth.setMonth(newMonth.getMonth() + 1);
+            }
+            return newMonth;
+        });
+    };
+
+    React.useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const days = getDaysInMonth(currentMonth);
+    const monthNames = [
+        'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
+        'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'
+    ];
+    const dayNames = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+
+    return (
+        <div className={className}>
+            {label && <Label className="mb-2 block">{label}</Label>}
+            <div className="relative" ref={dropdownRef}>
+                <div className="relative">
+                    <Input
+                        value={inputValue}
+                        onChange={handleInputChange}
+                        placeholder={placeholder}
+                        className={`pr-10 ${error ? 'border-red-500' : ''}`}
+                        onFocus={() => setIsOpen(true)}
+                    />
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                        onClick={() => setIsOpen(!isOpen)}
+                    >
+                        <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+                    </Button>
+                </div>
+
+                {isOpen && (
+                    <div className="absolute top-full left-0 z-50 mt-1 rounded-md border bg-popover p-0 text-popover-foreground shadow-md outline-none">
+                        <div className="p-3">
+                            <div className="flex items-center justify-between mb-4 gap-2">
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-7 w-7 p-0"
+                                    onClick={() => navigateMonth('prev')}
+                                >
+                                    <ChevronLeft className="h-4 w-4" />
+                                </Button>
+                                
+                                <div className="flex items-center gap-1">
+                                    <select 
+                                        value={currentMonth.getMonth()}
+                                        onChange={(e) => {
+                                            const newMonth = new Date(currentMonth);
+                                            newMonth.setMonth(parseInt(e.target.value));
+                                            setCurrentMonth(newMonth);
+                                        }}
+                                        className="text-sm font-medium px-2 py-1 rounded-md border border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer"
+                                    >
+                                        {monthNames.map((month, index) => (
+                                            <option key={index} value={index} className="bg-background text-foreground">
+                                                {month}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    
+                                    <select 
+                                        value={currentMonth.getFullYear()}
+                                        onChange={(e) => {
+                                            const newMonth = new Date(currentMonth);
+                                            newMonth.setFullYear(parseInt(e.target.value));
+                                            setCurrentMonth(newMonth);
+                                        }}
+                                        className="text-sm font-medium px-2 py-1 rounded-md border border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer"
+                                    >
+                                        {Array.from({ length: 101 }, (_, i) => {
+                                            const year = new Date().getFullYear() - 100 + i;
+                                            return (
+                                                <option key={year} value={year} className="bg-background text-foreground">
+                                                    {year}
+                                                </option>
+                                            );
+                                        })}
+                                    </select>
+                                </div>
+                                
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-7 w-7 p-0"
+                                    onClick={() => navigateMonth('next')}
+                                >
+                                    <ChevronRight className="h-4 w-4" />
+                                </Button>
+                            </div>
+
+                            <div className="grid grid-cols-7 gap-1 mb-2">
+                                {dayNames.map(day => (
+                                    <div key={day} className="text-center text-xs font-medium text-muted-foreground p-1">
+                                        {day}
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="grid grid-cols-7 gap-1">
+                                {days.map((day, index) => {
+                                    if (!day) {
+                                        return <div key={index} className="p-1" />;
+                                    }
+
+                                    const isSelected = value && 
+                                        day.getDate() === value.getDate() &&
+                                        day.getMonth() === value.getMonth() &&
+                                        day.getFullYear() === value.getFullYear();
+
+                                    const isToday = 
+                                        day.getDate() === new Date().getDate() &&
+                                        day.getMonth() === new Date().getMonth() &&
+                                        day.getFullYear() === new Date().getFullYear();
+
+                                    return (
+                                        <button
+                                            key={index}
+                                            type="button"
+                                            className={`
+                                                h-8 w-8 text-sm rounded-md font-normal
+                                                hover:bg-accent hover:text-accent-foreground
+                                                focus:bg-accent focus:text-accent-foreground
+                                                ${isSelected 
+                                                    ? 'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground' 
+                                                    : ''
+                                                }
+                                                ${isToday && !isSelected 
+                                                    ? 'bg-accent text-accent-foreground' 
+                                                    : ''
+                                                }
+                                            `}
+                                            onClick={() => handleDateSelect(day)}
+                                        >
+                                            {day.getDate()}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
 
 interface CustomerDialogProps {
     open: boolean;
@@ -77,7 +331,6 @@ export function CustomerDialog({
 
     useEffect(() => {
         if (open && initialData) {
-            // Populate form with existing data
             Object.keys(initialData).forEach(key => {
                 if (key !== 'index') {
                     setValue(key as any, (initialData as any)[key]);
@@ -85,7 +338,6 @@ export function CustomerDialog({
             });
             setIdType(initialData.idType);
         } else if (open) {
-            // Reset form for new customer
             reset({
                 customerType: 'individual',
                 isVip: false,
@@ -116,7 +368,6 @@ export function CustomerDialog({
                 setShowExistingCustomer(true);
             }
         } catch (error) {
-            // Customer not found, which is normal
             console.log('Customer not found for lookup:', value);
         }
     };
@@ -134,7 +385,6 @@ export function CustomerDialog({
     const handleIdTypeChange = (type: 'CMND' | 'Passport') => {
         setIdType(type);
         setValue('idType', type);
-        // Clear the other ID type when switching
         if (type === 'CMND') {
             setValue('passportNumber', '');
             setValue('passportIssueDate', undefined);
@@ -147,7 +397,6 @@ export function CustomerDialog({
     };
 
     const onSubmit = (data: any) => {
-        // Create CustomerSummary object
         const customerSummary: CustomerSummary = {
             id: initialData?.id || uuidv4(),
             fullName: data.fullName,
@@ -229,7 +478,7 @@ export function CustomerDialog({
                         )}
                     </div>
 
-                    {/* Personal Information Section - Now Collapsible */}
+                    {/* Personal Information Section */}
                     <Accordion type="single" collapsible defaultValue="customer-info" className="w-full">
                         <AccordionItem value="customer-info">
                             <AccordionTrigger className="text-lg font-semibold">
@@ -279,15 +528,13 @@ export function CustomerDialog({
                                                         </Button>
                                                     </div>
                                                 </div>
-                                                <div>
-                                                    <DatePicker
-                                                        label="Ngày cấp CMND *"
-                                                        value={watch('cmndIssueDate')}
-                                                        onChange={(date) => setValue('cmndIssueDate', date)}
-                                                        placeholder="Chọn ngày cấp"
-                                                        className="w-full"
-                                                    />
-                                                </div>
+                                                <CustomDatePicker
+                                                    label="Ngày cấp CMND *"
+                                                    value={watch('cmndIssueDate') || null}
+                                                    onChange={(date) => setValue('cmndIssueDate', date || undefined)}
+                                                    placeholder="Chọn ngày cấp"
+                                                    error={!!errors.cmndIssueDate}
+                                                />
                                                 <div>
                                                     <Label htmlFor="cmndIssuePlace">Nơi cấp CMND *</Label>
                                                     <Input
@@ -313,15 +560,13 @@ export function CustomerDialog({
                                                         </Button>
                                                     </div>
                                                 </div>
-                                                <div>
-                                                    <DatePicker
-                                                        label="Ngày cấp Passport *"
-                                                        value={watch('passportIssueDate')}
-                                                        onChange={(date) => setValue('passportIssueDate', date)}
-                                                        placeholder="Chọn ngày cấp"
-                                                        className="w-full"
-                                                    />
-                                                </div>
+                                                <CustomDatePicker
+                                                    label="Ngày cấp Passport *"
+                                                    value={watch('passportIssueDate') || null}
+                                                    onChange={(date) => setValue('passportIssueDate', date || undefined)}
+                                                    placeholder="Chọn ngày cấp"
+                                                    error={!!errors.passportIssueDate}
+                                                />
                                                 <div>
                                                     <Label htmlFor="passportIssuePlace">Nơi cấp Passport *</Label>
                                                     <Input
@@ -361,15 +606,13 @@ export function CustomerDialog({
                                     </div>
 
                                     <div className="grid md:grid-cols-2 gap-6 mt-4">
-                                        <div>
-                                            <DatePicker
-                                                label="Ngày sinh *"
-                                                value={watch('dateOfBirth')}
-                                                onChange={(date) => setValue('dateOfBirth', date || new Date())}
-                                                placeholder="Chọn ngày sinh"
-                                                className="w-full"
-                                            />
-                                        </div>
+                                        <CustomDatePicker
+                                            label="Ngày sinh *"
+                                            value={watch('dateOfBirth') || null}
+                                            onChange={(date) => setValue('dateOfBirth', date || new Date())}
+                                            placeholder="Chọn ngày sinh"
+                                            error={!!errors.dateOfBirth}
+                                        />
 
                                         <div>
                                             <Label htmlFor="gender">Giới tính *</Label>
