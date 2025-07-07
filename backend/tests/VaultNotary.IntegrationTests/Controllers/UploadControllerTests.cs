@@ -9,6 +9,7 @@ using System.Text.Json;
 using VaultNotary.Application.DTOs;
 using VaultNotary.Application.Services;
 using VaultNotary.Web.Controllers;
+using VaultNotary.Infrastructure.Jobs;
 
 namespace VaultNotary.IntegrationTests.Controllers;
 
@@ -17,21 +18,30 @@ public class UploadControllerTests : IClassFixture<WebApplicationFactory<Program
     private readonly WebApplicationFactory<Program> _factory;
     private readonly HttpClient _client;
     private readonly Mock<IFileService> _mockFileService;
+    private readonly Mock<IJobQueue> _mockJobQueue;
 
     public UploadControllerTests(WebApplicationFactory<Program> factory)
     {
         _mockFileService = new Mock<IFileService>();
+        _mockJobQueue = new Mock<IJobQueue>();
         
         _factory = factory.WithWebHostBuilder(builder =>
         {
             builder.ConfigureServices(services =>
             {
-                var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IFileService));
-                if (descriptor != null)
+                var fileServiceDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IFileService));
+                if (fileServiceDescriptor != null)
                 {
-                    services.Remove(descriptor);
+                    services.Remove(fileServiceDescriptor);
                 }
                 services.AddScoped(_ => _mockFileService.Object);
+
+                var jobQueueDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IJobQueue));
+                if (jobQueueDescriptor != null)
+                {
+                    services.Remove(jobQueueDescriptor);
+                }
+                services.AddScoped(_ => _mockJobQueue.Object);
             });
             
             builder.UseEnvironment("Testing");
@@ -244,5 +254,53 @@ public class UploadControllerTests : IClassFixture<WebApplicationFactory<Program
         var response = await _client.PostAsync($"/api/upload/{key}/verify", content);
 
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task UploadSingle_ShouldPublishCompressFileJob_WhenPdfFileUploaded()
+    {
+        var fileContent = "Test PDF content";
+        var fileBytes = Encoding.UTF8.GetBytes(fileContent);
+        var fileKey = "test-pdf-file-key";
+
+        _mockFileService.Setup(s => s.UploadAsync(It.IsAny<FileUploadDto>()))
+            .ReturnsAsync(fileKey);
+
+        using var content = new MultipartFormDataContent();
+        using var fileContent1 = new ByteArrayContent(fileBytes);
+        fileContent1.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/pdf");
+        content.Add(fileContent1, "file", "test.pdf");
+
+        var response = await _client.PostAsync("/api/upload/single", content);
+
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+        
+        // Verify that CompressFileJob was published
+        _mockJobQueue.Verify(q => q.PublishAsync(It.Is<CompressFileJob>(job => 
+            job.FileKey == fileKey && 
+            job.FileName == "test.pdf")), Times.Once);
+    }
+
+    [Fact]
+    public async Task UploadSingle_ShouldNotPublishCompressFileJob_WhenNonPdfFileUploaded()
+    {
+        var fileContent = "Test text content";
+        var fileBytes = Encoding.UTF8.GetBytes(fileContent);
+        var fileKey = "test-text-file-key";
+
+        _mockFileService.Setup(s => s.UploadAsync(It.IsAny<FileUploadDto>()))
+            .ReturnsAsync(fileKey);
+
+        using var content = new MultipartFormDataContent();
+        using var fileContent1 = new ByteArrayContent(fileBytes);
+        fileContent1.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/plain");
+        content.Add(fileContent1, "file", "test.txt");
+
+        var response = await _client.PostAsync("/api/upload/single", content);
+
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+        
+        // Verify that CompressFileJob was NOT published for non-PDF files
+        _mockJobQueue.Verify(q => q.PublishAsync(It.IsAny<CompressFileJob>()), Times.Never);
     }
 }

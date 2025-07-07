@@ -141,7 +141,7 @@ public class CustomerService : ICustomerService
             DocumentId = customer.DocumentId,
             PassportId = customer.PassportId,
             BusinessRegistrationNumber = customer.BusinessRegistrationNumber,
-            BusinessName = customer.BussinessName,
+            BusinessName = customer.BusinessName,
             CreatedAt = customer.CreatedAt,
             UpdatedAt = customer.UpdatedAt
         };
