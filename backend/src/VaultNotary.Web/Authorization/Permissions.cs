@@ -23,9 +23,6 @@ public static class Permissions
     public const string SearchDocuments = "search:documents";
     public const string SearchCustomers = "search:customers";
     
-    // Verification permissions
-    public const string VerifyDocuments = "verify:documents";
-    public const string SignDocuments = "sign:documents";
     
     // Admin permissions
     public const string AdminAccess = "admin:access";

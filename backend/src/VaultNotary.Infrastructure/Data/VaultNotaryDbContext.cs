@@ -26,6 +26,39 @@ public class VaultNotaryDbContext : DbContext
         modelBuilder.Entity<DocumentFile>()
             .ToTable("document_files");
 
+        // Configure column names for snake_case database
+        modelBuilder.Entity<DocumentFile>()
+            .Property(f => f.DocumentId)
+            .HasColumnName("document_id");
+
+        modelBuilder.Entity<DocumentFile>()
+            .Property(f => f.FileName)
+            .HasColumnName("file_name");
+
+        modelBuilder.Entity<DocumentFile>()
+            .Property(f => f.FileSize)
+            .HasColumnName("file_size");
+
+        modelBuilder.Entity<DocumentFile>()
+            .Property(f => f.ContentType)
+            .HasColumnName("content_type");
+
+        modelBuilder.Entity<DocumentFile>()
+            .Property(f => f.S3Key)
+            .HasColumnName("s3_key");
+
+        modelBuilder.Entity<DocumentFile>()
+            .Property(f => f.S3Bucket)
+            .HasColumnName("s3_bucket");
+
+        modelBuilder.Entity<DocumentFile>()
+            .Property(f => f.CreatedAt)
+            .HasColumnName("created_at");
+
+        modelBuilder.Entity<DocumentFile>()
+            .Property(f => f.UpdatedAt)
+            .HasColumnName("updated_at");
+
         // Configure Document relationships
         modelBuilder.Entity<Document>()
             .HasMany(d => d.Files)

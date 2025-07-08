@@ -10,6 +10,7 @@ public static class DependencyInjection
         // Register application services
         services.AddScoped<ICustomerService, CustomerService>();
         services.AddScoped<IDocumentService, DocumentService>();
+        services.AddScoped<IDocumentFileService, DocumentFileService>();
         services.AddScoped<ISearchService, SearchService>();
         
         return services;

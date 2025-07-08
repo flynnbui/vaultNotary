@@ -165,11 +165,8 @@ public class SearchService : ISearchService
         {
             DocumentId = file.DocumentId,
             FileId = file.Id,
-            FileName = file.FileName,
-            FileSize = file.FileSize,
             ContentType = file.ContentType,
             S3Key = file.S3Key,
-            S3Bucket = file.S3Bucket,
             CreatedAt = file.CreatedAt,
             UpdatedAt = file.UpdatedAt
         }).ToList();
@@ -219,11 +216,8 @@ public class SearchService : ISearchService
         {
             Id = file.Id,
             DocumentId = file.DocumentId,
-            FileName = file.FileName,
-            FileSize = file.FileSize,
             ContentType = file.ContentType,
             S3Key = file.S3Key,
-            S3Bucket = file.S3Bucket,
             CreatedAt = file.CreatedAt,
             UpdatedAt = file.UpdatedAt
         };
