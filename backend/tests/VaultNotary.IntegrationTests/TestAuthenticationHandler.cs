@@ -35,8 +35,6 @@ public class TestAuthenticationHandler : AuthenticationHandler<AuthenticationSch
             new Claim("permissions", Permissions.UploadFiles),
             new Claim("permissions", Permissions.DownloadFiles),
             new Claim("permissions", Permissions.DeleteFiles),
-            new Claim("permissions", Permissions.VerifyDocuments),
-            new Claim("permissions", Permissions.SignDocuments),
             new Claim("permissions", Permissions.AdminAccess)
         };
 

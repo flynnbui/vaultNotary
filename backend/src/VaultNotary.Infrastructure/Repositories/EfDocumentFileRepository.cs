@@ -28,7 +28,7 @@ public class EfDocumentFileRepository : IDocumentFileRepository
         return await _context.Files
             .Include(f => f.Document)
             .Where(f => f.DocumentId == documentId)
-            .OrderBy(f => f.FileName)
+            .OrderBy(f => f.CreatedAt)
             .ToListAsync();
     }
 
@@ -45,8 +45,8 @@ public class EfDocumentFileRepository : IDocumentFileRepository
     {
         return await _context.Files
             .Include(f => f.Document)
-            .Where(f => EF.Functions.Like(f.FileName.ToLower(), $"%{fileName.ToLower()}%"))
-            .OrderBy(f => f.FileName)
+            .Where(f => EF.Functions.Like(f.ContentType.ToLower(), $"%{fileName.ToLower()}%"))
+            .OrderBy(f => f.CreatedAt)
             .ToListAsync();
     }
 
@@ -55,7 +55,6 @@ public class EfDocumentFileRepository : IDocumentFileRepository
         return await _context.Files
             .Include(f => f.Document)
             .OrderByDescending(f => f.CreatedAt)
-            .ThenBy(f => f.FileName)
             .ToListAsync();
     }
 

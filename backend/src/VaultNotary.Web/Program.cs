@@ -75,8 +75,6 @@ if (builder.Environment.IsEnvironment("Testing") || builder.Environment.IsEnviro
         options.AddPolicy(Permissions.SearchDocuments, p => p.RequireAssertion(_ => true));
         options.AddPolicy(Permissions.SearchCustomers, p => p.RequireAssertion(_ => true));
 
-        options.AddPolicy(Permissions.VerifyDocuments, p => p.RequireAssertion(_ => true));
-        options.AddPolicy(Permissions.SignDocuments, p => p.RequireAssertion(_ => true));
 
         options.AddPolicy(Permissions.AdminAccess, p => p.RequireAssertion(_ => true));
 
@@ -121,10 +119,6 @@ else
         options.AddPolicy(Permissions.SearchCustomers, policy => 
             policy.Requirements.Add(new PermissionRequirement(Permissions.SearchCustomers)));
         
-        options.AddPolicy(Permissions.VerifyDocuments, policy => 
-            policy.Requirements.Add(new PermissionRequirement(Permissions.VerifyDocuments)));
-        options.AddPolicy(Permissions.SignDocuments, policy => 
-            policy.Requirements.Add(new PermissionRequirement(Permissions.SignDocuments)));
         
         options.AddPolicy(Permissions.AdminAccess, policy => 
             policy.Requirements.Add(new PermissionRequirement(Permissions.AdminAccess)));

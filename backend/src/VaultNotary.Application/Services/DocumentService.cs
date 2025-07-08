@@ -9,21 +9,28 @@ public class DocumentService : IDocumentService
     private readonly IDocumentRepository _documentRepository;
     private readonly IPartyDocumentRepository _partyDocumentRepository;
     private readonly ICustomerRepository _customerRepository;
+    private readonly IDocumentFileService _documentFileService;
 
     public DocumentService(
         IDocumentRepository documentRepository,
         IPartyDocumentRepository partyDocumentRepository,
-        ICustomerRepository customerRepository)
+        ICustomerRepository customerRepository,
+        IDocumentFileService documentFileService)
     {
         _documentRepository = documentRepository;
         _partyDocumentRepository = partyDocumentRepository;
         _customerRepository = customerRepository;
+        _documentFileService = documentFileService;
     }
 
     public async Task<DocumentDto?> GetByIdAsync(string id)
     {
         var document = await _documentRepository.GetByIdAsync(id);
-        return document == null ? null : MapToDto(document);
+        if (document == null) return null;
+        
+        var dto = MapToDto(document);
+        dto.Files = await _documentFileService.GetByDocumentIdAsync(id);
+        return dto;
     }
 
     public async Task<DocumentDto?> GetByTransactionCodeAsync(string transactionCode)
@@ -79,7 +86,16 @@ public class DocumentService : IDocumentService
     public async Task<List<DocumentDto>> GetAllAsync()
     {
         var documents = await _documentRepository.GetAllAsync();
-        return documents.Select(MapToDto).ToList();
+        var dtos = new List<DocumentDto>();
+        
+        foreach (var document in documents)
+        {
+            var dto = MapToDto(document);
+            dto.Files = await _documentFileService.GetByDocumentIdAsync(document.Id);
+            dtos.Add(dto);
+        }
+        
+        return dtos;
     }
 
     public async Task<string> CreateAsync(CreateDocumentDto createDocumentDto)
@@ -186,7 +202,7 @@ public class DocumentService : IDocumentService
             CreatedAt = document.CreatedAt,
             UpdatedAt = document.UpdatedAt,
             PartyDocumentLinks = document.PartyDocumentLinks.Select(MapPartyLinkToDto).ToList(),
-            Files = new List<DocumentFileDto>() // Empty for now, will be populated separately
+            Files = new List<DocumentFileDto>() // Will be populated by calling service
         };
     }
 
@@ -210,11 +226,8 @@ public class DocumentService : IDocumentService
         {
             Id = file.Id,
             DocumentId = file.DocumentId,
-            FileName = file.FileName,
-            FileSize = file.FileSize,
             ContentType = file.ContentType,
             S3Key = file.S3Key,
-            S3Bucket = file.S3Bucket,
             CreatedAt = file.CreatedAt,
             UpdatedAt = file.UpdatedAt
         };

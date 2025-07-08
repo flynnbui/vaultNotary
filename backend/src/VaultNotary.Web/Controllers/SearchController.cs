@@ -12,12 +12,10 @@ namespace VaultNotary.Web.Controllers;
 public class SearchController : ControllerBase
 {
     private readonly ISearchService _searchService;
-    private readonly IDocumentService _documentService;
 
-    public SearchController(ISearchService searchService, IDocumentService documentService)
+    public SearchController(ISearchService searchService)
     {
         _searchService = searchService;
-        _documentService = documentService;
     }
 
     [HttpGet("customers")]
@@ -31,27 +29,7 @@ public class SearchController : ControllerBase
         return Ok(customers);
     }
 
-    [HttpGet("documents/customer/{customerId}")]
-    [HasPermission(Permissions.SearchDocuments)]
-    public async Task<ActionResult<List<DocumentDto>>> GetCustomerDocuments(string customerId)
-    {
-        if (string.IsNullOrEmpty(customerId))
-            return BadRequest("Customer ID is required");
 
-        var documents = await _documentService.GetByPartyIdAsync(customerId);
-        return Ok(documents);
-    }
-
-    [HttpGet("documents")]
-    [HasPermission(Permissions.SearchDocuments)]
-    public async Task<ActionResult<List<DocumentDto>>> SearchDocuments([FromQuery] string query)
-    {
-        if (string.IsNullOrEmpty(query))
-            return BadRequest("Query parameter is required");
-
-        var documents = await _searchService.SearchDocumentsAsync(query);
-        return Ok(documents);
-    }
 
     [HttpGet("documents/identity/{documentId}")]
     [HasPermission(Permissions.SearchDocuments)]
