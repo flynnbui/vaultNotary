@@ -37,25 +37,6 @@ public class CustomersController : ControllerBase
         return Ok(customer);
     }
 
-    [HttpGet("search")]
-    [HasPermission(Permissions.SearchCustomers)]
-    public async Task<ActionResult<List<CustomerDto>>> SearchByIdentity([FromQuery] string identity)
-    {
-        if (string.IsNullOrEmpty(identity))
-            return BadRequest("Identity parameter is required");
-
-        var customers = await _customerService.SearchByIdentityAsync(identity);
-        return Ok(customers);
-    }
-
-    [HttpGet("documents/{identity}")]
-    [HasPermission(Permissions.SearchCustomers)]
-    public async Task<ActionResult<List<CustomerDto>>> GetDocumentsByIdentity(string identity)
-    {
-        var customers = await _customerService.SearchByIdentityAsync(identity);
-        return Ok(customers);
-    }
-
     [HttpPost]
     [HasPermission(Permissions.CreateCustomers)]
     public async Task<ActionResult<string>> Create([FromBody] CreateCustomerDto createCustomerDto)
@@ -90,38 +71,5 @@ public class CustomersController : ControllerBase
 
         await _customerService.DeleteAsync(id);
         return NoContent();
-    }
-
-    [HttpPost("validate")]
-    public async Task<ActionResult<bool>> ValidateIdentity([FromBody] string identity)
-    {
-        var isValid = await _customerService.ValidateIdentityAsync(identity);
-        return Ok(isValid);
-    }
-
-    [HttpGet("lookup/identity/{identity}")]
-    [HasPermission(Permissions.ReadCustomers)]
-    public async Task<ActionResult<CustomerDto>> GetByIdentity(string identity)
-    {
-        var customers = await _customerService.SearchByIdentityAsync(identity);
-        var customer = customers.FirstOrDefault();
-        
-        if (customer == null)
-            return NotFound();
-
-        return Ok(customer);
-    }
-
-    [HttpGet("lookup/phone/{phone}")]
-    [HasPermission(Permissions.ReadCustomers)]
-    public async Task<ActionResult<CustomerDto>> GetByPhone(string phone)
-    {
-        var customers = await _customerService.GetAllAsync();
-        var customer = customers.FirstOrDefault(c => c.Phone == phone);
-        
-        if (customer == null)
-            return NotFound();
-
-        return Ok(customer);
     }
 }

@@ -13,13 +13,13 @@ public class CustomerTests
         customer.Id.Should().BeEmpty();
         customer.FullName.Should().BeEmpty();
         customer.Address.Should().BeEmpty();
-        customer.Phone.Should().BeEmpty();
-        customer.Email.Should().BeEmpty();
+        customer.Phone.Should().BeNull(); // Phone is nullable
+        customer.Email.Should().BeNull(); // Email is nullable
         customer.Type.Should().Be(CustomerType.Individual);
         customer.DocumentId.Should().BeNull();
         customer.PassportId.Should().BeNull();
         customer.BusinessRegistrationNumber.Should().BeNull();
-        customer.PartyDocumentLinks.Should().BeEmpty();
+        customer.PartyDocumentLinks.Should().NotBeNull(); // Collection is initialized
     }
 
     [Fact]

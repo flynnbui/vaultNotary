@@ -57,10 +57,14 @@ public class DocumentsControllerTests : IClassFixture<WebApplicationFactory<Prog
         var existingDocument = new DocumentDto
         {
             Id = fileId,
-            FileName = "existing.pdf",
+            CreatedDate = DateTime.UtcNow,
+            Secretary = "Test Secretary",
             NotaryPublic = "Test Notary",
-            DocumentType = VaultNotary.Domain.Entities.DocumentType.Contract,
-            NotaryDate = DateTime.UtcNow
+            TransactionCode = "TX123",
+            Description = "Test document",
+            DocumentType = "Contract",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
         };
 
         _mockDocumentService.Setup(s => s.ExistsAsync(fileId))
@@ -99,10 +103,14 @@ public class DocumentsControllerTests : IClassFixture<WebApplicationFactory<Prog
         var existingDocument = new DocumentDto
         {
             Id = fileId,
-            FileName = "existing.txt",
+            CreatedDate = DateTime.UtcNow,
+            Secretary = "Test Secretary",
             NotaryPublic = "Test Notary",
-            DocumentType = VaultNotary.Domain.Entities.DocumentType.Contract,
-            NotaryDate = DateTime.UtcNow
+            TransactionCode = "TX123",
+            Description = "Test document",
+            DocumentType = "Contract",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
         };
 
         _mockDocumentService.Setup(s => s.ExistsAsync(fileId))

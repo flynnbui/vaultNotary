@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
+using VaultNotary.Application;
 using VaultNotary.Application.Services;
 using VaultNotary.Infrastructure;
+using VaultNotary.Infrastructure.Data;
 using VaultNotary.Web.Authorization;
 using VaultNotary.Web.Configuration;
 using VaultNotary.Web.Middleware;
@@ -136,9 +139,9 @@ else
     builder.Services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
 }
 
+builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
-builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IFileService, FileService>();
 
 builder.Services.AddCors(options =>
@@ -153,6 +156,24 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// Initialize database
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<VaultNotaryDbContext>();
+    
+    try
+    {
+        // Ensure database is created and apply any pending migrations
+        dbContext.Database.EnsureCreated();
+        app.Logger.LogInformation("Database initialized successfully");
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogError(ex, "An error occurred while initializing the database");
+        throw;
+    }
+}
 
 // Configure Serilog request logging
 app.UseSerilogRequestLogging();

@@ -14,6 +14,5 @@ public interface ICustomerService
     Task UpdateAsync(string id, UpdateCustomerDto updateCustomerDto);
     Task DeleteAsync(string id);
     Task<bool> ExistsAsync(string id);
-    Task<bool> ValidateIdentityAsync(string identity);
     Task<List<CustomerDto>> DetectDuplicatesAsync(CreateCustomerDto createCustomerDto);
 }

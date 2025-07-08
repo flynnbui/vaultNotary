@@ -98,12 +98,6 @@ public class CustomerService : ICustomerService
         return await _customerRepository.ExistsAsync(id);
     }
 
-    public async Task<bool> ValidateIdentityAsync(string identity)
-    {
-        var customers = await _customerRepository.SearchByIdentityAsync(identity);
-        return customers.Any();
-    }
-
     public async Task<List<CustomerDto>> DetectDuplicatesAsync(CreateCustomerDto createCustomerDto)
     {
         var duplicates = new List<Customer>();
