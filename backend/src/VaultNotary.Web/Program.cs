@@ -139,7 +139,6 @@ else
 builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddScoped<ICustomerService, CustomerService>();
-builder.Services.AddScoped<IFileService, FileService>();
 
 builder.Services.AddCors(options =>
 {

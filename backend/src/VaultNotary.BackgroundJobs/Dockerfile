@@ -3,13 +3,13 @@ WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["VaultNotary.BackgroundJobs/VaultNotary.BackgroundJobs.csproj", "VaultNotary.BackgroundJobs/"]
-COPY ["VaultNotary.Infrastructure/VaultNotary.Infrastructure.csproj", "VaultNotary.Infrastructure/"]
-COPY ["VaultNotary.Application/VaultNotary.Application.csproj", "VaultNotary.Application/"]
-COPY ["VaultNotary.Domain/VaultNotary.Domain.csproj", "VaultNotary.Domain/"]
-RUN dotnet restore "VaultNotary.BackgroundJobs/VaultNotary.BackgroundJobs.csproj"
+COPY ["src/VaultNotary.BackgroundJobs/VaultNotary.BackgroundJobs.csproj", "src/VaultNotary.BackgroundJobs/"]
+COPY ["src/VaultNotary.Infrastructure/VaultNotary.Infrastructure.csproj", "src/VaultNotary.Infrastructure/"]
+COPY ["src/VaultNotary.Application/VaultNotary.Application.csproj", "src/VaultNotary.Application/"]
+COPY ["src/VaultNotary.Domain/VaultNotary.Domain.csproj", "src/VaultNotary.Domain/"]
+RUN dotnet restore "src/VaultNotary.BackgroundJobs/VaultNotary.BackgroundJobs.csproj"
 COPY . .
-WORKDIR "/src/VaultNotary.BackgroundJobs"
+WORKDIR "/src/src/VaultNotary.BackgroundJobs"
 RUN dotnet build "VaultNotary.BackgroundJobs.csproj" -c Release -o /app/build
 
 FROM build AS publish
