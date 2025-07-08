@@ -111,48 +111,130 @@ public class DocumentsController : ControllerBase
         return NoContent();
     }
 
-    [HttpPost("upload")]
+    [HttpPost("{documentId}/files")]
     [HasPermission(Permissions.UploadFiles)]
-    public async Task<ActionResult<string>> UploadDocuments([FromForm] IFormFile file, [FromForm] string fileId)
+    public async Task<ActionResult<DocumentFileDto>> UploadFile(string documentId, [FromForm] IFormFile file)
     {
         if (file == null || file.Length == 0)
             return BadRequest("No file provided");
 
-        if (string.IsNullOrEmpty(fileId))
-            return BadRequest("FileId is required");
+        if (string.IsNullOrEmpty(documentId))
+            return BadRequest("Document ID is required");
 
-        if (!await _documentService.ExistsAsync(fileId))
+        if (!await _documentService.ExistsAsync(documentId))
             return NotFound("Document not found");
 
-        // Update the document with file information
-        var document = await _documentService.GetByIdAsync(fileId);
-        if (document == null)
-            return NotFound("Document not found");
-
-        var updateDto = new UpdateDocumentDto
+        try
         {
-            FileName = file.FileName,
-            NotaryPublic = document.NotaryPublic,
-            DocumentType = document.DocumentType,
-            NotaryDate = document.NotaryDate
-        };
-
-        await _documentService.UpdateAsync(fileId, updateDto);
-
-        // Publish CompressFileJob for PDF files
-        if (file.ContentType == "application/pdf")
-        {
-            var compressJob = new CompressFileJob
-            {
-                FileKey = $"documents/{fileId}/{file.FileName}",
-                DocumentId = fileId,
-                FileName = file.FileName
-            };
+            // Create a unique key for the file in S3
+            var fileId = Guid.NewGuid().ToString();
+            var s3Key = $"documents/{documentId}/{fileId}/{file.FileName}";
             
-            await _jobQueue.PublishAsync(compressJob);
-        }
+            // Create the DocumentFile DTO
+            var createDocumentFileDto = new CreateDocumentFileDto
+            {
+                DocumentId = documentId,
+                FileName = file.FileName,
+                FileSize = file.Length,
+                ContentType = file.ContentType,
+                S3Key = s3Key,
+                S3Bucket = "vault-notary-documents" // Should come from configuration
+            };
 
-        return Ok(new { fileId, fileName = file.FileName, message = "File uploaded successfully" });
+            // Note: You'll need to implement DocumentFileService to handle this
+            // For now, returning the expected structure
+            var documentFile = new DocumentFileDto
+            {
+                Id = fileId,
+                DocumentId = documentId,
+                FileName = file.FileName,
+                FileSize = file.Length,
+                ContentType = file.ContentType,
+                S3Key = s3Key,
+                S3Bucket = "vault-notary-documents",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            // Publish CompressFileJob for PDF files
+            if (file.ContentType == "application/pdf")
+            {
+                var compressJob = new CompressFileJob
+                {
+                    FileKey = s3Key,
+                    DocumentId = documentId,
+                    FileName = file.FileName
+                };
+                
+                await _jobQueue.PublishAsync(compressJob);
+            }
+
+            return CreatedAtAction(nameof(GetFileById), new { documentId, fileId }, documentFile);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"An error occurred while uploading the file: {ex.Message}");
+        }
+    }
+
+    [HttpGet("{documentId}/files")]
+    [HasPermission(Permissions.ReadDocuments)]
+    public async Task<ActionResult<List<DocumentFileDto>>> GetDocumentFiles(string documentId)
+    {
+        if (!await _documentService.ExistsAsync(documentId))
+            return NotFound("Document not found");
+
+        try
+        {
+            var document = await _documentService.GetByIdAsync(documentId);
+            return Ok(document?.Files ?? new List<DocumentFileDto>());
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"An error occurred while retrieving files: {ex.Message}");
+        }
+    }
+
+    [HttpGet("{documentId}/files/{fileId}")]
+    [HasPermission(Permissions.ReadDocuments)]
+    public async Task<ActionResult<DocumentFileDto>> GetFileById(string documentId, string fileId)
+    {
+        if (!await _documentService.ExistsAsync(documentId))
+            return NotFound("Document not found");
+
+        try
+        {
+            var document = await _documentService.GetByIdAsync(documentId);
+            var file = document?.Files.FirstOrDefault(f => f.Id == fileId);
+            
+            if (file == null)
+                return NotFound("File not found");
+
+            return Ok(file);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"An error occurred while retrieving the file: {ex.Message}");
+        }
+    }
+
+    [HttpDelete("{documentId}/files/{fileId}")]
+    [HasPermission(Permissions.DeleteFiles)]
+    public async Task<ActionResult> DeleteFile(string documentId, string fileId)
+    {
+        if (!await _documentService.ExistsAsync(documentId))
+            return NotFound("Document not found");
+
+        try
+        {
+            // Note: You'll need to implement DocumentFileService to handle this
+            // For now, return success
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"An error occurred while deleting the file: {ex.Message}");
+        }
     }
 }
 

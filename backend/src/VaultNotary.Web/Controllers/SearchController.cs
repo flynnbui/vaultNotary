@@ -12,56 +12,12 @@ namespace VaultNotary.Web.Controllers;
 public class SearchController : ControllerBase
 {
     private readonly ISearchService _searchService;
+    private readonly IDocumentService _documentService;
 
-    public SearchController(ISearchService searchService)
+    public SearchController(ISearchService searchService, IDocumentService documentService)
     {
         _searchService = searchService;
-    }
-
-    [HttpGet("identity/{documentId}")]
-    [HasPermission(Permissions.SearchDocuments)]
-    public async Task<ActionResult<List<DocumentDto>>> SearchByDocumentId(string documentId)
-    {
-        var documents = await _searchService.SearchDocumentsByDocumentIdAsync(documentId);
-        return Ok(documents);
-    }
-
-    [HttpGet("business/{registrationNumber}")]
-    [HasPermission(Permissions.SearchDocuments)]
-    public async Task<ActionResult<List<DocumentDto>>> SearchByBusinessRegistration(string registrationNumber)
-    {
-        var documents = await _searchService.SearchDocumentsByBusinessRegistrationAsync(registrationNumber);
-        return Ok(documents);
-    }
-
-    [HttpGet("passport/{passportId}")]
-    [HasPermission(Permissions.SearchDocuments)]
-    public async Task<ActionResult<List<DocumentDto>>> SearchByPassport(string passportId)
-    {
-        var documents = await _searchService.SearchDocumentsByPassportAsync(passportId);
-        return Ok(documents);
-    }
-
-    [HttpGet("documents")]
-    [HasPermission(Permissions.SearchDocuments)]
-    public async Task<ActionResult<List<DocumentDto>>> SearchDocumentsByParty([FromQuery] string partyId)
-    {
-        if (string.IsNullOrEmpty(partyId))
-            return BadRequest("PartyId parameter is required");
-
-        var documents = await _searchService.SearchDocumentsByCustomerAsync(partyId);
-        return Ok(documents);
-    }
-
-    [HttpPost("cross-reference")]
-    [HasPermission(Permissions.SearchDocuments)]
-    public async Task<ActionResult<List<DocumentDto>>> CrossReferenceSearch([FromBody] List<string> customerIds)
-    {
-        if (customerIds == null || !customerIds.Any())
-            return BadRequest("Customer IDs are required");
-
-        var documents = await _searchService.CrossReferenceSearchAsync(customerIds);
-        return Ok(documents);
+        _documentService = documentService;
     }
 
     [HttpGet("customers")]
@@ -75,7 +31,18 @@ public class SearchController : ControllerBase
         return Ok(customers);
     }
 
-    [HttpGet("documents/text")]
+    [HttpGet("documents/customer/{customerId}")]
+    [HasPermission(Permissions.SearchDocuments)]
+    public async Task<ActionResult<List<DocumentDto>>> GetCustomerDocuments(string customerId)
+    {
+        if (string.IsNullOrEmpty(customerId))
+            return BadRequest("Customer ID is required");
+
+        var documents = await _documentService.GetByPartyIdAsync(customerId);
+        return Ok(documents);
+    }
+
+    [HttpGet("documents")]
     [HasPermission(Permissions.SearchDocuments)]
     public async Task<ActionResult<List<DocumentDto>>> SearchDocuments([FromQuery] string query)
     {
@@ -86,7 +53,42 @@ public class SearchController : ControllerBase
         return Ok(documents);
     }
 
-    [HttpGet("party-links/{documentId}")]
+    [HttpGet("documents/identity/{documentId}")]
+    [HasPermission(Permissions.SearchDocuments)]
+    public async Task<ActionResult<List<DocumentDto>>> SearchByDocumentId(string documentId)
+    {
+        var documents = await _searchService.SearchDocumentsByTransactionCodeAsync(documentId);
+        return Ok(documents);
+    }
+
+    [HttpGet("documents/business/{registrationNumber}")]
+    [HasPermission(Permissions.SearchDocuments)]
+    public async Task<ActionResult<List<DocumentDto>>> SearchByBusinessRegistration(string registrationNumber)
+    {
+        var documents = await _searchService.SearchDocumentsByBusinessRegistrationAsync(registrationNumber);
+        return Ok(documents);
+    }
+
+    [HttpGet("documents/passport/{passportId}")]
+    [HasPermission(Permissions.SearchDocuments)]
+    public async Task<ActionResult<List<DocumentDto>>> SearchByPassport(string passportId)
+    {
+        var documents = await _searchService.SearchDocumentsByPassportAsync(passportId);
+        return Ok(documents);
+    }
+
+    [HttpPost("documents/cross-reference")]
+    [HasPermission(Permissions.SearchDocuments)]
+    public async Task<ActionResult<List<DocumentDto>>> CrossReferenceSearch([FromBody] List<string> customerIds)
+    {
+        if (customerIds == null || !customerIds.Any())
+            return BadRequest("Customer IDs are required");
+
+        var documents = await _searchService.CrossReferenceSearchAsync(customerIds);
+        return Ok(documents);
+    }
+
+    [HttpGet("party-links/document/{documentId}")]
     [HasPermission(Permissions.SearchDocuments)]
     public async Task<ActionResult<List<PartyDocumentLinkDto>>> GetPartyDocumentLinks(string documentId)
     {
@@ -94,7 +96,7 @@ public class SearchController : ControllerBase
         return Ok(links);
     }
 
-    [HttpGet("customer-links/{customerId}")]
+    [HttpGet("party-links/customer/{customerId}")]
     [HasPermission(Permissions.SearchCustomers)]
     public async Task<ActionResult<List<PartyDocumentLinkDto>>> GetCustomerDocumentLinks(string customerId)
     {

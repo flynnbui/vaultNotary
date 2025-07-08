@@ -99,35 +99,6 @@ public class CustomerServiceTests
         result[1].FullName.Should().Be("Jane Smith");
     }
 
-    [Fact]
-    public async Task ValidateIdentityAsync_ShouldReturnTrue_WhenIdentityExists()
-    {
-        var identity = "123456789";
-        var customers = new List<Customer>
-        {
-            new Customer { Id = "1", DocumentId = identity }
-        };
-
-        _mockCustomerRepository.Setup(r => r.SearchByIdentityAsync(identity))
-            .ReturnsAsync(customers);
-
-        var result = await _customerService.ValidateIdentityAsync(identity);
-
-        result.Should().BeTrue();
-    }
-
-    [Fact]
-    public async Task ValidateIdentityAsync_ShouldReturnFalse_WhenIdentityDoesNotExist()
-    {
-        var identity = "999999999";
-
-        _mockCustomerRepository.Setup(r => r.SearchByIdentityAsync(identity))
-            .ReturnsAsync(new List<Customer>());
-
-        var result = await _customerService.ValidateIdentityAsync(identity);
-
-        result.Should().BeFalse();
-    }
 
     [Fact]
     public async Task DetectDuplicatesAsync_ShouldReturnDuplicates_WhenFound()

@@ -7,8 +7,8 @@ public class CustomerDto
     public string Id { get; set; } = string.Empty;
     public string FullName { get; set; } = string.Empty;
     public string Address { get; set; } = string.Empty;
-    public string Phone { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
+    public string? Phone { get; set; }
+    public string? Email { get; set; }
     public CustomerType Type { get; set; }
     public string? DocumentId { get; set; }
     public string? PassportId { get; set; }
@@ -22,8 +22,8 @@ public class CreateCustomerDto
 {
     public string FullName { get; set; } = string.Empty;
     public string Address { get; set; } = string.Empty;
-    public string Phone { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
+    public string? Phone { get; set; }
+    public string? Email { get; set; }
     public CustomerType Type { get; set; }
     public string? DocumentId { get; set; }
     public string? PassportId { get; set; }
@@ -35,8 +35,8 @@ public class UpdateCustomerDto
 {
     public string FullName { get; set; } = string.Empty;
     public string Address { get; set; } = string.Empty;
-    public string Phone { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
+    public string? Phone { get; set; }
+    public string? Email { get; set; }
     public CustomerType Type { get; set; }
     public string? DocumentId { get; set; }
     public string? PassportId { get; set; }

@@ -23,92 +23,161 @@ public class FilesController : ControllerBase
     [HasPermission(Permissions.CreateDocuments)]
     public async Task<ActionResult<string>> CreateFile([FromBody] CreateFileDto createFileDto)
     {
-        // Convert CreateFileDto to CreateDocumentDto
-        var createDocumentDto = new CreateDocumentDto
+        if (createFileDto == null)
+            return BadRequest("CreateFileDto cannot be null");
+
+        if (string.IsNullOrWhiteSpace(createFileDto.TransactionCode))
+            return BadRequest("TransactionCode is required");
+
+        if (string.IsNullOrWhiteSpace(createFileDto.DocumentType))
+            return BadRequest("DocumentType is required");
+
+        try
         {
-            FileName = createFileDto.MaGiaoDich,
-            FileSize = 0, // Will be updated during file upload
-            ContentType = "application/pdf", // Default, will be updated during file upload
-            NotaryPublic = createFileDto.CongChungVien,
-            DocumentType = MapLoaiHoSoToDocumentType(createFileDto.LoaiHoSo),
-            NotaryDate = createFileDto.NgayTao
-        };
+            var createDocumentDto = new CreateDocumentDto
+            {
+                CreatedDate = createFileDto.CreatedDate,
+                Secretary = createFileDto.Secretary,
+                NotaryPublic = createFileDto.NotaryPublic,
+                TransactionCode = createFileDto.TransactionCode,
+                Description = createFileDto.Description,
+                DocumentType = createFileDto.DocumentType,
+                Parties = new List<PartyDocumentLinkDto>()
+            };
 
-        var documentId = await _documentService.CreateAsync(createDocumentDto);
-        
-        // Link parties to the document
-        await LinkPartiesToDocument(documentId, createFileDto.Parties);
+            var documentId = await _documentService.CreateAsync(createDocumentDto);
+            
+            // Link parties to the document
+            await LinkPartiesToDocument(documentId, createFileDto.Parties);
 
-        return Ok(new { id = documentId });
+            return Ok(new { id = documentId });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"An error occurred while creating the file: {ex.Message}");
+        }
     }
 
     [HttpGet("{id}")]
     [HasPermission(Permissions.ReadDocuments)]
     public async Task<ActionResult<DocumentDto>> GetFile(string id)
     {
-        var document = await _documentService.GetByIdAsync(id);
-        if (document == null)
-            return NotFound();
+        if (string.IsNullOrWhiteSpace(id))
+            return BadRequest("Document ID is required");
 
-        return Ok(document);
+        try
+        {
+            var document = await _documentService.GetByIdAsync(id);
+            if (document == null)
+                return NotFound($"Document with ID '{id}' not found");
+
+            return Ok(document);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"An error occurred while retrieving the file: {ex.Message}");
+        }
     }
 
     [HttpPut("{id}")]
     [HasPermission(Permissions.UpdateDocuments)]
     public async Task<ActionResult> UpdateFile(string id, [FromBody] CreateFileDto updateFileDto)
     {
-        if (!await _documentService.ExistsAsync(id))
-            return NotFound();
+        if (string.IsNullOrWhiteSpace(id))
+            return BadRequest("Document ID is required");
 
-        var updateDocumentDto = new UpdateDocumentDto
+        if (updateFileDto == null)
+            return BadRequest("UpdateFileDto cannot be null");
+
+        if (string.IsNullOrWhiteSpace(updateFileDto.TransactionCode))
+            return BadRequest("TransactionCode is required");
+
+        if (string.IsNullOrWhiteSpace(updateFileDto.DocumentType))
+            return BadRequest("DocumentType is required");
+
+        try
         {
-            FileName = updateFileDto.MaGiaoDich,
-            NotaryPublic = updateFileDto.CongChungVien,
-            DocumentType = MapLoaiHoSoToDocumentType(updateFileDto.LoaiHoSo),
-            NotaryDate = updateFileDto.NgayTao
-        };
+            if (!await _documentService.ExistsAsync(id))
+                return NotFound($"Document with ID '{id}' not found");
 
-        await _documentService.UpdateAsync(id, updateDocumentDto);
-        return NoContent();
+            var updateDocumentDto = new UpdateDocumentDto
+            {
+                CreatedDate = updateFileDto.CreatedDate,
+                Secretary = updateFileDto.Secretary,
+                NotaryPublic = updateFileDto.NotaryPublic,
+                TransactionCode = updateFileDto.TransactionCode,
+                Description = updateFileDto.Description,
+                DocumentType = updateFileDto.DocumentType
+            };
+
+            await _documentService.UpdateAsync(id, updateDocumentDto);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"An error occurred while updating the file: {ex.Message}");
+        }
     }
 
     [HttpDelete("{id}")]
     [HasPermission(Permissions.DeleteDocuments)]
     public async Task<ActionResult> DeleteFile(string id)
     {
-        if (!await _documentService.ExistsAsync(id))
-            return NotFound();
+        if (string.IsNullOrWhiteSpace(id))
+            return BadRequest("Document ID is required");
 
-        await _documentService.DeleteAsync(id);
-        return NoContent();
+        try
+        {
+            if (!await _documentService.ExistsAsync(id))
+                return NotFound($"Document with ID '{id}' not found");
+
+            await _documentService.DeleteAsync(id);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"An error occurred while deleting the file: {ex.Message}");
+        }
     }
 
     private async Task LinkPartiesToDocument(string documentId, PartiesDto parties)
     {
+        if (parties == null) return;
+
         // Link party A members
-        foreach (var member in parties.A)
+        if (parties.A != null)
         {
-            var linkDto = new CreatePartyDocumentLinkDto
+            foreach (var member in parties.A)
             {
-                DocumentId = documentId,
-                CustomerId = member.Id,
-                PartyRole = PartyRole.PartyA,
-                NotaryDate = DateTime.UtcNow
-            };
-            await _documentService.LinkPartyAsync(documentId, member.Id, linkDto);
+                if (string.IsNullOrWhiteSpace(member.Id)) continue;
+                
+                var linkDto = new CreatePartyDocumentLinkDto
+                {
+                    CustomerId = member.Id,
+                    PartyRole = PartyRole.PartyA,
+                    SignatureStatus = SignatureStatus.Pending,
+                    NotaryDate = member.NotaryDate == default ? DateTime.UtcNow : member.NotaryDate
+                };
+                await _documentService.LinkPartyAsync(documentId, member.Id, linkDto);
+            }
         }
 
         // Link party B members
-        foreach (var member in parties.B)
+        if (parties.B != null)
         {
-            var linkDto = new CreatePartyDocumentLinkDto
+            foreach (var member in parties.B)
             {
-                DocumentId = documentId,
-                CustomerId = member.Id,
-                PartyRole = PartyRole.PartyB,
-                NotaryDate = DateTime.UtcNow
-            };
-            await _documentService.LinkPartyAsync(documentId, member.Id, linkDto);
+                if (string.IsNullOrWhiteSpace(member.Id)) continue;
+                
+                var linkDto = new CreatePartyDocumentLinkDto
+                {
+                    CustomerId = member.Id,
+                    PartyRole = PartyRole.PartyB,
+                    SignatureStatus = SignatureStatus.Pending,
+                    NotaryDate = member.NotaryDate == default ? DateTime.UtcNow : member.NotaryDate
+                };
+                await _documentService.LinkPartyAsync(documentId, member.Id, linkDto);
+            }
         }
 
         // Link party C members if present
@@ -116,26 +185,18 @@ public class FilesController : ControllerBase
         {
             foreach (var member in parties.C)
             {
+                if (string.IsNullOrWhiteSpace(member.Id)) continue;
+                
                 var linkDto = new CreatePartyDocumentLinkDto
                 {
-                    DocumentId = documentId,
                     CustomerId = member.Id,
                     PartyRole = PartyRole.Witness,
-                    NotaryDate = DateTime.UtcNow
+                    SignatureStatus = SignatureStatus.Pending,
+                    NotaryDate = member.NotaryDate == default ? DateTime.UtcNow : member.NotaryDate
                 };
                 await _documentService.LinkPartyAsync(documentId, member.Id, linkDto);
             }
         }
     }
 
-    private static VaultNotary.Domain.Entities.DocumentType MapLoaiHoSoToDocumentType(string loaiHoSo)
-    {
-        return loaiHoSo.ToLower() switch
-        {
-            "hop dong" => VaultNotary.Domain.Entities.DocumentType.Contract,
-            "chung thuc" => VaultNotary.Domain.Entities.DocumentType.Certificate,
-            "uy quyen" => VaultNotary.Domain.Entities.DocumentType.Agreement,
-            _ => VaultNotary.Domain.Entities.DocumentType.Other
-        };
-    }
 }
