@@ -8,12 +8,14 @@
     ".NETCoreApp,Version=v9.0": {
       "VaultNotary.Infrastructure/1.0.0": {
         "dependencies": {
-          "AWSSDK.DynamoDBv2": "4.0.2.1",
-          "AWSSDK.KeyManagementService": "4.0.3.5",
-          "AWSSDK.S3": "4.0.4.1",
-          "Microsoft.Extensions.Configuration.Abstractions": "9.0.6",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.6",
-          "Microsoft.Extensions.Options.ConfigurationExtensions": "9.0.6",
+          "AWSSDK.DynamoDBv2": "3.7.301.14",
+          "AWSSDK.KeyManagementService": "3.7.302",
+          "AWSSDK.S3": "3.7.305.24",
+          "Microsoft.Extensions.Configuration.Abstractions": "9.0.0",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "9.0.0",
+          "Microsoft.Extensions.Options.ConfigurationExtensions": "9.0.0",
+          "RabbitMQ.Client": "6.8.1",
           "VaultNotary.Application": "1.0.0",
           "VaultNotary.Domain": "1.0.0"
         },
@@ -21,112 +23,137 @@
           "VaultNotary.Infrastructure.dll": {}
         }
       },
-      "AWSSDK.Core/4.0.0.14": {
+      "AWSSDK.Core/3.7.303.14": {
         "runtime": {
           "lib/net8.0/AWSSDK.Core.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.0.0.14"
+            "assemblyVersion": "3.3.0.0",
+            "fileVersion": "3.7.303.14"
           }
         }
       },
-      "AWSSDK.DynamoDBv2/4.0.2.1": {
+      "AWSSDK.DynamoDBv2/3.7.301.14": {
         "dependencies": {
-          "AWSSDK.Core": "4.0.0.14"
+          "AWSSDK.Core": "3.7.303.14"
         },
         "runtime": {
           "lib/net8.0/AWSSDK.DynamoDBv2.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.0.2.1"
+            "assemblyVersion": "3.3.0.0",
+            "fileVersion": "3.7.301.14"
           }
         }
       },
-      "AWSSDK.KeyManagementService/4.0.3.5": {
+      "AWSSDK.KeyManagementService/3.7.302": {
         "dependencies": {
-          "AWSSDK.Core": "4.0.0.14"
+          "AWSSDK.Core": "3.7.303.14"
         },
         "runtime": {
           "lib/net8.0/AWSSDK.KeyManagementService.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.0.3.5"
+            "assemblyVersion": "3.3.0.0",
+            "fileVersion": "3.7.302.0"
           }
         }
       },
-      "AWSSDK.S3/4.0.4.1": {
+      "AWSSDK.S3/3.7.305.24": {
         "dependencies": {
-          "AWSSDK.Core": "4.0.0.14"
+          "AWSSDK.Core": "3.7.303.14"
         },
         "runtime": {
           "lib/net8.0/AWSSDK.S3.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.0.4.1"
+            "assemblyVersion": "3.3.0.0",
+            "fileVersion": "3.7.305.24"
           }
         }
       },
-      "Microsoft.Extensions.Configuration.Abstractions/9.0.6": {
+      "Microsoft.Extensions.Configuration.Abstractions/9.0.0": {
         "dependencies": {
-          "Microsoft.Extensions.Primitives": "9.0.6"
+          "Microsoft.Extensions.Primitives": "9.0.0"
         },
         "runtime": {
           "lib/net9.0/Microsoft.Extensions.Configuration.Abstractions.dll": {
             "assemblyVersion": "9.0.0.0",
-            "fileVersion": "9.0.625.26613"
+            "fileVersion": "9.0.24.52809"
           }
         }
       },
-      "Microsoft.Extensions.Configuration.Binder/9.0.6": {
+      "Microsoft.Extensions.Configuration.Binder/9.0.0": {
         "dependencies": {
-          "Microsoft.Extensions.Configuration.Abstractions": "9.0.6"
+          "Microsoft.Extensions.Configuration.Abstractions": "9.0.0"
         },
         "runtime": {
           "lib/net9.0/Microsoft.Extensions.Configuration.Binder.dll": {
             "assemblyVersion": "9.0.0.0",
-            "fileVersion": "9.0.625.26613"
+            "fileVersion": "9.0.24.52809"
           }
         }
       },
-      "Microsoft.Extensions.DependencyInjection.Abstractions/9.0.6": {
+      "Microsoft.Extensions.DependencyInjection.Abstractions/9.0.0": {
         "runtime": {
           "lib/net9.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
             "assemblyVersion": "9.0.0.0",
-            "fileVersion": "9.0.625.26613"
+            "fileVersion": "9.0.24.52809"
           }
         }
       },
-      "Microsoft.Extensions.Options/9.0.6": {
+      "Microsoft.Extensions.Logging.Abstractions/9.0.0": {
         "dependencies": {
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.6",
-          "Microsoft.Extensions.Primitives": "9.0.6"
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.0"
+        },
+        "runtime": {
+          "lib/net9.0/Microsoft.Extensions.Logging.Abstractions.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.24.52809"
+          }
+        }
+      },
+      "Microsoft.Extensions.Options/9.0.0": {
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.0",
+          "Microsoft.Extensions.Primitives": "9.0.0"
         },
         "runtime": {
           "lib/net9.0/Microsoft.Extensions.Options.dll": {
             "assemblyVersion": "9.0.0.0",
-            "fileVersion": "9.0.625.26613"
+            "fileVersion": "9.0.24.52809"
           }
         }
       },
-      "Microsoft.Extensions.Options.ConfigurationExtensions/9.0.6": {
+      "Microsoft.Extensions.Options.ConfigurationExtensions/9.0.0": {
         "dependencies": {
-          "Microsoft.Extensions.Configuration.Abstractions": "9.0.6",
-          "Microsoft.Extensions.Configuration.Binder": "9.0.6",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.6",
-          "Microsoft.Extensions.Options": "9.0.6",
-          "Microsoft.Extensions.Primitives": "9.0.6"
+          "Microsoft.Extensions.Configuration.Abstractions": "9.0.0",
+          "Microsoft.Extensions.Configuration.Binder": "9.0.0",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.0",
+          "Microsoft.Extensions.Options": "9.0.0",
+          "Microsoft.Extensions.Primitives": "9.0.0"
         },
         "runtime": {
           "lib/net9.0/Microsoft.Extensions.Options.ConfigurationExtensions.dll": {
             "assemblyVersion": "9.0.0.0",
-            "fileVersion": "9.0.625.26613"
+            "fileVersion": "9.0.24.52809"
           }
         }
       },
-      "Microsoft.Extensions.Primitives/9.0.6": {
+      "Microsoft.Extensions.Primitives/9.0.0": {
         "runtime": {
           "lib/net9.0/Microsoft.Extensions.Primitives.dll": {
             "assemblyVersion": "9.0.0.0",
-            "fileVersion": "9.0.625.26613"
+            "fileVersion": "9.0.24.52809"
           }
         }
       },
+      "RabbitMQ.Client/6.8.1": {
+        "dependencies": {
+          "System.Memory": "4.5.5",
+          "System.Threading.Channels": "7.0.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/RabbitMQ.Client.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.8.1.0"
+          }
+        }
+      },
+      "System.Memory/4.5.5": {},
+      "System.Threading.Channels/7.0.0": {},
       "VaultNotary.Application/1.0.0": {
         "dependencies": {
           "VaultNotary.Domain": "1.0.0"
@@ -154,75 +181,103 @@
       "serviceable": false,
       "sha512": ""
     },
-    "AWSSDK.Core/4.0.0.14": {
+    "AWSSDK.Core/3.7.303.14": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-GUCP2LozKSapBKvV/rZtnh2e9SFF/DO3e4Z+0UV7oo9LuVVa+0XDDUKMiC3Oz54FBq29K7s9OxegBQPIZbe4Yw==",
-      "path": "awssdk.core/4.0.0.14",
-      "hashPath": "awssdk.core.4.0.0.14.nupkg.sha512"
+      "sha512": "sha512-CB0eSYIH1TjP2z16l8cKkG3UkuYj9KZdmGFuzx+JML7DhdsIz+dnuwI4fPf1mH8GlfjhS17xgHp1apDty/pS0A==",
+      "path": "awssdk.core/3.7.303.14",
+      "hashPath": "awssdk.core.3.7.303.14.nupkg.sha512"
     },
-    "AWSSDK.DynamoDBv2/4.0.2.1": {
+    "AWSSDK.DynamoDBv2/3.7.301.14": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-H8XlR0KebEM0OqQI3I65JnZShoMj8t5RPz7BBOgnFKp9LspU08aqmTnZo2LLX5AGTrbjCiMrdKrNHjqWnAGMxA==",
-      "path": "awssdk.dynamodbv2/4.0.2.1",
-      "hashPath": "awssdk.dynamodbv2.4.0.2.1.nupkg.sha512"
+      "sha512": "sha512-PRNCBQif2E8LcN2pXHqgU8vNrgnxgbcu9KpNHyaQFgOBm4o9IwjFaco64SQfhzKEDGEmgl/bnD9ocmNGL1SALA==",
+      "path": "awssdk.dynamodbv2/3.7.301.14",
+      "hashPath": "awssdk.dynamodbv2.3.7.301.14.nupkg.sha512"
     },
-    "AWSSDK.KeyManagementService/4.0.3.5": {
+    "AWSSDK.KeyManagementService/3.7.302": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-m1brUzHd901lB5skLrgaIkhXmuE0pywfGPJx8102o4/xhivpFanSlD9aiIaeiCg/GhO3Jo2Axc5qZiXKVT4mFw==",
-      "path": "awssdk.keymanagementservice/4.0.3.5",
-      "hashPath": "awssdk.keymanagementservice.4.0.3.5.nupkg.sha512"
+      "sha512": "sha512-TjxAUgOqueW+uxZRQg3gIRfrHFdjz5HLzoIM35GvhTXnCc6bdZ1DetX4eTuanEV6hjPx+TXnsCX9eWAgfCSkDg==",
+      "path": "awssdk.keymanagementservice/3.7.302",
+      "hashPath": "awssdk.keymanagementservice.3.7.302.nupkg.sha512"
     },
-    "AWSSDK.S3/4.0.4.1": {
+    "AWSSDK.S3/3.7.305.24": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-HknrzpYjFyACKCqOjiyq4AsrZsV3/LdZlpLb/qZIIGnm8d9i1XC4CFa2WMMk0E/XNDt3RxWNRlt3exXbhDSlVA==",
-      "path": "awssdk.s3/4.0.4.1",
-      "hashPath": "awssdk.s3.4.0.4.1.nupkg.sha512"
+      "sha512": "sha512-nOOpRSE+FPzCDpIFHo2S3nDckPBfny/4oxmGir50xrd7ADe0ivKFE2SdCexkRiVeyyaMNvZu6A/JXmc8ynMtyw==",
+      "path": "awssdk.s3/3.7.305.24",
+      "hashPath": "awssdk.s3.3.7.305.24.nupkg.sha512"
     },
-    "Microsoft.Extensions.Configuration.Abstractions/9.0.6": {
+    "Microsoft.Extensions.Configuration.Abstractions/9.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-3GgMIi2jP8g1fBW93Z9b9Unamc0SIsgyhiCmC91gq4loTixK9vQMuxxUsfJ1kRGwn+/FqLKwOHqmn0oYWn3Fvw==",
-      "path": "microsoft.extensions.configuration.abstractions/9.0.6",
-      "hashPath": "microsoft.extensions.configuration.abstractions.9.0.6.nupkg.sha512"
+      "sha512": "sha512-lqvd7W3FGKUO1+ZoUEMaZ5XDJeWvjpy2/M/ptCGz3tXLD4HWVaSzjufsAsjemasBEg+2SxXVtYVvGt5r2nKDlg==",
+      "path": "microsoft.extensions.configuration.abstractions/9.0.0",
+      "hashPath": "microsoft.extensions.configuration.abstractions.9.0.0.nupkg.sha512"
     },
-    "Microsoft.Extensions.Configuration.Binder/9.0.6": {
+    "Microsoft.Extensions.Configuration.Binder/9.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-Opl/7SIrwDy9WjHn/vU2thQ8CUtrIWHLr+89I7/0VYNEJQvpL24zvqYrh83cH38RzNKHji0WGVkCVP6HJChVVw==",
-      "path": "microsoft.extensions.configuration.binder/9.0.6",
-      "hashPath": "microsoft.extensions.configuration.binder.9.0.6.nupkg.sha512"
+      "sha512": "sha512-RiScL99DcyngY9zJA2ROrri7Br8tn5N4hP4YNvGdTN/bvg1A3dwvDOxHnNZ3Im7x2SJ5i4LkX1uPiR/MfSFBLQ==",
+      "path": "microsoft.extensions.configuration.binder/9.0.0",
+      "hashPath": "microsoft.extensions.configuration.binder.9.0.0.nupkg.sha512"
     },
-    "Microsoft.Extensions.DependencyInjection.Abstractions/9.0.6": {
+    "Microsoft.Extensions.DependencyInjection.Abstractions/9.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-0Zn6nR/6g+90MxskZyOOMPQvnPnrrGu6bytPwkV+azDcTtCSuQ1+GJUrg8Klmnrjk1i6zMpw2lXijl+tw7Q3kA==",
-      "path": "microsoft.extensions.dependencyinjection.abstractions/9.0.6",
-      "hashPath": "microsoft.extensions.dependencyinjection.abstractions.9.0.6.nupkg.sha512"
+      "sha512": "sha512-+6f2qv2a3dLwd5w6JanPIPs47CxRbnk+ZocMJUhv9NxP88VlOcJYZs9jY+MYSjxvady08bUZn6qgiNh7DadGgg==",
+      "path": "microsoft.extensions.dependencyinjection.abstractions/9.0.0",
+      "hashPath": "microsoft.extensions.dependencyinjection.abstractions.9.0.0.nupkg.sha512"
     },
-    "Microsoft.Extensions.Options/9.0.6": {
+    "Microsoft.Extensions.Logging.Abstractions/9.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-wUPhNM1zsI58Dy10xRdF2+pnsisiUuETg5ZBncyAEEUm/CQ9Q1vmivyUWH8RDbAlqyixf2dJNQ2XZb7HsKUEQw==",
-      "path": "microsoft.extensions.options/9.0.6",
-      "hashPath": "microsoft.extensions.options.9.0.6.nupkg.sha512"
+      "sha512": "sha512-g0UfujELzlLbHoVG8kPKVBaW470Ewi+jnptGS9KUi6jcb+k2StujtK3m26DFSGGwQ/+bVgZfsWqNzlP6YOejvw==",
+      "path": "microsoft.extensions.logging.abstractions/9.0.0",
+      "hashPath": "microsoft.extensions.logging.abstractions.9.0.0.nupkg.sha512"
     },
-    "Microsoft.Extensions.Options.ConfigurationExtensions/9.0.6": {
+    "Microsoft.Extensions.Options/9.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-2lnp8nrvfzyp+5zvfeULm/hkZsDsKkl2ziBt5T8EZKoON5q+XRpRLoWcSPo8mP7GNZXpxKMBVjFNIZNbBIcnRw==",
-      "path": "microsoft.extensions.options.configurationextensions/9.0.6",
-      "hashPath": "microsoft.extensions.options.configurationextensions.9.0.6.nupkg.sha512"
+      "sha512": "sha512-y2146b3jrPI3Q0lokKXdKLpmXqakYbDIPDV6r3M8SqvSf45WwOTzkyfDpxnZXJsJQEpAsAqjUq5Pu8RCJMjubg==",
+      "path": "microsoft.extensions.options/9.0.0",
+      "hashPath": "microsoft.extensions.options.9.0.0.nupkg.sha512"
     },
-    "Microsoft.Extensions.Primitives/9.0.6": {
+    "Microsoft.Extensions.Options.ConfigurationExtensions/9.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-BHniU24QV67qp1pJknqYSofAPYGmijGI8D+ci9yfw33iuFdyOeB9lWTg78ThyYLyQwZw3s0vZ36VMb0MqbUuLw==",
-      "path": "microsoft.extensions.primitives/9.0.6",
-      "hashPath": "microsoft.extensions.primitives.9.0.6.nupkg.sha512"
+      "sha512": "sha512-Ob3FXsXkcSMQmGZi7qP07EQ39kZpSBlTcAZLbJLdI4FIf0Jug8biv2HTavWmnTirchctPlq9bl/26CXtQRguzA==",
+      "path": "microsoft.extensions.options.configurationextensions/9.0.0",
+      "hashPath": "microsoft.extensions.options.configurationextensions.9.0.0.nupkg.sha512"
+    },
+    "Microsoft.Extensions.Primitives/9.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-N3qEBzmLMYiASUlKxxFIISP4AiwuPTHF5uCh+2CWSwwzAJiIYx0kBJsS30cp1nvhSySFAVi30jecD307jV+8Kg==",
+      "path": "microsoft.extensions.primitives/9.0.0",
+      "hashPath": "microsoft.extensions.primitives.9.0.0.nupkg.sha512"
+    },
+    "RabbitMQ.Client/6.8.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-jNsmGgmCNw2S/NzskeN2ijtGywtH4Sk/G6jWUTD5sY9SrC27Xz6BsLIiB8hdsfjeyWCa4j4GvCIGkpE8wrjU1Q==",
+      "path": "rabbitmq.client/6.8.1",
+      "hashPath": "rabbitmq.client.6.8.1.nupkg.sha512"
+    },
+    "System.Memory/4.5.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-XIWiDvKPXaTveaB7HVganDlOCRoj03l+jrwNvcge/t8vhGYKvqV+dMv6G4SAX2NoNmN0wZfVPTAlFwZcZvVOUw==",
+      "path": "system.memory/4.5.5",
+      "hashPath": "system.memory.4.5.5.nupkg.sha512"
+    },
+    "System.Threading.Channels/7.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-qmeeYNROMsONF6ndEZcIQ+VxR4Q/TX/7uIVLJqtwIWL7dDWeh0l1UIqgo4wYyjG//5lUNhwkLDSFl+pAWO6oiA==",
+      "path": "system.threading.channels/7.0.0",
+      "hashPath": "system.threading.channels.7.0.0.nupkg.sha512"
     },
     "VaultNotary.Application/1.0.0": {
       "type": "project",

@@ -1,4 +1,3 @@
-/home/flynn/code/vaultNotary/backend/tests/VaultNotary.UnitTests/bin/Debug/net9.0/.msCoverageSourceRootsMapping_VaultNotary.UnitTests
 /home/flynn/code/vaultNotary/backend/tests/VaultNotary.UnitTests/bin/Debug/net9.0/CoverletSourceRootsMapping_VaultNotary.UnitTests
 /home/flynn/code/vaultNotary/backend/tests/VaultNotary.UnitTests/obj/Debug/net9.0/VaultNotary.UnitTests.csproj.AssemblyReference.cache
 /home/flynn/code/vaultNotary/backend/tests/VaultNotary.UnitTests/obj/Debug/net9.0/VaultNotary.UnitTests.GeneratedMSBuildEditorConfig.editorconfig
@@ -120,3 +119,8 @@
 /home/flynn/code/vaultNotary/backend/tests/VaultNotary.UnitTests/obj/Debug/net9.0/VaultNotary.UnitTests.pdb
 /home/flynn/code/vaultNotary/backend/tests/VaultNotary.UnitTests/obj/Debug/net9.0/VaultNotary.UnitTests.genruntimeconfig.cache
 /home/flynn/code/vaultNotary/backend/tests/VaultNotary.UnitTests/obj/Debug/net9.0/ref/VaultNotary.UnitTests.dll
+/home/flynn/code/vaultNotary/backend/tests/VaultNotary.UnitTests/bin/Debug/net9.0/Microsoft.Extensions.Logging.Abstractions.dll
+/home/flynn/code/vaultNotary/backend/tests/VaultNotary.UnitTests/bin/Debug/net9.0/RabbitMQ.Client.dll
+/home/flynn/code/vaultNotary/backend/tests/VaultNotary.UnitTests/bin/Debug/net9.0/System.Configuration.ConfigurationManager.dll
+/home/flynn/code/vaultNotary/backend/tests/VaultNotary.UnitTests/bin/Debug/net9.0/System.Security.Cryptography.ProtectedData.dll
+/home/flynn/code/vaultNotary/backend/tests/VaultNotary.UnitTests/bin/Debug/net9.0/runtimes/win/lib/netstandard2.0/System.Security.Cryptography.ProtectedData.dll

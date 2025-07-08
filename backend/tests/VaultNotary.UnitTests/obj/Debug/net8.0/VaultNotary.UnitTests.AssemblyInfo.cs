@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("VaultNotary.UnitTests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+48ea7aee56973e3e1cb790ba35f4b730fc38a196")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9334039a15752c83011bbf0d2ba2113c7855ef1f")]
 [assembly: System.Reflection.AssemblyProductAttribute("VaultNotary.UnitTests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("VaultNotary.UnitTests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

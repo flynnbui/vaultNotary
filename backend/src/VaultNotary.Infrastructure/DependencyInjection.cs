@@ -55,7 +55,6 @@ public static class DependencyInjection
         });
 
         services.AddScoped<ICustomerRepository, DynamoDbCustomerRepository>();
-        services.AddScoped<IFileRepository, S3FileRepository>();
         services.AddScoped<IHashService, HashService>();
         services.AddScoped<ISignatureService, KmsSignatureService>();
         services.AddSingleton<IJobQueue, RabbitMqJobQueue>();

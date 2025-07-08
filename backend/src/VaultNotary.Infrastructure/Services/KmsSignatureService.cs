@@ -10,53 +10,53 @@ namespace VaultNotary.Infrastructure.Services;
 public class KmsSignatureService : ISignatureService
 {
     private readonly IAmazonKeyManagementService _kmsClient;
-    private readonly string _asymmetricKeyId;
+    private readonly string _keyId;
 
-    public KmsSignatureService(IAmazonKeyManagementService kmsClient, IConfiguration configuration)
+    public KmsSignatureService(IAmazonKeyManagementService kmsClient, string keyId)
     {
         _kmsClient = kmsClient;
-        _asymmetricKeyId = configuration.GetSection("Aws:Kms:AsymmetricKeyId").Value ?? throw new InvalidOperationException("AsymmetricKeyId is required");
+        _keyId = keyId;
     }
 
-    public async Task<string> SignHashAsync(string hash)
+    public async Task<byte[]> SignAsync(byte[] data)
     {
-        var hashBytes = Convert.FromHexString(hash);
-        
         var request = new SignRequest
         {
-            KeyId = _asymmetricKeyId,
-            Message = new MemoryStream(hashBytes),
-            MessageType = MessageType.DIGEST,
+            KeyId = _keyId,
+            Message = new MemoryStream(data),
             SigningAlgorithm = SigningAlgorithmSpec.RSASSA_PKCS1_V1_5_SHA_256
         };
 
         var response = await _kmsClient.SignAsync(request);
-        return Convert.ToBase64String(response.Signature.ToArray());
+        return response.Signature.ToArray();
     }
 
-    public async Task<bool> VerifySignatureAsync(string hash, string signature)
+    public async Task<bool> VerifyAsync(byte[] data, byte[] signature)
     {
-        var hashBytes = Convert.FromHexString(hash);
-        var signatureBytes = Convert.FromBase64String(signature);
-        
         var request = new VerifyRequest
         {
-            KeyId = _asymmetricKeyId,
-            Message = new MemoryStream(hashBytes),
-            MessageType = MessageType.DIGEST,
-            Signature = new MemoryStream(signatureBytes),
+            KeyId = _keyId,
+            Message = new MemoryStream(data),
+            Signature = new MemoryStream(signature),
             SigningAlgorithm = SigningAlgorithmSpec.RSASSA_PKCS1_V1_5_SHA_256
         };
 
-        var response = await _kmsClient.VerifyAsync(request);
-        return response.SignatureValid ?? false;
+        try
+        {
+            var response = await _kmsClient.VerifyAsync(request);
+            return response.SignatureValid;
+        }
+        catch (KMSInvalidSignatureException)
+        {
+            return false;
+        }
     }
 
     public async Task<string> GetPublicKeyAsync()
     {
         var request = new GetPublicKeyRequest
         {
-            KeyId = _asymmetricKeyId
+            KeyId = _keyId
         };
 
         var response = await _kmsClient.GetPublicKeyAsync(request);

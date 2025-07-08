@@ -40,25 +40,6 @@ public class DocumentsController : ControllerBase
         return Ok(document);
     }
 
-    [HttpGet("search")]
-    [HasPermission(Permissions.SearchDocuments)]
-    public async Task<ActionResult<List<DocumentDto>>> Search([FromQuery] string query)
-    {
-        if (string.IsNullOrEmpty(query))
-            return BadRequest("Query parameter is required");
-
-        var documents = await _documentService.SearchAsync(query);
-        return Ok(documents);
-    }
-
-    [HttpGet("parties/{partyId}")]
-    [HasPermission(Permissions.ReadDocuments)]
-    public async Task<ActionResult<List<DocumentDto>>> GetByPartyId(string partyId)
-    {
-        var documents = await _documentService.GetByPartyIdAsync(partyId);
-        return Ok(documents);
-    }
-
     [HttpPost]
     [HasPermission(Permissions.CreateDocuments)]
     public async Task<ActionResult<string>> Create([FromBody] CreateDocumentDto createDocumentDto)

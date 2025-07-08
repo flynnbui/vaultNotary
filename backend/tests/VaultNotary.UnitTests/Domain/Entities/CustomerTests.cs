@@ -13,8 +13,8 @@ public class CustomerTests
         customer.Id.Should().BeEmpty();
         customer.FullName.Should().BeEmpty();
         customer.Address.Should().BeEmpty();
-        customer.Phone.Should().BeEmpty();
-        customer.Email.Should().BeEmpty();
+        customer.Phone.Should().BeNull();
+        customer.Email.Should().BeNull();
         customer.Type.Should().Be(CustomerType.Individual);
         customer.DocumentId.Should().BeNull();
         customer.PassportId.Should().BeNull();

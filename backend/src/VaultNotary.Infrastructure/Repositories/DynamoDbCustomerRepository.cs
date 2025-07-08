@@ -20,6 +20,11 @@ public class DynamoDbCustomerRepository : ICustomerRepository
 
     public async Task<Customer?> GetByIdAsync(string id)
     {
+        if (string.IsNullOrEmpty(id))
+        {
+            return null;
+        }
+
         var request = new GetItemRequest
         {
             TableName = _tableName,
@@ -36,6 +41,11 @@ public class DynamoDbCustomerRepository : ICustomerRepository
 
     public async Task<Customer?> GetByDocumentIdAsync(string documentId)
     {
+        if (string.IsNullOrEmpty(documentId))
+        {
+            return null;
+        }
+
         var request = new QueryRequest
         {
             TableName = _tableName,
@@ -53,6 +63,11 @@ public class DynamoDbCustomerRepository : ICustomerRepository
 
     public async Task<Customer?> GetByPassportIdAsync(string passportId)
     {
+        if (string.IsNullOrEmpty(passportId))
+        {
+            return null;
+        }
+
         var request = new QueryRequest
         {
             TableName = _tableName,
@@ -70,6 +85,11 @@ public class DynamoDbCustomerRepository : ICustomerRepository
 
     public async Task<Customer?> GetByBusinessRegistrationAsync(string businessRegistrationNumber)
     {
+        if (string.IsNullOrEmpty(businessRegistrationNumber))
+        {
+            return null;
+        }
+
         var request = new QueryRequest
         {
             TableName = _tableName,
@@ -87,6 +107,11 @@ public class DynamoDbCustomerRepository : ICustomerRepository
 
     public async Task<List<Customer>> SearchByIdentityAsync(string identity)
     {
+        if (string.IsNullOrEmpty(identity))
+        {
+            return new List<Customer>();
+        }
+
         var customers = new List<Customer>();
 
         var documentCustomer = await GetByDocumentIdAsync(identity);
@@ -139,6 +164,11 @@ public class DynamoDbCustomerRepository : ICustomerRepository
 
     public async Task DeleteAsync(string id)
     {
+        if (string.IsNullOrEmpty(id))
+        {
+            return;
+        }
+
         var request = new DeleteItemRequest
         {
             TableName = _tableName,
@@ -165,8 +195,8 @@ public class DynamoDbCustomerRepository : ICustomerRepository
             Id = item["PK"].S,
             FullName = item["FullName"].S,
             Address = item["Address"].S,
-            Phone = item["Phone"].S,
-            Email = item["Email"].S,
+            Phone = item.ContainsKey("Phone") ? item["Phone"].S : null,
+            Email = item.ContainsKey("Email") ? item["Email"].S : null,
             Type = Enum.Parse<CustomerType>(item["Type"].S),
             DocumentId = item.ContainsKey("DocumentId") ? item["DocumentId"].S : null,
             PassportId = item.ContainsKey("PassportId") ? item["PassportId"].S : null,
@@ -189,6 +219,7 @@ public class DynamoDbCustomerRepository : ICustomerRepository
             { "CreatedAt", new AttributeValue { S = customer.CreatedAt.ToString("O") } },
             { "UpdatedAt", new AttributeValue { S = customer.UpdatedAt.ToString("O") } }
         };
+
         if (!string.IsNullOrEmpty(customer.Phone))
         {
             item["Phone"] = new AttributeValue { S = customer.Phone };
@@ -197,12 +228,10 @@ public class DynamoDbCustomerRepository : ICustomerRepository
         {
             item["Email"] = new AttributeValue { S = customer.Email };
         }
-         if (!string.IsNullOrEmpty(customer.BusinessName))
+        if (!string.IsNullOrEmpty(customer.BusinessName))
         {
-            item["BussinessName"] = new AttributeValue { S = customer.BusinessName };
+            item["BusinessName"] = new AttributeValue { S = customer.BusinessName };
         }
-       
-       
         if (!string.IsNullOrEmpty(customer.DocumentId))
         {
             item["DocumentId"] = new AttributeValue { S = customer.DocumentId };
@@ -213,7 +242,7 @@ public class DynamoDbCustomerRepository : ICustomerRepository
             item["PassportId"] = new AttributeValue { S = customer.PassportId };
             item["GSI2PK"] = new AttributeValue { S = customer.PassportId };
         }
-         if (!string.IsNullOrEmpty(customer.BusinessRegistrationNumber))
+        if (!string.IsNullOrEmpty(customer.BusinessRegistrationNumber))
         {
             item["BusinessRegistrationNumber"] = new AttributeValue { S = customer.BusinessRegistrationNumber };
             item["GSI3PK"] = new AttributeValue { S = customer.BusinessRegistrationNumber };
