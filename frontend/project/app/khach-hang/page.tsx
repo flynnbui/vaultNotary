@@ -1,84 +1,90 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Layout } from '@/src/components/layout/Layout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
-import { Button } from '@/src/components/ui/button';
-import { Input } from '@/src/components/ui/input';
-import { Label } from '@/src/components/ui/label';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/components/ui/table';
-import { Badge } from '@/src/components/ui/badge';
-import { CustomerDialog } from '@/src/components/forms/CustomerDialog';
-import { Users, Search, Plus, Edit, Eye } from 'lucide-react';
-import { toast } from 'sonner';
-import type { CustomerFormData } from '@/src/lib/schemas';
-import { apiService } from '@/src/lib/api';
-import '@/src/lib/i18n';
+import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import { Layout } from "@/src/components/layout/Layout";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
+import { Button } from "@/src/components/ui/button";
+import { Input } from "@/src/components/ui/input";
+import { Label } from "@/src/components/ui/label";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/src/components/ui/table";
+import { Badge } from "@/src/components/ui/badge";
+import { CustomerDialog } from "@/src/components/forms/CustomerDialog";
+import {
+  Users,
+  Search,
+  Plus,
+  Edit,
+  Eye,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+import { toast } from "sonner";
 
-// Mock customer data
-const mockCustomers: CustomerFormData[] = [
-  {
-    id: '1',
-    type: 'individual',
-    fullName: 'Nguyễn Văn A',
-    phone: '0123456789',
-    email: 'nguyenvana@email.com',
-    address: '123 Đường ABC, Quận 1, TP.HCM',
-    cmndNumber: '123456789'
-  },
-  {
-    id: '2',
-    type: 'organization',
-    fullName: 'Trần Thị B',
-    organizationName: 'Công ty TNHH XYZ',
-    phone: '0987654321',
-    email: 'contact@xyz.com',
-    address: '456 Đường DEF, Quận 2, TP.HCM',
-    cmndNumber: '987654321'
-  },
-  {
-    id: '3',
-    type: 'individual',
-    fullName: 'Lê Văn C',
-    phone: '0555666777',
-    email: 'levanc@email.com',
-    address: '789 Đường GHI, Quận 3, TP.HCM',
-    passportNumber: 'A1234567'
-  }
-];
+import "@/src/lib/i18n";
+import useCustomerService from "@/src/services/useCustomerService";
+
 
 export default function CustomersPage() {
   const { t } = useTranslation();
   const [customers, setCustomers] = useState<any[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [showDialog, setShowDialog] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<any | undefined>();
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
 
-  useEffect(() => {
-    loadCustomers();
-  }, []);
+  const { getPaginatedCustomers } = useCustomerService();
 
   const loadCustomers = async () => {
     try {
-      setLoading(true);
-      const response = await apiService.getCustomers({ search: searchTerm });
-      setCustomers((response as any).customers || []);
+      const response = await getPaginatedCustomers(pageNumber, pageSize);
+      setCustomers(response?.items || []);
+      setTotalItems(response?.totalCount || 0);
+      setTotalPages(response?.totalPages || 1);
     } catch (error) {
-      console.error('Error loading customers:', error);
-      toast.error('Không thể tải danh sách khách hàng');
-    } finally {
-      setLoading(false);
+      console.error("Error loading customers:", error);
+      toast.error("Không thể tải danh sách khách hàng");
     }
   };
 
-  const filteredCustomers = customers.filter(customer =>
-    customer.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    customer.phone?.includes(searchTerm) ||
-    customer.cmndNumber?.includes(searchTerm) ||
-    customer.passportNumber?.includes(searchTerm) ||
-    customer.organizationName?.toLowerCase().includes(searchTerm.toLowerCase())
+  const handlePageChange = (page: number) => {
+    setPageNumber(page);
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setPageNumber(1);
+  };
+
+  useEffect(() => {
+    loadCustomers();
+  }, [pageNumber]);
+
+  const filteredCustomers = customers.filter(
+    (customer) =>
+      customer.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customer.phone?.includes(searchTerm) ||
+      customer.cmndNumber?.includes(searchTerm) ||
+      customer.passportNumber?.includes(searchTerm) ||
+      customer.organizationName
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase())
   );
 
   const handleAddCustomer = () => {
@@ -94,24 +100,30 @@ export default function CustomersPage() {
   const handleSaveCustomer = (customerData: any) => {
     if (editingCustomer) {
       // Update existing customer
-      setCustomers(prev => prev.map(c => 
-        c.id === editingCustomer.id ? { ...customerData, id: editingCustomer.id } : c
-      ));
-      toast.success('Thông tin khách hàng đã được cập nhật!');
+      setCustomers((prev) =>
+        prev.map((c) =>
+          c.id === editingCustomer.id
+            ? { ...customerData, id: editingCustomer.id }
+            : c
+        )
+      );
+      toast.success("Thông tin khách hàng đã được cập nhật!");
     } else {
       // Add new customer
       const newCustomer = { ...customerData, id: Date.now().toString() };
-      setCustomers(prev => [...prev, newCustomer]);
-      toast.success('Khách hàng mới đã được thêm!');
+      setCustomers((prev) => [...prev, newCustomer]);
+      toast.success("Khách hàng mới đã được thêm!");
     }
     setShowDialog(false);
   };
 
-  const getCustomerTypeBadge = (type: string) => {
-    return type === 'individual' ? (
+  const getCustomerTypeBadge = (type: number | string) => {
+    const isIndividual = String(type) === "1";
+
+    return isIndividual ? (
       <Badge variant="secondary">Cá nhân</Badge>
     ) : (
-      <Badge variant="outline">Tổ chức</Badge>
+      <Badge variant="outline">Doanh nghiệp</Badge>
     );
   };
 
@@ -121,9 +133,13 @@ export default function CustomersPage() {
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
             <Users className="h-8 w-8 text-orange-600" />
-            <h1 className="text-3xl font-bold text-foreground">Quản lý khách hàng</h1>
+            <h1 className="text-3xl font-bold text-foreground">
+              Quản lý khách hàng
+            </h1>
           </div>
-          <p className="text-muted-foreground">Quản lý thông tin khách hàng và lịch sử giao dịch</p>
+          <p className="text-muted-foreground">
+            Quản lý thông tin khách hàng và lịch sử giao dịch
+          </p>
         </div>
 
         {/* Search and Add Section */}
@@ -134,7 +150,7 @@ export default function CustomersPage() {
                 <Search className="h-5 w-5 text-orange-600" />
                 Tìm kiếm khách hàng
               </div>
-              <Button 
+              <Button
                 onClick={handleAddCustomer}
                 className="bg-orange-600 hover:bg-orange-700"
               >
@@ -146,7 +162,9 @@ export default function CustomersPage() {
           <CardContent className="p-6">
             <div className="flex gap-4">
               <div className="flex-1">
-                <Label htmlFor="search">Tìm kiếm theo tên, số điện thoại, CMND/CCCD, Passport</Label>
+                <Label htmlFor="search">
+                  Tìm kiếm theo tên, số điện thoại, CMND/CCCD, Passport
+                </Label>
                 <Input
                   id="search"
                   value={searchTerm}
@@ -164,7 +182,7 @@ export default function CustomersPage() {
           <CardHeader className="bg-muted/50 border-b">
             <CardTitle className="flex items-center gap-2">
               <Users className="h-5 w-5 text-orange-600" />
-              Danh sách khách hàng ({filteredCustomers.length})
+              Danh sách khách hàng
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
@@ -185,17 +203,25 @@ export default function CustomersPage() {
                 <TableBody>
                   {filteredCustomers.map((customer) => (
                     <TableRow key={customer.id} className="hover:bg-muted/50">
-                      <TableCell>{getCustomerTypeBadge(customer.type)}</TableCell>
-                      <TableCell className="font-medium">{customer.fullName}</TableCell>
-                      <TableCell>{customer.organizationName || '-'}</TableCell>
+                      <TableCell>
+                        {getCustomerTypeBadge(customer.type)}
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        {customer.fullName}
+                      </TableCell>
+                      <TableCell>{customer.organizationName || "-"}</TableCell>
                       <TableCell>{customer.phone}</TableCell>
-                      <TableCell>{customer.email || '-'}</TableCell>
-                      <TableCell className="font-mono">{customer.cmndNumber || '-'}</TableCell>
-                      <TableCell className="font-mono">{customer.passportNumber || '-'}</TableCell>
+                      <TableCell>{customer.email || "-"}</TableCell>
+                      <TableCell className="font-mono">
+                        {customer.cmndcmndId || "-"}
+                      </TableCell>
+                      <TableCell className="font-mono">
+                        {customer.passportId || "-"}
+                      </TableCell>
                       <TableCell>
                         <div className="flex gap-2">
-                          <Button 
-                            variant="outline" 
+                          <Button
+                            variant="outline"
                             size="sm"
                             onClick={() => handleEditCustomer(customer)}
                           >
@@ -210,8 +236,81 @@ export default function CustomersPage() {
                   ))}
                 </TableBody>
               </Table>
+
+              {totalItems > 0 && (
+                <div className="flex items-center justify-between px-6 py-4 border-t bg-muted/20">
+                  <div className="text-sm text-muted-foreground">
+                    Hiển thị {(pageNumber - 1) * pageSize + 1}-
+                    {Math.min(pageNumber * pageSize, totalItems)} trong tổng số{" "}
+                    {totalItems} kết quả
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(pageNumber - 1)}
+                      disabled={pageNumber === 1}
+                      className="h-8 px-3"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+
+                    {/* Page numbers */}
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                        (page) => {
+                          const showPage =
+                            page === 1 ||
+                            page === totalPages ||
+                            (page >= pageNumber - 1 && page <= pageNumber + 1);
+
+                          if (!showPage) {
+                            if (page === 2 && pageNumber > 4)
+                              return <span key={page}>...</span>;
+                            if (
+                              page === totalPages - 1 &&
+                              pageNumber < totalPages - 3
+                            )
+                              return <span key={page}>...</span>;
+                            return null;
+                          }
+
+                          return (
+                            <Button
+                              key={page}
+                              variant={
+                                pageNumber === page ? "default" : "outline"
+                              }
+                              size="sm"
+                              onClick={() => handlePageChange(page)}
+                              className={`h-8 w-8 p-0 ${
+                                pageNumber === page
+                                  ? "bg-orange-600 text-white"
+                                  : ""
+                              }`}
+                            >
+                              {page}
+                            </Button>
+                          );
+                        }
+                      )}
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(pageNumber + 1)}
+                      disabled={pageNumber === totalPages}
+                      className="h-8 px-3"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
-            
+
             {filteredCustomers.length === 0 && (
               <div className="p-12 text-center">
                 <Users className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
@@ -219,7 +318,9 @@ export default function CustomersPage() {
                   Không tìm thấy khách hàng
                 </h3>
                 <p className="text-muted-foreground">
-                  {searchTerm ? 'Không có khách hàng nào phù hợp với từ khóa tìm kiếm.' : 'Chưa có khách hàng nào trong hệ thống.'}
+                  {searchTerm
+                    ? "Không có khách hàng nào phù hợp với từ khóa tìm kiếm."
+                    : "Chưa có khách hàng nào trong hệ thống."}
                 </p>
               </div>
             )}
