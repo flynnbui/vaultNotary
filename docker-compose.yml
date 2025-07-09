@@ -2,236 +2,29 @@ version: '3.8'
 
 services:
   # ======================
-  # FRONTEND SERVICES
+  # VAULTNOTARY BACKEND API
   # ======================
-  frontend:
+  vaultnotary-api:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: vaultnotary-frontend
+      context: ./backend/src
+      dockerfile: VaultNotary.Web/Dockerfile
+    container_name: vaultnotary-api
     ports:
-      - "3000:3000"
+      - "5000:80"
     environment:
-      - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=http://nginx:80
-      - NEXT_PUBLIC_WS_URL=ws://nginx:80
+      - ASPNETCORE_ENVIRONMENT=Test
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Host=vaultnotary-db-dev.corg006sghpa.us-east-1.rds.amazonaws.com;Database=vaultnotary;Username=vaultnotary_user;Password=VaultNotary123!;Port=5432
+      - Aws__Region=us-east-1
+      - Aws__AccessKey=AKIARXO2YC5AF6QISK4Z
+      - Aws__SecretKey=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
+      - Aws__S3__BucketName=vaultnotary-files-dev-119107229504
+      - Aws__S3__FileKeyPrefix=files/
+      - Aws__S3__PresignedUrlExpirationHours=24
+      - Aws__Kms__SymmetricKeyId=f9998863-7bd3-4682-98cc-cdecc2df87b2
+      - ConnectionStrings__RabbitMQ=amqp://admin:password@rabbitmq:5672
     depends_on:
-      - nginx
-    networks:
-      - frontend-network
-    restart: unless-stopped
-
-  # ======================
-  # LOAD BALANCER
-  # ======================
-  nginx:
-    image: nginx:alpine
-    container_name: vaultnotary-nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/ssl:/etc/nginx/ssl
-    depends_on:
-      - api-gateway
-    networks:
-      - frontend-network
-      - backend-network
-    restart: unless-stopped
-
-  # ======================
-  # API GATEWAY
-  # ======================
-  api-gateway:
-    build:
-      context: ./backend/api-gateway
-      dockerfile: Dockerfile
-    container_name: vaultnotary-api-gateway
-    ports:
-      - "8080:8080"
-    environment:
-      - NODE_ENV=production
-      - REDIS_URL=redis://redis:6379
-      - AUTH_SERVICE_URL=http://auth-service:8081
-      - FILE_SERVICE_URL=http://file-service:8082
-      - VERIFY_SERVICE_URL=http://verify-service:8083
-      - SEARCH_SERVICE_URL=http://search-service:8084
-      - NOTIFICATION_SERVICE_URL=http://notification-service:8085
-      - CUSTOMER_SERVICE_URL=http://customer-service:8087
-    depends_on:
-      - redis
-      - auth-service
-      - file-service
-      - verify-service
-      - search-service
-      - notification-service
-      - customer-service
-    networks:
-      - backend-network
-    restart: unless-stopped
-
-  # ======================
-  # CORE SERVICES
-  # ======================
-  auth-service:
-    build:
-      context: ./backend/auth-service
-      dockerfile: Dockerfile
-    container_name: vaultnotary-auth-service
-    ports:
-      - "8081:8081"
-    environment:
-      - NODE_ENV=production
-      - DATABASE_URL=postgresql://postgres:password@postgres:5432/vaultnotary
-      - REDIS_URL=redis://redis:6379
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_EXPIRATION=24h
-    depends_on:
-      - postgres
-      - redis
-    networks:
-      - backend-network
-    restart: unless-stopped
-
-  file-service:
-    build:
-      context: ./backend/file-service
-      dockerfile: Dockerfile
-    container_name: vaultnotary-file-service
-    ports:
-      - "8082:8082"
-    environment:
-      - NODE_ENV=production
-      - MINIO_ENDPOINT=minio
-      - MINIO_PORT=9000
-      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
-      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
-      - DYNAMODB_ENDPOINT=http://dynamodb-local:8000
-      - DYNAMODB_REGION=us-east-1
-      - DYNAMODB_ACCESS_KEY=${DYNAMODB_ACCESS_KEY}
-      - DYNAMODB_SECRET_KEY=${DYNAMODB_SECRET_KEY}
-      - REDIS_URL=redis://redis:6379
-      - RABBITMQ_URL=amqp://rabbitmq:5672
-      - CUSTOMER_SERVICE_URL=http://customer-service:8087
-    depends_on:
-      - minio
-      - dynamodb-local
-      - redis
       - rabbitmq
-      - customer-service
-    networks:
-      - backend-network
-    restart: unless-stopped
-
-  verify-service:
-    build:
-      context: ./backend/verify-service
-      dockerfile: Dockerfile
-    container_name: vaultnotary-verify-service
-    ports:
-      - "8083:8083"
-    environment:
-      - NODE_ENV=production
-      - DYNAMODB_ENDPOINT=http://dynamodb-local:8000
-      - DYNAMODB_REGION=us-east-1
-      - DYNAMODB_ACCESS_KEY=${DYNAMODB_ACCESS_KEY}
-      - DYNAMODB_SECRET_KEY=${DYNAMODB_SECRET_KEY}
-      - CRYPTO_SERVICE_URL=http://crypto-service:8086
-      - REDIS_URL=redis://redis:6379
-    depends_on:
-      - dynamodb-local
-      - crypto-service
-      - redis
-    networks:
-      - backend-network
-    restart: unless-stopped
-
-  search-service:
-    build:
-      context: ./backend/search-service
-      dockerfile: Dockerfile
-    container_name: vaultnotary-search-service
-    ports:
-      - "8084:8084"
-    environment:
-      - NODE_ENV=production
-      - DYNAMODB_ENDPOINT=http://dynamodb-local:8000
-      - DYNAMODB_REGION=us-east-1
-      - DYNAMODB_ACCESS_KEY=${DYNAMODB_ACCESS_KEY}
-      - DYNAMODB_SECRET_KEY=${DYNAMODB_SECRET_KEY}
-      - ELASTICSEARCH_URL=http://elasticsearch:9200
-      - REDIS_URL=redis://redis:6379
-      - CUSTOMER_SERVICE_URL=http://customer-service:8087
-    depends_on:
-      - dynamodb-local
-      - elasticsearch
-      - redis
-      - customer-service
-    networks:
-      - backend-network
-    restart: unless-stopped
-
-  notification-service:
-    build:
-      context: ./backend/notification-service
-      dockerfile: Dockerfile
-    container_name: vaultnotary-notification-service
-    ports:
-      - "8085:8085"
-    environment:
-      - NODE_ENV=production
-      - REDIS_URL=redis://redis:6379
-      - RABBITMQ_URL=amqp://rabbitmq:5672
-      - SMTP_HOST=${SMTP_HOST}
-      - SMTP_PORT=${SMTP_PORT}
-      - SMTP_USER=${SMTP_USER}
-      - SMTP_PASS=${SMTP_PASS}
-    depends_on:
-      - redis
-      - rabbitmq
-    networks:
-      - backend-network
-    restart: unless-stopped
-
-  customer-service:
-    build:
-      context: ./backend/customer-service
-      dockerfile: Dockerfile
-    container_name: vaultnotary-customer-service
-    ports:
-      - "8087:8087"
-    environment:
-      - NODE_ENV=production
-      - DYNAMODB_ENDPOINT=http://dynamodb-local:8000
-      - DYNAMODB_REGION=us-east-1
-      - DYNAMODB_ACCESS_KEY=${DYNAMODB_ACCESS_KEY}
-      - DYNAMODB_SECRET_KEY=${DYNAMODB_SECRET_KEY}
-      - REDIS_URL=redis://redis:6379
-      - ELASTICSEARCH_URL=http://elasticsearch:9200
-    depends_on:
-      - dynamodb-local
-      - redis
-      - elasticsearch
-    networks:
-      - backend-network
-    restart: unless-stopped
-
-  crypto-service:
-    build:
-      context: ./backend/crypto-service
-      dockerfile: Dockerfile
-    container_name: vaultnotary-crypto-service
-    ports:
-      - "8086:8086"
-    environment:
-      - NODE_ENV=production
-      - KEY_STORAGE_PATH=/app/keys
-      - REDIS_URL=redis://redis:6379
-    volumes:
-      - crypto-keys:/app/keys
-    depends_on:
-      - redis
     networks:
       - backend-network
     restart: unless-stopped
@@ -239,91 +32,72 @@ services:
   # ======================
   # BACKGROUND JOBS
   # ======================
-  background-jobs:
+  vaultnotary-jobs:
     build:
-      context: ./backend/src/VaultNotary.BackgroundJobs
-      dockerfile: Dockerfile
-    container_name: vaultnotary-background-jobs
+      context: ./backend/src
+      dockerfile: VaultNotary.BackgroundJobs/Dockerfile
+    container_name: vaultnotary-jobs
     environment:
-      - DOTNET_ENVIRONMENT=Production
+      - DOTNET_ENVIRONMENT=Test
       - ConnectionStrings__RabbitMQ=amqp://admin:password@rabbitmq:5672
       - Aws__Region=us-east-1
-      - Aws__AccessKey=${AWS_ACCESS_KEY}
-      - Aws__SecretKey=${AWS_SECRET_KEY}
-      - Aws__S3__BucketName=vaultnotary-files
+      - Aws__AccessKey=AKIARXO2YC5AF6QISK4Z
+      - Aws__SecretKey=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
+      - Aws__S3__BucketName=vaultnotary-files-dev-119107229504
       - Aws__S3__FileKeyPrefix=files/
+      - Aws__Kms__SymmetricKeyId=f9998863-7bd3-4682-98cc-cdecc2df87b2
     depends_on:
       - rabbitmq
-      - minio
     networks:
       - backend-network
     restart: unless-stopped
 
   # ======================
-  # DATABASES
+  # FRONTEND (Disabled for API testing)
   # ======================
-  postgres:
-    image: postgres:15-alpine
-    container_name: vaultnotary-postgres
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_DB=vaultnotary
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-      - ./backend/database/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      - backend-network
-    restart: unless-stopped
-
-  dynamodb-local:
-    image: amazon/dynamodb-local:latest
-    container_name: vaultnotary-dynamodb
-    ports:
-      - "8000:8000"
-    command: ["-jar", "DynamoDBLocal.jar", "-sharedDb", "-inMemory"]
-    volumes:
-      - dynamodb-data:/home/dynamodblocal/data
-    networks:
-      - backend-network
-    restart: unless-stopped
+  # vaultnotary-frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   container_name: vaultnotary-frontend
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - NODE_ENV=development
+  #     - NEXT_PUBLIC_API_URL=http://localhost:5000
+  #   depends_on:
+  #     - vaultnotary-api
+  #   networks:
+  #     - frontend-network
+  #   restart: unless-stopped
 
   # ======================
-  # STORAGE
+  # DATABASE (Disabled for AWS testing)
   # ======================
-  minio:
-    image: minio/minio:latest
-    container_name: vaultnotary-minio
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    environment:
-      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
-      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
-    volumes:
-      - minio-data:/data
-    command: server /data --console-address ":9001"
-    networks:
-      - backend-network
-    restart: unless-stopped
+  # postgres:
+  #   image: postgres:15-alpine
+  #   container_name: vaultnotary-postgres
+  #   ports:
+  #     - "5432:5432"
+  #   environment:
+  #     - POSTGRES_DB=vaultnotary
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=password
+  #   volumes:
+  #     - postgres-data:/var/lib/postgresql/data
+  #     - ./backend/migrations:/docker-entrypoint-initdb.d
+  #   networks:
+  #     - backend-network
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U postgres"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
 
   # ======================
-  # CACHE & MESSAGING
+  # MESSAGE QUEUE
   # ======================
-  redis:
-    image: redis:7-alpine
-    container_name: vaultnotary-redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis-data:/data
-    command: redis-server --appendonly yes
-    networks:
-      - backend-network
-    restart: unless-stopped
-
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: vaultnotary-rabbitmq
@@ -335,106 +109,6 @@ services:
       - RABBITMQ_DEFAULT_PASS=password
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
-    networks:
-      - backend-network
-    restart: unless-stopped
-
-  # ======================
-  # SEARCH
-  # ======================
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.0
-    container_name: vaultnotary-elasticsearch
-    ports:
-      - "9200:9200"
-    environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    volumes:
-      - elasticsearch-data:/usr/share/elasticsearch/data
-    networks:
-      - backend-network
-    restart: unless-stopped
-
-  # ======================
-  # MONITORING
-  # ======================
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: vaultnotary-prometheus
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus-data:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-    networks:
-      - backend-network
-    restart: unless-stopped
-
-  grafana:
-    image: grafana/grafana:latest
-    container_name: vaultnotary-grafana
-    ports:
-      - "3001:3000"
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-    volumes:
-      - grafana-data:/var/lib/grafana
-      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
-      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
-    depends_on:
-      - prometheus
-    networks:
-      - backend-network
-    restart: unless-stopped
-
-  # ======================
-  # LOGGING
-  # ======================
-  elasticsearch-logs:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.0
-    container_name: vaultnotary-elasticsearch-logs
-    ports:
-      - "9201:9200"
-    environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    volumes:
-      - elasticsearch-logs-data:/usr/share/elasticsearch/data
-    networks:
-      - backend-network
-    restart: unless-stopped
-
-  logstash:
-    image: docker.elastic.co/logstash/logstash:8.10.0
-    container_name: vaultnotary-logstash
-    ports:
-      - "5044:5044"
-    volumes:
-      - ./monitoring/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
-      - ./monitoring/logstash/pipeline:/usr/share/logstash/pipeline
-    depends_on:
-      - elasticsearch-logs
-    networks:
-      - backend-network
-    restart: unless-stopped
-
-  kibana:
-    image: docker.elastic.co/kibana/kibana:8.10.0
-    container_name: vaultnotary-kibana
-    ports:
-      - "5601:5601"
-    environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch-logs:9200
-    depends_on:
-      - elasticsearch-logs
     networks:
       - backend-network
     restart: unless-stopped
@@ -453,12 +127,4 @@ networks:
 # ======================
 volumes:
   postgres-data:
-  dynamodb-data:
-  minio-data:
-  redis-data:
   rabbitmq-data:
-  elasticsearch-data:
-  elasticsearch-logs-data:
-  prometheus-data:
-  grafana-data:
-  crypto-keys:
