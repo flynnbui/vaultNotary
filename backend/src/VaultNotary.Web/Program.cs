@@ -12,6 +12,7 @@ using VaultNotary.Web.Configuration;
 using VaultNotary.Web.Middleware;
 using VaultNotary.Web;
 using Serilog;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,34 @@ builder.Host.UseSerilog((context, configuration) =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Configure Rate Limiting
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    
+    // Global rate limit for all requests
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.User.Identity?.Name ?? httpContext.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
+            factory: partition => new FixedWindowRateLimiterOptions
+            {
+                AutoReplenishment = true,
+                PermitLimit = 1000,
+                Window = TimeSpan.FromMinutes(1)
+            }));
+
+    // Search endpoint specific rate limit
+    options.AddPolicy("SearchPolicy", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.User.Identity?.Name ?? httpContext.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
+            factory: partition => new FixedWindowRateLimiterOptions
+            {
+                AutoReplenishment = true,
+                PermitLimit = 100,
+                Window = TimeSpan.FromMinutes(1)
+            }));
+});
 
 // Configure Auth0 - Skip in Testing and Test environments
 if (!builder.Environment.IsEnvironment("Testing") && !builder.Environment.IsEnvironment("Test"))
@@ -182,6 +211,8 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 app.UseCors("AllowAuth0");
+
+app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseMiddleware<Auth0PermissionsMiddleware>();

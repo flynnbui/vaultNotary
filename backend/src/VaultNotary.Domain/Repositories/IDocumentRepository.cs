@@ -10,6 +10,9 @@ public interface IDocumentRepository
     Task<List<Document>> SearchAsync(string query);
     Task<List<Document>> GetByNotaryDateRangeAsync(DateTime from, DateTime to);
     Task<List<Document>> GetAllAsync();
+    Task<List<Document>> GetAllDocumentsAsync();
+    Task<List<Document>> GetAllDocumentsAsync(int skip, int take);
+    Task<int> GetTotalCountAsync();
     Task<string> CreateAsync(Document document);
     Task UpdateAsync(Document document);
     Task DeleteAsync(string id);

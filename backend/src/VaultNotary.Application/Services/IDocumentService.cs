@@ -12,7 +12,8 @@ public interface IDocumentService
     Task<List<DocumentDto>> GetByNotaryAsync(string notaryPublic);
     Task<List<DocumentDto>> GetBySecretaryAsync(string secretary);
     Task<List<DocumentDto>> GetByDocumentTypeAsync(string documentType);
-    Task<List<DocumentDto>> GetAllAsync();
+    Task<List<DocumentListDto>> GetAllAsync();
+    Task<PaginatedResult<DocumentListDto>> GetAllDocumentsAsync(int pageNumber = 1, int pageSize = 10);
     Task<string> CreateAsync(CreateDocumentDto createDocumentDto);
     Task UpdateAsync(string id, UpdateDocumentDto updateDocumentDto);
     Task DeleteAsync(string id);

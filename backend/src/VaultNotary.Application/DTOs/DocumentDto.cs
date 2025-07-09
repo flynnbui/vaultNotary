@@ -17,6 +17,19 @@ public class DocumentDto
     public List<DocumentFileDto> Files { get; set; } = new();
 }
 
+public class DocumentListDto
+{
+    public string Id { get; set; } = string.Empty;
+    public DateTime CreatedDate { get; set; }
+    public string Secretary { get; set; } = string.Empty;
+    public string NotaryPublic { get; set; } = string.Empty;
+    public string TransactionCode { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public string DocumentType { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+}
+
 public class CreateDocumentDto
 {
     public DateTime CreatedDate { get; set; }

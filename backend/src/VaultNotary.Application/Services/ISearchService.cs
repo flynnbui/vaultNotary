@@ -28,4 +28,14 @@ public interface ISearchService
     Task<List<PartyDocumentLinkDto>> GetPartyDocumentLinksAsync(string documentId);
     Task<List<PartyDocumentLinkDto>> GetCustomerDocumentLinksAsync(string customerId);
     Task<List<DocumentFileLinkDto>> GetDocumentFileLinksAsync(string documentId);
+
+    // Paginated search methods
+    Task<PagedResultDto<DocumentDto>> SearchDocumentsByTransactionCodePagedAsync(string transactionCode, int pageNumber, int pageSize);
+    Task<PagedResultDto<DocumentDto>> SearchDocumentsByNotaryPagedAsync(string notaryPublic, int pageNumber, int pageSize);
+    Task<PagedResultDto<DocumentDto>> SearchDocumentsBySecretaryPagedAsync(string secretary, int pageNumber, int pageSize);
+    Task<PagedResultDto<DocumentDto>> SearchDocumentsByDateRangePagedAsync(DateTime from, DateTime to, int pageNumber, int pageSize);
+    Task<PagedResultDto<DocumentDto>> SearchDocumentsByCustomerPagedAsync(string customerId, int pageNumber, int pageSize);
+    Task<PagedResultDto<DocumentDto>> SearchDocumentsByBusinessRegistrationPagedAsync(string businessRegistrationNumber, int pageNumber, int pageSize);
+    Task<PagedResultDto<DocumentDto>> SearchDocumentsByPassportPagedAsync(string passportId, int pageNumber, int pageSize);
+    Task<PagedResultDto<CustomerDto>> SearchCustomersByIdentityPagedAsync(string identity, int pageNumber, int pageSize);
 }
