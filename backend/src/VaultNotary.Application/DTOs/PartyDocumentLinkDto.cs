@@ -15,9 +15,9 @@ public class PartyDocumentLinkDto
 
 public class CreatePartyDocumentLinkDto
 {
-    public string DocumentId { get; set; } = string.Empty;
     public string CustomerId { get; set; } = string.Empty;
     public PartyRole PartyRole { get; set; }
+    public SignatureStatus SignatureStatus { get; set; }
     public DateTime NotaryDate { get; set; }
 }
 

@@ -8,6 +8,21 @@ public class FileUploadDto
     public Stream FileStream { get; set; } = null!;
 }
 
+public class FileUploadResponse
+{
+    public string Id { get; set; } = string.Empty;
+    public string DocumentId { get; set; } = string.Empty;
+    public string ContentType { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; }
+    public string Message { get; set; } = string.Empty;
+}
+
+public class FileDownloadResponse
+{
+    public string DownloadUrl { get; set; } = string.Empty;
+    public DateTime ExpiresAt { get; set; }
+}
+
 public class MultipartUploadInitiateDto
 {
     public string FileName { get; set; } = string.Empty;

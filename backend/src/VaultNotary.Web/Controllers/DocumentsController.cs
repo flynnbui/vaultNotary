@@ -20,41 +20,44 @@ public class DocumentsController : ControllerBase
 
     [HttpGet]
     [HasPermission(Permissions.ReadDocuments)]
-    public async Task<ActionResult<List<DocumentDto>>> GetAll()
+    public async Task<ActionResult<List<DocumentListDto>>> GetAll()
     {
         var documents = await _documentService.GetAllAsync();
         return Ok(documents);
+    }
+
+    [HttpGet("paginated")]
+    [HasPermission(Permissions.ReadDocuments)]
+    public async Task<ActionResult<PaginatedResult<DocumentListDto>>> GetAllPaginated(
+        [FromQuery] int pageNumber = 1, 
+        [FromQuery] int pageSize = 10)
+    {
+        if (pageNumber < 1) pageNumber = 1;
+        if (pageSize < 1 || pageSize > 100) pageSize = 10;
+
+        var result = await _documentService.GetAllDocumentsAsync(pageNumber, pageSize);
+        return Ok(result);
     }
 
     [HttpGet("{id}")]
     [HasPermission(Permissions.ReadDocuments)]
     public async Task<ActionResult<DocumentDto>> GetById(string id)
     {
-        var document = await _documentService.GetByIdAsync(id);
-        if (document == null)
-            return NotFound();
+        try
+        {
+            var document = await _documentService.GetByIdAsync(id);
+            if (document == null)
+                return NotFound("Document not found");
 
-        return Ok(document);
+            return Ok(document);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"An error occurred while retrieving the document: {ex.Message}");
+        }
     }
 
-    [HttpGet("search")]
-    [HasPermission(Permissions.SearchDocuments)]
-    public async Task<ActionResult<List<DocumentDto>>> Search([FromQuery] string query)
-    {
-        if (string.IsNullOrEmpty(query))
-            return BadRequest("Query parameter is required");
 
-        var documents = await _documentService.SearchAsync(query);
-        return Ok(documents);
-    }
-
-    [HttpGet("parties/{partyId}")]
-    [HasPermission(Permissions.ReadDocuments)]
-    public async Task<ActionResult<List<DocumentDto>>> GetByPartyId(string partyId)
-    {
-        var documents = await _documentService.GetByPartyIdAsync(partyId);
-        return Ok(documents);
-    }
 
     [HttpPost]
     [HasPermission(Permissions.CreateDocuments)]
@@ -107,6 +110,7 @@ public class DocumentsController : ControllerBase
         await _documentService.UnlinkPartyAsync(id, customerId);
         return NoContent();
     }
+
 }
 
 public class LinkPartyRequest

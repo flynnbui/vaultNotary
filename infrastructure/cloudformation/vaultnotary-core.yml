@@ -1,0 +1,526 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'VaultNotary Core Infrastructure - S3, DynamoDB, KMS, and IAM resources'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: prod
+    AllowedValues: [dev, staging, prod]
+    Description: Environment name for resource naming
+  
+  S3BucketName:
+    Type: String
+    Default: vaultnotary-files
+    Description: Name for the S3 bucket (must be globally unique)
+    
+  DynamoDBBillingMode:
+    Type: String
+    Default: PAY_PER_REQUEST
+    AllowedValues: [PAY_PER_REQUEST, PROVISIONED]
+    Description: DynamoDB billing mode
+
+Conditions:
+  IsProvisionedMode: !Equals [!Ref DynamoDBBillingMode, 'PROVISIONED']
+
+Resources:
+  # ==========================================
+  # KMS KEYS
+  # ==========================================
+  VaultNotaryS3KMSKey:
+    Type: AWS::KMS::Key
+    Properties:
+      Description: 'VaultNotary S3 Encryption Key'
+      KeyPolicy:
+        Statement:
+          - Sid: Enable IAM User Permissions
+            Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:${AWS::Partition}:iam::${AWS::AccountId}:root'
+            Action: 'kms:*'
+            Resource: '*'
+          - Sid: Allow S3 Service
+            Effect: Allow
+            Principal:
+              Service: s3.amazonaws.com
+            Action:
+              - kms:Decrypt
+              - kms:GenerateDataKey
+            Resource: '*'
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+
+  VaultNotaryS3KMSKeyAlias:
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName: !Sub 'alias/vaultnotary-s3-${Environment}'
+      TargetKeyId: !Ref VaultNotaryS3KMSKey
+
+  VaultNotarySigningKMSKey:
+    Type: AWS::KMS::Key
+    Properties:
+      Description: 'VaultNotary Asymmetric Signing Key'
+      KeyUsage: SIGN_VERIFY
+      KeySpec: RSA_2048
+      KeyPolicy:
+        Statement:
+          - Sid: Enable IAM User Permissions
+            Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:${AWS::Partition}:iam::${AWS::AccountId}:root'
+            Action: 'kms:*'
+            Resource: '*'
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+
+  VaultNotarySigningKMSKeyAlias:
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName: !Sub 'alias/vaultnotary-signing-${Environment}'
+      TargetKeyId: !Ref VaultNotarySigningKMSKey
+
+  # ==========================================
+  # S3 BUCKET
+  # ==========================================
+  VaultNotaryS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${S3BucketName}-${Environment}-${AWS::AccountId}'
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: aws:kms
+              KMSMasterKeyID: !Ref VaultNotaryS3KMSKey
+            BucketKeyEnabled: true
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteIncompleteMultipartUploads
+            Status: Enabled
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 7
+          - Id: TransitionToIA
+            Status: Enabled
+            Transitions:
+              - TransitionInDays: 30
+                StorageClass: STANDARD_IA
+              - TransitionInDays: 90
+                StorageClass: GLACIER
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders: ['*']
+            AllowedMethods: [GET, PUT, POST, DELETE, HEAD]
+            AllowedOrigins: ['*']
+            MaxAge: 3000
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+
+  # ==========================================
+  # DYNAMODB TABLES
+  # ==========================================
+  CustomersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub 'VaultNotary-Customers-${Environment}'
+      BillingMode: !Ref DynamoDBBillingMode
+      AttributeDefinitions:
+        - AttributeName: Id
+          AttributeType: S
+        - AttributeName: DocumentId
+          AttributeType: S
+        - AttributeName: PassportId
+          AttributeType: S
+        - AttributeName: Phone
+          AttributeType: S
+      KeySchema:
+        - AttributeName: Id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: DocumentIdIndex
+          KeySchema:
+            - AttributeName: DocumentId
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput: !If
+            - IsProvisionedMode
+            - ReadCapacityUnits: 5
+              WriteCapacityUnits: 5
+            - !Ref AWS::NoValue
+        - IndexName: PassportIdIndex
+          KeySchema:
+            - AttributeName: PassportId
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput: !If
+            - IsProvisionedMode
+            - ReadCapacityUnits: 5
+              WriteCapacityUnits: 5
+            - !Ref AWS::NoValue
+        - IndexName: PhoneIndex
+          KeySchema:
+            - AttributeName: Phone
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput: !If
+            - IsProvisionedMode
+            - ReadCapacityUnits: 5
+              WriteCapacityUnits: 5
+            - !Ref AWS::NoValue
+      ProvisionedThroughput: !If
+        - IsProvisionedMode
+        - ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+        - !Ref AWS::NoValue
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Application
+          Value: VaultNotary
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+
+  DocumentsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub 'VaultNotary-Documents-${Environment}'
+      BillingMode: !Ref DynamoDBBillingMode
+      AttributeDefinitions:
+        - AttributeName: Id
+          AttributeType: S
+        - AttributeName: Sha256Hash
+          AttributeType: S
+        - AttributeName: NotaryDate
+          AttributeType: S
+      KeySchema:
+        - AttributeName: Id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: Sha256HashIndex
+          KeySchema:
+            - AttributeName: Sha256Hash
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput: !If
+            - IsProvisionedMode
+            - ReadCapacityUnits: 5
+              WriteCapacityUnits: 5
+            - !Ref AWS::NoValue
+        - IndexName: NotaryDateIndex
+          KeySchema:
+            - AttributeName: NotaryDate
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput: !If
+            - IsProvisionedMode
+            - ReadCapacityUnits: 5
+              WriteCapacityUnits: 5
+            - !Ref AWS::NoValue
+      ProvisionedThroughput: !If
+        - IsProvisionedMode
+        - ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+        - !Ref AWS::NoValue
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Application
+          Value: VaultNotary
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+
+  PartyDocumentsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub 'VaultNotary-PartyDocuments-${Environment}'
+      BillingMode: !Ref DynamoDBBillingMode
+      AttributeDefinitions:
+        - AttributeName: DocumentId
+          AttributeType: S
+        - AttributeName: CustomerId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: DocumentId
+          KeyType: HASH
+        - AttributeName: CustomerId
+          KeyType: RANGE
+      ProvisionedThroughput: !If
+        - IsProvisionedMode
+        - ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+        - !Ref AWS::NoValue
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Application
+          Value: VaultNotary
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+
+  # ==========================================
+  # IAM POLICIES
+  # ==========================================
+  VaultNotaryS3Policy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub 'VaultNotaryS3Policy-${Environment}'
+      Description: 'Policy for VaultNotary S3 access'
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: S3BucketAccess
+            Effect: Allow
+            Action:
+              - s3:GetObject
+              - s3:PutObject
+              - s3:DeleteObject
+              - s3:ListBucket
+              - s3:GetObjectVersion
+              - s3:PutObjectAcl
+              - s3:GetBucketLocation
+              - s3:GetBucketVersioning
+              - s3:AbortMultipartUpload
+              - s3:ListMultipartUploadParts
+              - s3:ListBucketMultipartUploads
+            Resource:
+              - !GetAtt VaultNotaryS3Bucket.Arn
+              - !Sub '${VaultNotaryS3Bucket.Arn}/*'
+
+  VaultNotaryDynamoDBPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub 'VaultNotaryDynamoDBPolicy-${Environment}'
+      Description: 'Policy for VaultNotary DynamoDB access'
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: DynamoDBTableAccess
+            Effect: Allow
+            Action:
+              - dynamodb:BatchGetItem
+              - dynamodb:BatchWriteItem
+              - dynamodb:DeleteItem
+              - dynamodb:GetItem
+              - dynamodb:PutItem
+              - dynamodb:Query
+              - dynamodb:Scan
+              - dynamodb:UpdateItem
+              - dynamodb:DescribeTable
+              - dynamodb:DescribeTimeToLive
+            Resource:
+              - !GetAtt CustomersTable.Arn
+              - !GetAtt DocumentsTable.Arn
+              - !GetAtt PartyDocumentsTable.Arn
+              - !Sub '${CustomersTable.Arn}/index/*'
+              - !Sub '${DocumentsTable.Arn}/index/*'
+
+  VaultNotaryKMSPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub 'VaultNotaryKMSPolicy-${Environment}'
+      Description: 'Policy for VaultNotary KMS access'
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: KMSAccess
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+              - kms:GenerateDataKey
+              - kms:Sign
+              - kms:Verify
+              - kms:GetPublicKey
+              - kms:DescribeKey
+            Resource:
+              - !GetAtt VaultNotaryS3KMSKey.Arn
+              - !GetAtt VaultNotarySigningKMSKey.Arn
+
+  VaultNotaryCloudWatchPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub 'VaultNotaryCloudWatchPolicy-${Environment}'
+      Description: 'Policy for VaultNotary CloudWatch access'
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: CloudWatchLogs
+            Effect: Allow
+            Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+              - logs:DescribeLogGroups
+              - logs:DescribeLogStreams
+            Resource: !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/vaultnotary/*'
+          - Sid: CloudWatchMetrics
+            Effect: Allow
+            Action:
+              - cloudwatch:PutMetricData
+              - cloudwatch:GetMetricStatistics
+              - cloudwatch:ListMetrics
+            Resource: '*'
+
+  # ==========================================
+  # IAM USERS
+  # ==========================================
+  VaultNotaryAppUser:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: !Sub 'vaultnotary-app-user-${Environment}'
+      ManagedPolicyArns:
+        - !Ref VaultNotaryS3Policy
+        - !Ref VaultNotaryDynamoDBPolicy
+        - !Ref VaultNotaryKMSPolicy
+        - !Ref VaultNotaryCloudWatchPolicy
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Application
+          Value: VaultNotary
+        - Key: Purpose
+          Value: Application
+
+  VaultNotaryJobsUser:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: !Sub 'vaultnotary-jobs-user-${Environment}'
+      ManagedPolicyArns:
+        - !Ref VaultNotaryS3Policy
+        - !Ref VaultNotaryDynamoDBPolicy
+        - !Ref VaultNotaryKMSPolicy
+        - !Ref VaultNotaryCloudWatchPolicy
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Application
+          Value: VaultNotary
+        - Key: Purpose
+          Value: BackgroundJobs
+
+  # ==========================================
+  # CLOUDWATCH LOG GROUPS
+  # ==========================================
+  AppLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/vaultnotary/app-${Environment}'
+      RetentionInDays: 30
+
+  JobsLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/vaultnotary/jobs-${Environment}'
+      RetentionInDays: 30
+
+# ==========================================
+# OUTPUTS
+# ==========================================
+Outputs:
+  # S3 Outputs
+  S3BucketName:
+    Description: 'Name of the S3 bucket for file storage'
+    Value: !Ref VaultNotaryS3Bucket
+    Export:
+      Name: !Sub '${AWS::StackName}-S3Bucket'
+
+  S3BucketArn:
+    Description: 'ARN of the S3 bucket'
+    Value: !GetAtt VaultNotaryS3Bucket.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-S3BucketArn'
+
+  # DynamoDB Outputs
+  CustomersTableName:
+    Description: 'Name of the Customers DynamoDB table'
+    Value: !Ref CustomersTable
+    Export:
+      Name: !Sub '${AWS::StackName}-CustomersTable'
+
+  DocumentsTableName:
+    Description: 'Name of the Documents DynamoDB table'
+    Value: !Ref DocumentsTable
+    Export:
+      Name: !Sub '${AWS::StackName}-DocumentsTable'
+
+  PartyDocumentsTableName:
+    Description: 'Name of the PartyDocuments DynamoDB table'
+    Value: !Ref PartyDocumentsTable
+    Export:
+      Name: !Sub '${AWS::StackName}-PartyDocumentsTable'
+
+  # KMS Outputs
+  S3KMSKeyId:
+    Description: 'KMS Key ID for S3 encryption'
+    Value: !Ref VaultNotaryS3KMSKey
+    Export:
+      Name: !Sub '${AWS::StackName}-S3KMSKey'
+
+  SigningKMSKeyId:
+    Description: 'KMS Key ID for digital signatures'
+    Value: !Ref VaultNotarySigningKMSKey
+    Export:
+      Name: !Sub '${AWS::StackName}-SigningKMSKey'
+
+  # IAM Outputs
+  AppUserName:
+    Description: 'IAM username for application'
+    Value: !Ref VaultNotaryAppUser
+    Export:
+      Name: !Sub '${AWS::StackName}-AppUser'
+
+  JobsUserName:
+    Description: 'IAM username for background jobs'
+    Value: !Ref VaultNotaryJobsUser
+    Export:
+      Name: !Sub '${AWS::StackName}-JobsUser'
+
+  # Configuration Template
+  ConfigurationTemplate:
+    Description: 'Template configuration for appsettings.json'
+    Value: !Sub |
+      {
+        "Aws": {
+          "Region": "${AWS::Region}",
+          "AccessKey": "REPLACE_WITH_ACCESS_KEY",
+          "SecretKey": "REPLACE_WITH_SECRET_KEY",
+          "DynamoDb": {
+            "CustomersTableName": "${CustomersTable}",
+            "DocumentsTableName": "${DocumentsTable}",
+            "PartyDocumentsTableName": "${PartyDocumentsTable}"
+          },
+          "S3": {
+            "BucketName": "${VaultNotaryS3Bucket}",
+            "FileKeyPrefix": "files/",
+            "PresignedUrlExpirationHours": 24
+          },
+          "Kms": {
+            "AsymmetricKeyId": "${VaultNotarySigningKMSKey}",
+            "SymmetricKeyId": "${VaultNotaryS3KMSKey}"
+          }
+        }
+      }
