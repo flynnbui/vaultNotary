@@ -1,14 +1,18 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
+using VaultNotary.Application;
 using VaultNotary.Application.Services;
 using VaultNotary.Infrastructure;
+using VaultNotary.Infrastructure.Data;
 using VaultNotary.Web.Authorization;
 using VaultNotary.Web.Configuration;
 using VaultNotary.Web.Middleware;
 using VaultNotary.Web;
 using Serilog;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,8 +24,36 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Configure Auth0 - Skip in Testing environment
-if (!builder.Environment.IsEnvironment("Testing"))
+// Configure Rate Limiting
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    
+    // Global rate limit for all requests
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.User.Identity?.Name ?? httpContext.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
+            factory: partition => new FixedWindowRateLimiterOptions
+            {
+                AutoReplenishment = true,
+                PermitLimit = 1000,
+                Window = TimeSpan.FromMinutes(1)
+            }));
+
+    // Search endpoint specific rate limit
+    options.AddPolicy("SearchPolicy", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.User.Identity?.Name ?? httpContext.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
+            factory: partition => new FixedWindowRateLimiterOptions
+            {
+                AutoReplenishment = true,
+                PermitLimit = 100,
+                Window = TimeSpan.FromMinutes(1)
+            }));
+});
+
+// Configure Auth0 - Skip in Testing and Test environments
+if (!builder.Environment.IsEnvironment("Testing") && !builder.Environment.IsEnvironment("Test"))
 {
     builder.Services.Configure<Auth0Configuration>(builder.Configuration.GetSection("Auth0"));
     var auth0Config = builder.Configuration.GetSection("Auth0").Get<Auth0Configuration>() ?? new Auth0Configuration();
@@ -45,7 +77,7 @@ else
 }
 
 // Configure Authorization
-if (builder.Environment.IsEnvironment("Testing"))
+if (builder.Environment.IsEnvironment("Testing") || builder.Environment.IsEnvironment("Test"))
 {
     // For testing, allow all requests
     builder.Services.AddAuthorization(options =>
@@ -72,8 +104,6 @@ if (builder.Environment.IsEnvironment("Testing"))
         options.AddPolicy(Permissions.SearchDocuments, p => p.RequireAssertion(_ => true));
         options.AddPolicy(Permissions.SearchCustomers, p => p.RequireAssertion(_ => true));
 
-        options.AddPolicy(Permissions.VerifyDocuments, p => p.RequireAssertion(_ => true));
-        options.AddPolicy(Permissions.SignDocuments, p => p.RequireAssertion(_ => true));
 
         options.AddPolicy(Permissions.AdminAccess, p => p.RequireAssertion(_ => true));
 
@@ -118,10 +148,6 @@ else
         options.AddPolicy(Permissions.SearchCustomers, policy => 
             policy.Requirements.Add(new PermissionRequirement(Permissions.SearchCustomers)));
         
-        options.AddPolicy(Permissions.VerifyDocuments, policy => 
-            policy.Requirements.Add(new PermissionRequirement(Permissions.VerifyDocuments)));
-        options.AddPolicy(Permissions.SignDocuments, policy => 
-            policy.Requirements.Add(new PermissionRequirement(Permissions.SignDocuments)));
         
         options.AddPolicy(Permissions.AdminAccess, policy => 
             policy.Requirements.Add(new PermissionRequirement(Permissions.AdminAccess)));
@@ -136,9 +162,9 @@ else
     builder.Services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
 }
 
+builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
-builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IFileService, FileService>();
 
 builder.Services.AddCors(options =>
@@ -154,10 +180,28 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// Initialize database
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<VaultNotaryDbContext>();
+    
+    try
+    {
+        // Ensure database is created and apply any pending migrations
+        dbContext.Database.EnsureCreated();
+        app.Logger.LogInformation("Database initialized successfully");
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogError(ex, "An error occurred while initializing the database");
+        throw;
+    }
+}
+
 // Configure Serilog request logging
 app.UseSerilogRequestLogging();
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Test"))
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -167,6 +211,8 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 app.UseCors("AllowAuth0");
+
+app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseMiddleware<Auth0PermissionsMiddleware>();

@@ -1,0 +1,21 @@
+{
+  "Aws": {
+    "Region": "ap-southeast-1",
+    "AccessKey": "REPLACE_WITH_ACCESS_KEY",
+    "SecretKey": "REPLACE_WITH_SECRET_KEY",
+    "DynamoDb": {
+      "CustomersTableName": "VaultNotary-Customers-prod",
+      "DocumentsTableName": "VaultNotary-Documents-prod",
+      "PartyDocumentsTableName": "VaultNotary-PartyDocuments-prod"
+    },
+    "S3": {
+      "BucketName": "vaultnotary-files-prod-119107229504",
+      "FileKeyPrefix": "files/",
+      "PresignedUrlExpirationHours": 24
+    },
+    "Kms": {
+      "AsymmetricKeyId": "357e292d-ba77-4e7f-a879-f2d699148474",
+      "SymmetricKeyId": "ef2b40c9-bf0e-46bc-bb66-ff3c962e7ac5"
+    }
+  }
+}

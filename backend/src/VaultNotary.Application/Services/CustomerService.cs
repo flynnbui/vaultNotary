@@ -45,8 +45,23 @@ public class CustomerService : ICustomerService
 
     public async Task<List<CustomerDto>> GetAllAsync()
     {
-        var customers = await _customerRepository.GetAllAsync();
+        var customers = await _customerRepository.GetAllCustomersAsync();
         return customers.Select(MapToDto).ToList();
+    }
+
+    public async Task<PaginatedResult<CustomerDto>> GetAllCustomersAsync(int pageNumber = 1, int pageSize = 10)
+    {
+        var skip = (pageNumber - 1) * pageSize;
+        var customers = await _customerRepository.GetAllCustomersAsync(skip, pageSize);
+        var totalCount = await _customerRepository.GetTotalCountAsync();
+
+        return new PaginatedResult<CustomerDto>
+        {
+            Items = customers.Select(MapToDto).ToList(),
+            TotalCount = totalCount,
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
     }
 
     public async Task<string> CreateAsync(CreateCustomerDto createCustomerDto)
@@ -98,12 +113,6 @@ public class CustomerService : ICustomerService
         return await _customerRepository.ExistsAsync(id);
     }
 
-    public async Task<bool> ValidateIdentityAsync(string identity)
-    {
-        var customers = await _customerRepository.SearchByIdentityAsync(identity);
-        return customers.Any();
-    }
-
     public async Task<List<CustomerDto>> DetectDuplicatesAsync(CreateCustomerDto createCustomerDto)
     {
         var duplicates = new List<Customer>();
@@ -141,7 +150,7 @@ public class CustomerService : ICustomerService
             DocumentId = customer.DocumentId,
             PassportId = customer.PassportId,
             BusinessRegistrationNumber = customer.BusinessRegistrationNumber,
-            BusinessName = customer.BussinessName,
+            BusinessName = customer.BusinessName,
             CreatedAt = customer.CreatedAt,
             UpdatedAt = customer.UpdatedAt
         };

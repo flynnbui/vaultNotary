@@ -44,6 +44,7 @@ This project implements Clean Architecture with the following layers:
 - Multipart upload for large files
 - Presigned URL generation for downloads
 - File integrity verification with SHA-256 hashing
+- Associated with document
 
 ### Search Capabilities
 - Search customers by identity information
