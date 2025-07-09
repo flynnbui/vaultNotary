@@ -20,15 +20,28 @@ public class DocumentsController : ControllerBase
 
     [HttpGet]
     [HasPermission(Permissions.ReadDocuments)]
-    public async Task<ActionResult<List<DocumentDto>>> GetAll()
+    public async Task<ActionResult<List<DocumentListDto>>> GetAll()
     {
         var documents = await _documentService.GetAllAsync();
         return Ok(documents);
     }
 
+    [HttpGet("paginated")]
+    [HasPermission(Permissions.ReadDocuments)]
+    public async Task<ActionResult<PaginatedResult<DocumentListDto>>> GetAllPaginated(
+        [FromQuery] int pageNumber = 1, 
+        [FromQuery] int pageSize = 10)
+    {
+        if (pageNumber < 1) pageNumber = 1;
+        if (pageSize < 1 || pageSize > 100) pageSize = 10;
+
+        var result = await _documentService.GetAllDocumentsAsync(pageNumber, pageSize);
+        return Ok(result);
+    }
+
     [HttpGet("{id}")]
     [HasPermission(Permissions.ReadDocuments)]
-    public async Task<ActionResult<DocumentWithFilesDto>> GetById(string id)
+    public async Task<ActionResult<DocumentDto>> GetById(string id)
     {
         try
         {
@@ -36,11 +49,7 @@ public class DocumentsController : ControllerBase
             if (document == null)
                 return NotFound("Document not found");
 
-            return Ok(new DocumentWithFilesDto
-            {
-                Document = document,
-                Files = document.Files
-            });
+            return Ok(document);
         }
         catch (Exception ex)
         {

@@ -26,6 +26,19 @@ public class CustomersController : ControllerBase
         return Ok(customers);
     }
 
+    [HttpGet("paginated")]
+    [HasPermission(Permissions.ReadCustomers)]
+    public async Task<ActionResult<PaginatedResult<CustomerDto>>> GetAllPaginated(
+        [FromQuery] int pageNumber = 1, 
+        [FromQuery] int pageSize = 10)
+    {
+        if (pageNumber < 1) pageNumber = 1;
+        if (pageSize < 1 || pageSize > 100) pageSize = 10;
+
+        var result = await _customerService.GetAllCustomersAsync(pageNumber, pageSize);
+        return Ok(result);
+    }
+
     [HttpGet("{id}")]
     [HasPermission(Permissions.ReadCustomers)]
     public async Task<ActionResult<CustomerDto>> GetById(string id)

@@ -172,6 +172,100 @@ public class SearchService : ISearchService
         }).ToList();
     }
 
+    // Paginated search methods
+    public async Task<PagedResultDto<DocumentDto>> SearchDocumentsByTransactionCodePagedAsync(string transactionCode, int pageNumber, int pageSize)
+    {
+        var documents = await _documentRepository.GetAllAsync();
+        var filtered = documents.Where(d => d.TransactionCode.Contains(transactionCode, StringComparison.OrdinalIgnoreCase))
+                               .OrderByDescending(d => d.CreatedDate);
+        
+        return CreatePagedResult(filtered, pageNumber, pageSize, MapDocumentToDto);
+    }
+
+    public async Task<PagedResultDto<DocumentDto>> SearchDocumentsByNotaryPagedAsync(string notaryPublic, int pageNumber, int pageSize)
+    {
+        var documents = await _documentRepository.GetAllAsync();
+        var filtered = documents.Where(d => d.NotaryPublic.Contains(notaryPublic, StringComparison.OrdinalIgnoreCase))
+                               .OrderByDescending(d => d.CreatedDate);
+        
+        return CreatePagedResult(filtered, pageNumber, pageSize, MapDocumentToDto);
+    }
+
+    public async Task<PagedResultDto<DocumentDto>> SearchDocumentsBySecretaryPagedAsync(string secretary, int pageNumber, int pageSize)
+    {
+        var documents = await _documentRepository.GetAllAsync();
+        var filtered = documents.Where(d => d.Secretary.Contains(secretary, StringComparison.OrdinalIgnoreCase))
+                               .OrderByDescending(d => d.CreatedDate);
+        
+        return CreatePagedResult(filtered, pageNumber, pageSize, MapDocumentToDto);
+    }
+
+    public async Task<PagedResultDto<DocumentDto>> SearchDocumentsByDateRangePagedAsync(DateTime from, DateTime to, int pageNumber, int pageSize)
+    {
+        var documents = await _documentRepository.GetByNotaryDateRangeAsync(from, to);
+        var ordered = documents.OrderByDescending(d => d.CreatedDate);
+        
+        return CreatePagedResult(ordered, pageNumber, pageSize, MapDocumentToDto);
+    }
+
+    public async Task<PagedResultDto<DocumentDto>> SearchDocumentsByCustomerPagedAsync(string customerId, int pageNumber, int pageSize)
+    {
+        var documents = await _documentRepository.GetByCustomerIdAsync(customerId);
+        var ordered = documents.OrderByDescending(d => d.CreatedDate);
+        
+        return CreatePagedResult(ordered, pageNumber, pageSize, MapDocumentToDto);
+    }
+
+    public async Task<PagedResultDto<DocumentDto>> SearchDocumentsByBusinessRegistrationPagedAsync(string businessRegistrationNumber, int pageNumber, int pageSize)
+    {
+        var customer = await _customerRepository.GetByBusinessRegistrationAsync(businessRegistrationNumber);
+        if (customer == null)
+            return new PagedResultDto<DocumentDto> { Items = new List<DocumentDto>(), TotalCount = 0, PageNumber = pageNumber, PageSize = pageSize };
+
+        var documents = await _documentRepository.GetByCustomerIdAsync(customer.Id);
+        var ordered = documents.OrderByDescending(d => d.CreatedDate);
+        
+        return CreatePagedResult(ordered, pageNumber, pageSize, MapDocumentToDto);
+    }
+
+    public async Task<PagedResultDto<DocumentDto>> SearchDocumentsByPassportPagedAsync(string passportId, int pageNumber, int pageSize)
+    {
+        var customer = await _customerRepository.GetByPassportIdAsync(passportId);
+        if (customer == null)
+            return new PagedResultDto<DocumentDto> { Items = new List<DocumentDto>(), TotalCount = 0, PageNumber = pageNumber, PageSize = pageSize };
+
+        var documents = await _documentRepository.GetByCustomerIdAsync(customer.Id);
+        var ordered = documents.OrderByDescending(d => d.CreatedDate);
+        
+        return CreatePagedResult(ordered, pageNumber, pageSize, MapDocumentToDto);
+    }
+
+    public async Task<PagedResultDto<CustomerDto>> SearchCustomersByIdentityPagedAsync(string identity, int pageNumber, int pageSize)
+    {
+        var customers = await _customerRepository.SearchByIdentityAsync(identity);
+        var ordered = customers.OrderByDescending(c => c.CreatedAt);
+        
+        return CreatePagedResult(ordered, pageNumber, pageSize, MapCustomerToDto);
+    }
+
+    // Helper method to create paginated results
+    private static PagedResultDto<TDto> CreatePagedResult<TEntity, TDto>(IEnumerable<TEntity> source, int pageNumber, int pageSize, Func<TEntity, TDto> mapper)
+    {
+        var totalCount = source.Count();
+        var items = source.Skip((pageNumber - 1) * pageSize)
+                         .Take(pageSize)
+                         .Select(mapper)
+                         .ToList();
+
+        return new PagedResultDto<TDto>
+        {
+            Items = items,
+            TotalCount = totalCount,
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
+    }
+
     // Mapping methods
     private static DocumentDto MapDocumentToDto(Document document)
     {

@@ -17,7 +17,12 @@ public class FileService : IFileService
 
     public async Task<string> UploadAsync(FileUploadDto fileUploadDto)
     {
-        var key = $"{Guid.NewGuid()}_{fileUploadDto.FileName}";
+        var now = DateTime.UtcNow;
+        var folderPath = $"uploads/{now:yyyy/MM/dd}";
+        var shortId = Guid.NewGuid().ToString("N")[..8];
+        var fileExtension = Path.GetExtension(fileUploadDto.FileName);
+        var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileUploadDto.FileName);
+        var key = $"{folderPath}/{fileNameWithoutExtension}_{shortId}{fileExtension}";
         await _fileRepository.UploadAsync(key, fileUploadDto.FileStream, fileUploadDto.ContentType);
         return key;
     }
@@ -49,7 +54,12 @@ public class FileService : IFileService
 
     public async Task<MultipartUploadInitiateResponseDto> InitiateMultipartUploadAsync(MultipartUploadInitiateDto initiateDto)
     {
-        var key = $"{Guid.NewGuid()}_{initiateDto.FileName}";
+        var now = DateTime.UtcNow;
+        var folderPath = $"uploads/{now:yyyy/MM/dd}";
+        var shortId = Guid.NewGuid().ToString("N")[..8];
+        var fileExtension = Path.GetExtension(initiateDto.FileName);
+        var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(initiateDto.FileName);
+        var key = $"{folderPath}/{fileNameWithoutExtension}_{shortId}{fileExtension}";
         var uploadId = await _fileRepository.InitiateMultipartUploadAsync(key, initiateDto.ContentType);
         
         return new MultipartUploadInitiateResponseDto

@@ -83,19 +83,47 @@ public class DocumentService : IDocumentService
         return filtered.Select(MapToDto).ToList();
     }
 
-    public async Task<List<DocumentDto>> GetAllAsync()
+    public async Task<List<DocumentListDto>> GetAllAsync()
     {
-        var documents = await _documentRepository.GetAllAsync();
-        var dtos = new List<DocumentDto>();
-        
-        foreach (var document in documents)
+        var documents = await _documentRepository.GetAllDocumentsAsync();
+        return documents.Select(d => new DocumentListDto
         {
-            var dto = MapToDto(document);
-            dto.Files = await _documentFileService.GetByDocumentIdAsync(document.Id);
-            dtos.Add(dto);
-        }
-        
-        return dtos;
+            Id = d.Id,
+            CreatedDate = d.CreatedDate,
+            Secretary = d.Secretary,
+            NotaryPublic = d.NotaryPublic,
+            TransactionCode = d.TransactionCode,
+            Description = d.Description,
+            DocumentType = d.DocumentType,
+            CreatedAt = d.CreatedAt,
+            UpdatedAt = d.UpdatedAt
+        }).ToList();
+    }
+
+    public async Task<PaginatedResult<DocumentListDto>> GetAllDocumentsAsync(int pageNumber = 1, int pageSize = 10)
+    {
+        var skip = (pageNumber - 1) * pageSize;
+        var documents = await _documentRepository.GetAllDocumentsAsync(skip, pageSize);
+        var totalCount = await _documentRepository.GetTotalCountAsync();
+
+        return new PaginatedResult<DocumentListDto>
+        {
+            Items = documents.Select(d => new DocumentListDto
+            {
+                Id = d.Id,
+                CreatedDate = d.CreatedDate,
+                Secretary = d.Secretary,
+                NotaryPublic = d.NotaryPublic,
+                TransactionCode = d.TransactionCode,
+                Description = d.Description,
+                DocumentType = d.DocumentType,
+                CreatedAt = d.CreatedAt,
+                UpdatedAt = d.UpdatedAt
+            }).ToList(),
+            TotalCount = totalCount,
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
     }
 
     public async Task<string> CreateAsync(CreateDocumentDto createDocumentDto)
@@ -201,8 +229,8 @@ public class DocumentService : IDocumentService
             DocumentType = document.DocumentType,
             CreatedAt = document.CreatedAt,
             UpdatedAt = document.UpdatedAt,
-            PartyDocumentLinks = document.PartyDocumentLinks.Select(MapPartyLinkToDto).ToList(),
-            Files = new List<DocumentFileDto>() // Will be populated by calling service
+            PartyDocumentLinks = document.PartyDocumentLinks?.Select(MapPartyLinkToDto).ToList() ?? new List<PartyDocumentLinkDto>(),
+            Files = new List<DocumentFileDto>() // Will be populated by calling service if needed
         };
     }
 

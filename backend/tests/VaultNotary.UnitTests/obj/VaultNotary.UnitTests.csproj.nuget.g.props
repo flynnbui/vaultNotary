@@ -26,5 +26,6 @@
     <PkgAWSSDK_Core Condition=" '$(PkgAWSSDK_Core)' == '' ">/home/flynn/.nuget/packages/awssdk.core/4.0.0.14</PkgAWSSDK_Core>
     <PkgAWSSDK_S3 Condition=" '$(PkgAWSSDK_S3)' == '' ">/home/flynn/.nuget/packages/awssdk.s3/4.0.4.1</PkgAWSSDK_S3>
     <PkgAWSSDK_KeyManagementService Condition=" '$(PkgAWSSDK_KeyManagementService)' == '' ">/home/flynn/.nuget/packages/awssdk.keymanagementservice/4.0.3.5</PkgAWSSDK_KeyManagementService>
+    <PkgMicrosoft_Extensions_ApiDescription_Server Condition=" '$(PkgMicrosoft_Extensions_ApiDescription_Server)' == '' ">/home/flynn/.nuget/packages/microsoft.extensions.apidescription.server/6.0.5</PkgMicrosoft_Extensions_ApiDescription_Server>
   </PropertyGroup>
 </Project>

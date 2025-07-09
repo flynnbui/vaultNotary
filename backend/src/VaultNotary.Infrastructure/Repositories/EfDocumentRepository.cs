@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using VaultNotary.Domain.Entities;
 using VaultNotary.Domain.Repositories;
 using VaultNotary.Infrastructure.Data;
+using VaultNotary.Application.DTOs;
 
 namespace VaultNotary.Infrastructure.Repositories;
 
@@ -84,10 +85,29 @@ public class EfDocumentRepository : IDocumentRepository
     public async Task<List<Document>> GetAllAsync()
     {
         return await _context.Documents
-            .Include(d => d.PartyDocumentLinks)
-            .ThenInclude(pdl => pdl.Customer)
             .OrderByDescending(d => d.CreatedDate)
             .ToListAsync();
+    }
+
+    public async Task<List<Document>> GetAllDocumentsAsync()
+    {
+        return await _context.Documents
+            .OrderByDescending(d => d.CreatedDate)
+            .ToListAsync();
+    }
+
+    public async Task<List<Document>> GetAllDocumentsAsync(int skip, int take)
+    {
+        return await _context.Documents
+            .OrderByDescending(d => d.CreatedDate)
+            .Skip(skip)
+            .Take(take)
+            .ToListAsync();
+    }
+
+    public async Task<int> GetTotalCountAsync()
+    {
+        return await _context.Documents.CountAsync();
     }
 
     public async Task<string> CreateAsync(Document document)

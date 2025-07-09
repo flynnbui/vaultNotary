@@ -10,6 +10,7 @@ public interface ICustomerService
     Task<CustomerDto?> GetByBusinessRegistrationAsync(string businessRegistrationNumber);
     Task<List<CustomerDto>> SearchByIdentityAsync(string identity);
     Task<List<CustomerDto>> GetAllAsync();
+    Task<PaginatedResult<CustomerDto>> GetAllCustomersAsync(int pageNumber = 1, int pageSize = 10);
     Task<string> CreateAsync(CreateCustomerDto createCustomerDto);
     Task UpdateAsync(string id, UpdateCustomerDto updateCustomerDto);
     Task DeleteAsync(string id);
