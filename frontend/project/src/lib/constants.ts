@@ -92,3 +92,8 @@ export const formatDate = (date: Date) => {
     year: 'numeric'
   }).format(date);
 };
+
+export const CUSTOMER = {
+  DEFAULT: "/Customers",
+  PAGINATED: "/Customers/paginated",
+};
