@@ -1,7 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback } from "react";
 import useApi from "./useApi";
-import { CustomerType, CreateCustomerType, UpdateCustomerType, CustomerFilterOptions } from "../types/customer.type";
+import {
+  CustomerType,
+  CreateCustomerType,
+  UpdateCustomerType,
+  CustomerFilterOptions,
+} from "../types/customer.type";
 import { PaginatedResponse } from "../types/pagination.type";
 import { CUSTOMER, SEARCH } from "../lib/constants";
 
@@ -16,7 +21,7 @@ const useCustomerService = () => {
     ): Promise<PaginatedResponse<CustomerType> | undefined> => {
       try {
         let url = `${CUSTOMER.PAGINATED}?pageNumber=${pageNumber}&pageSize=${pageSize}`;
-        
+
         if (filters?.type) {
           url += `&type=${filters.type}`;
         }
@@ -37,18 +42,15 @@ const useCustomerService = () => {
     [callApi]
   );
 
-  const getAllCustomers = useCallback(
-    async (): Promise<CustomerType[]> => {
-      try {
-        const response = await callApi("get", CUSTOMER.DEFAULT);
-        return response?.data || [];
-      } catch (error) {
-        console.error("Lỗi khi lấy tất cả khách hàng:", error);
-        throw error;
-      }
-    },
-    [callApi]
-  );
+  const getAllCustomers = useCallback(async (): Promise<CustomerType[]> => {
+    try {
+      const response = await callApi("get", CUSTOMER.DEFAULT);
+      return response?.data || [];
+    } catch (error) {
+      console.error("Lỗi khi lấy tất cả khách hàng:", error);
+      throw error;
+    }
+  }, [callApi]);
 
   const getCustomerById = useCallback(
     async (id: string): Promise<CustomerType | undefined> => {
@@ -65,6 +67,7 @@ const useCustomerService = () => {
 
   const createCustomer = useCallback(
     async (customerData: CreateCustomerType): Promise<string> => {
+      console.log("Hello");
       try {
         const response = await callApi("post", CUSTOMER.DEFAULT, customerData);
         return response?.data;
@@ -109,7 +112,9 @@ const useCustomerService = () => {
       try {
         const response = await callApi(
           "get",
-          `${SEARCH.CUSTOMERS}?identity=${encodeURIComponent(identity)}&pageNumber=${pageNumber}&pageSize=${pageSize}`
+          `${SEARCH.CUSTOMERS}?identity=${encodeURIComponent(
+            identity
+          )}&pageNumber=${pageNumber}&pageSize=${pageSize}`
         );
         return response?.data;
       } catch (error) {
@@ -121,11 +126,7 @@ const useCustomerService = () => {
   );
 
   const getCustomerDocuments = useCallback(
-    async (
-      customerId: string,
-      pageNumber = 1,
-      pageSize = 10
-    ): Promise<any> => {
+    async (customerId: string, pageNumber = 1, pageSize = 10): Promise<any> => {
       try {
         const response = await callApi(
           "get",
@@ -143,7 +144,7 @@ const useCustomerService = () => {
   const bulkDeleteCustomers = useCallback(
     async (customerIds: string[]): Promise<void> => {
       try {
-        await Promise.all(customerIds.map(id => deleteCustomer(id)));
+        await Promise.all(customerIds.map((id) => deleteCustomer(id)));
       } catch (error) {
         console.error("Lỗi khi xóa hàng loạt khách hàng:", error);
         throw error;

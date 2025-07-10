@@ -38,7 +38,7 @@ export function CustomerCardView({
   loading = false
 }: CustomerCardViewProps) {
   const getCustomerTypeInfo = (type: number) => {
-    const isIndividual = type === 1;
+    const isIndividual = type === 0; // Backend uses 0 for Individual, 1 for Business
     return {
       label: isIndividual ? "Cá nhân" : "Doanh nghiệp",
       icon: isIndividual ? User : Building,
@@ -102,7 +102,7 @@ export function CustomerCardView({
             key={customer.id} 
             className={cn(
               "transition-all duration-200 hover:shadow-md",
-              isSelected && "ring-2 ring-orange-500 ring-offset-2"
+              isSelected && "ring-2 ring-orange-500 ring-offset-2 ring-offset-background"
             )}
           >
             <CardHeader className="pb-4">
@@ -115,7 +115,7 @@ export function CustomerCardView({
                   />
                   <Avatar className="h-12 w-12">
                     <AvatarFallback className={cn("text-white", 
-                      customer.type === 1 ? "bg-blue-500" : "bg-purple-500"
+                      customer.type === 0 ? "bg-blue-500" : "bg-purple-500"
                     )}>
                       {getInitials(customer.fullName)}
                     </AvatarFallback>
@@ -171,7 +171,7 @@ export function CustomerCardView({
                 </div>
 
                 {/* Business info for organizations */}
-                {customer.type === 2 && customer.businessName && (
+                {customer.type === 1 && customer.businessName && (
                   <div className="flex items-center gap-2 text-sm">
                     <Building className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                     <span className="text-muted-foreground truncate">

@@ -89,7 +89,7 @@ export function CustomerBulkActions({
 
   return (
     <>
-      <div className="flex items-center justify-between p-4 bg-orange-50 border border-orange-200 rounded-lg mb-4">
+      <div className="flex items-center justify-between p-4 bg-orange-50 dark:bg-orange-950/50 border border-orange-200 dark:border-orange-800 rounded-lg mb-4">
         <div className="flex items-center gap-4">
           <Checkbox
             checked={allSelected}
@@ -101,10 +101,10 @@ export function CustomerBulkActions({
           />
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4 text-orange-600" />
-            <span className="font-medium text-orange-900">
+            <span className="font-medium text-orange-900 dark:text-orange-100">
               Đã chọn {selectedCustomers.length} khách hàng
             </span>
-            <Badge variant="secondary" className="bg-orange-100 text-orange-800">
+            <Badge variant="secondary" className="bg-orange-100 dark:bg-orange-900/50 text-orange-800 dark:text-orange-200">
               {selectedCustomers.length}
             </Badge>
           </div>
@@ -115,7 +115,7 @@ export function CustomerBulkActions({
             variant="outline"
             size="sm"
             onClick={onClearSelection}
-            className="text-orange-700 border-orange-200 hover:bg-orange-100"
+            className="text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800 hover:bg-orange-100 dark:hover:bg-orange-900/50"
           >
             <X className="h-4 w-4 mr-1" />
             Bỏ chọn

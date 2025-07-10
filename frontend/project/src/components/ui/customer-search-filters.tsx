@@ -118,20 +118,20 @@ export function CustomerSearchFilters({
           <div className="flex items-end gap-2">
             <Button
               variant="outline"
-              onClick={() => handleFilterChange('type', 1)}
+              onClick={() => handleFilterChange('type', 0)}
               className={cn(
                 "transition-colors",
-                filters.type === 1 && "bg-orange-50 border-orange-200 text-orange-700"
+                filters.type === 0 && "bg-orange-50 dark:bg-orange-950/50 border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-300"
               )}
             >
               Cá nhân
             </Button>
             <Button
               variant="outline"
-              onClick={() => handleFilterChange('type', 2)}
+              onClick={() => handleFilterChange('type', 1)}
               className={cn(
                 "transition-colors",
-                filters.type === 2 && "bg-orange-50 border-orange-200 text-orange-700"
+                filters.type === 1 && "bg-orange-50 dark:bg-orange-950/50 border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-300"
               )}
             >
               Doanh nghiệp
@@ -153,8 +153,8 @@ export function CustomerSearchFilters({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="">Tất cả</SelectItem>
-                    <SelectItem value="1">Cá nhân</SelectItem>
-                    <SelectItem value="2">Doanh nghiệp</SelectItem>
+                    <SelectItem value="0">Cá nhân</SelectItem>
+                    <SelectItem value="1">Doanh nghiệp</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
