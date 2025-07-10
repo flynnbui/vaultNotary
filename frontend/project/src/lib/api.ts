@@ -4,9 +4,13 @@ class ApiService {
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
     
+    // Get access token from Auth0
+    const accessToken = await this.getAccessToken();
+    
     const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
+        ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
         ...options.headers,
       },
       ...options,
@@ -23,6 +27,24 @@ class ApiService {
     } catch (error) {
       console.error('API request failed:', error);
       throw error;
+    }
+  }
+
+  private async getAccessToken(): Promise<string | null> {
+    try {
+      // This will only work on the client side or in API routes
+      if (typeof window !== 'undefined') {
+        // Client-side: get token from Auth0
+        const response = await fetch('/api/auth/token');
+        if (response.ok) {
+          const { accessToken } = await response.json();
+          return accessToken;
+        }
+      }
+      return null;
+    } catch (error) {
+      console.error('Failed to get access token:', error);
+      return null;
     }
   }
 
@@ -126,8 +148,13 @@ class ApiService {
 
   // Document upload
   async uploadDocuments(formData: FormData) {
+    const accessToken = await this.getAccessToken();
+    
     return fetch(`${API_BASE_URL}/documents/upload`, {
       method: 'POST',
+      headers: {
+        ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+      },
       body: formData,
     }).then(response => {
       if (!response.ok) {
