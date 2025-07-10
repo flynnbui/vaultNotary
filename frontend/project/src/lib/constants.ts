@@ -94,6 +94,27 @@ export const formatDate = (date: Date) => {
 };
 
 export const CUSTOMER = {
-  DEFAULT: "/Customers",
-  PAGINATED: "/Customers/paginated",
+  DEFAULT: "/api/Customers",
+  PAGINATED: "/api/Customers/paginated",
+  BY_ID: "/api/Customers",
+};
+
+export const SEARCH = {
+  CUSTOMERS: "/api/Search/customers",
+  DOCUMENTS_BY_CUSTOMER: "/api/Search/documents/customer",
+  DOCUMENTS_BY_TRANSACTION: "/api/Search/documents/transaction-code",
+  DOCUMENTS_BY_PASSPORT: "/api/Search/documents/passport",
+  DOCUMENTS_BY_BUSINESS: "/api/Search/documents/business",
+  DOCUMENTS_BY_NOTARY: "/api/Search/documents/notary",
+  DOCUMENTS_BY_SECRETARY: "/api/Search/documents/secretary",
+  DOCUMENTS_BY_DATE_RANGE: "/api/Search/documents/date-range",
+  PARTY_LINKS_BY_CUSTOMER: "/api/Search/party-links/customer",
+  PARTY_LINKS_BY_DOCUMENT: "/api/Search/party-links/document",
+  CROSS_REFERENCE: "/api/Search/documents/cross-reference",
+};
+
+export const DOCUMENTS = {
+  DEFAULT: "/api/Documents",
+  PAGINATED: "/api/Documents/paginated",
+  BY_ID: "/api/Documents",
 };
