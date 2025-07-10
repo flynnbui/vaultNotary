@@ -1,6 +1,0 @@
-{
-  "VaultNotary.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "\/home\/flynn\/code\/vaultNotary\/backend\/src\/VaultNotary.Application",
-  "VaultNotary.Domain, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "\/home\/flynn\/code\/vaultNotary\/backend\/src\/VaultNotary.Domain",
-  "VaultNotary.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "\/home\/flynn\/code\/vaultNotary\/backend\/src\/VaultNotary.Infrastructure",
-  "VaultNotary.Web, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "\/home\/flynn\/code\/vaultNotary\/backend\/src\/VaultNotary.Web"
-}
