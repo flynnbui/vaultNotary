@@ -165,16 +165,31 @@ export default function CustomersPage() {
 
   const handleSaveCustomer = async (customerData: any) => {
     try {
+      console.log("Received customer data:", customerData);
+      
+      // Transform form data to CreateCustomerType/UpdateCustomerType
+      const transformedData = {
+        fullName: customerData.fullName || "",
+        address: customerData.permanentAddress || customerData.currentAddress || "",
+        phone: customerData.phone || null,
+        email: customerData.email || null,
+        type: customerData.customerType === 'individual' ? 0 : 1, // Transform to backend enum
+        documentId: customerData.idType === 'CMND' ? (customerData.cmndNumber || customerData.idNumber) : null,
+        passportId: customerData.idType === 'Passport' ? (customerData.passportNumber || customerData.idNumber) : null,
+        businessRegistrationNumber: customerData.businessRegistrationNumber || null,
+        businessName: customerData.businessName || null
+      };
+
+      console.log("Transformed data for API:", transformedData);
+
       if (editingCustomer) {
-        await updateCustomer(editingCustomer.id, customerData);
+        await updateCustomer(editingCustomer.id, transformedData);
         toast.success("Thông tin khách hàng đã được cập nhật!");
         
-        // Update in local state
-        setCustomers(prev => 
-          prev.map(c => c.id === editingCustomer.id ? { ...c, ...customerData } : c)
-        );
+        // Reload to get fresh data
+        await loadCustomers();
       } else {
-        const newCustomerId = await createCustomer(customerData);
+        await createCustomer(transformedData);
         toast.success("Khách hàng mới đã được thêm!");
         
         // Reload to get fresh data
@@ -182,6 +197,7 @@ export default function CustomersPage() {
       }
       setShowDialog(false);
     } catch (error: any) {
+      console.error("Error saving customer:", error);
       toast.error(error.response?.data?.message || "Có lỗi xảy ra khi lưu khách hàng");
     }
   };
@@ -204,7 +220,7 @@ export default function CustomersPage() {
   const displayCustomers = useMemo(() => customers, [customers]);
   
   const getCustomerTypeBadge = (type: number) => {
-    const isIndividual = type === 1;
+    const isIndividual = type === 0; // Backend uses 0 for Individual, 1 for Business
     return isIndividual ? (
       <Badge variant="secondary">Cá nhân</Badge>
     ) : (
@@ -381,7 +397,7 @@ export default function CustomersPage() {
                         key={customer.id} 
                         className={cn(
                           "hover:bg-muted/50",
-                          selectedCustomers.includes(customer.id) && "bg-orange-50"
+                          selectedCustomers.includes(customer.id) && "bg-orange-50 dark:bg-orange-950/50"
                         )}
                       >
                         <TableCell>

@@ -76,7 +76,7 @@ export function CustomerDetailsDialog({
   };
 
   const getCustomerTypeInfo = (type: number) => {
-    const isIndividual = type === 1;
+    const isIndividual = type === 0; // Backend uses 0 for Individual, 1 for Business
     return {
       label: isIndividual ? "Cá nhân" : "Doanh nghiệp",
       icon: isIndividual ? User : Building,
@@ -190,7 +190,7 @@ export function CustomerDetailsDialog({
                       </div>
                     </div>
 
-                    {customer.type === 2 && (
+                    {customer.type === 1 && (
                       <>
                         <div className="flex items-center gap-3">
                           <Building className="h-4 w-4 text-muted-foreground" />
@@ -285,13 +285,13 @@ export function CustomerDetailsDialog({
                             key={document.id}
                             className={cn(
                               "flex items-center gap-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer",
-                              selectedDocument?.id === document.id && "bg-orange-50 border-orange-200"
+                              selectedDocument?.id === document.id && "bg-orange-50 dark:bg-orange-950/50 border-orange-200 dark:border-orange-800"
                             )}
                             onClick={() => handleDocumentClick(document)}
                           >
                             <div className="flex-shrink-0">
-                              <div className="h-12 w-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                                <FileText className="h-6 w-6 text-orange-600" />
+                              <div className="h-12 w-12 bg-orange-100 dark:bg-orange-900/50 rounded-lg flex items-center justify-center">
+                                <FileText className="h-6 w-6 text-orange-600 dark:text-orange-400" />
                               </div>
                             </div>
                             <div className="flex-1 min-w-0">

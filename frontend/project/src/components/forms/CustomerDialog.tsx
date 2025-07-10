@@ -15,7 +15,7 @@ import { Alert, AlertDescription } from '@/src/components/ui/alert';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/src/components/ui/accordion';
 import { Search, Info, User, CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
-import { customerSchema, type CustomerSummary } from '@/src/lib/schemas';
+import { extendedCustomerSchema, type CustomerSummary } from '@/src/lib/schemas';
 import { apiService } from '@/src/lib/api';
 
 // Custom DatePicker Component
@@ -316,7 +316,7 @@ export function CustomerDialog({
         businessName?: string;
         businessRegistrationNumber?: string;
     }>({
-        resolver: zodResolver(customerSchema),
+        resolver: zodResolver(extendedCustomerSchema),
         defaultValues: {
             customerType: 'individual',
             isVip: false,
@@ -397,15 +397,24 @@ export function CustomerDialog({
     };
 
     const onSubmit = (data: any) => {
-        const customerSummary: CustomerSummary = {
+        console.log("🚀 CustomerDialog onSubmit called with data:", data);
+        console.log("🚀 Form errors:", errors);
+        
+        // Send the complete form data instead of just CustomerSummary
+        const completeCustomerData = {
+            ...data,
             id: initialData?.id || uuidv4(),
-            fullName: data.fullName,
-            idType: data.idType,
-            idNumber: data.idType === 'CMND' ? data.cmndNumber : data.passportNumber,
-            dob: data.dateOfBirth.toISOString()
+            idType: idType,
+            idNumber: idType === 'CMND' ? data.cmndNumber : data.passportNumber,
+            dob: data.dateOfBirth?.toISOString() || null
         };
 
-        onSave(customerSummary);
+        console.log("🚀 CustomerDialog submitting:", completeCustomerData);
+        onSave(completeCustomerData);
+    };
+
+    const onError = (errors: any) => {
+        console.log("❌ Form validation errors:", errors);
     };
 
     return (
@@ -415,7 +424,7 @@ export function CustomerDialog({
                     <DialogTitle>{title}</DialogTitle>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 mt-6">
+                <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-8 mt-6">
                     {showExistingCustomer && (
                         <Alert>
                             <Info className="h-4 w-4" />
@@ -677,7 +686,12 @@ export function CustomerDialog({
                         <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                             Hủy
                         </Button>
-                        <Button type="submit" disabled={isSubmitting} className="px-8">
+                        <Button 
+                            type="submit" 
+                            disabled={isSubmitting} 
+                            className="px-8"
+                            onClick={() => console.log("🔥 Submit button clicked!")}
+                        >
                             {isSubmitting ? 'Đang lưu...' : (initialData ? 'Cập nhật' : 'Thêm')}
                         </Button>
                     </DialogFooter>
