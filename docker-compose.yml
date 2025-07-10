@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   # ======================
@@ -14,11 +14,11 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Test
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__DefaultConnection=Host=vaultnotary-db-dev.corg006sghpa.us-east-1.rds.amazonaws.com;Database=vaultnotary;Username=vaultnotary_user;Password=VaultNotary123!;Port=5432
-      - Aws__Region=us-east-1
-      - Aws__AccessKey=AKIARXO2YC5AF6QISK4Z
-      - Aws__SecretKey=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
-      - Aws__S3__BucketName=vaultnotary-files-dev-119107229504
+      - ConnectionStrings__DefaultConnection=Host=vaultnotary-db-prod.cx0ewaugo94q.ap-southeast-1.rds.amazonaws.com;Port=5432;Database=vaultnotary;Username=vaultnotary_user;Password=CatTu0ng080503
+      - Aws__Region=ap-southeast-1
+      - Aws__AccessKey=AKIARXO2YC5AHWZKHPIN
+      - Aws__SecretKey=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
+      - Aws__S3__BucketName=vaultnotary-files-prod-119107229504
       - Aws__S3__FileKeyPrefix=files/
       - Aws__S3__PresignedUrlExpirationHours=24
       - Aws__Kms__SymmetricKeyId=f9998863-7bd3-4682-98cc-cdecc2df87b2
@@ -32,25 +32,25 @@ services:
   # ======================
   # BACKGROUND JOBS
   # ======================
-  vaultnotary-jobs:
-    build:
-      context: ./backend/src
-      dockerfile: VaultNotary.BackgroundJobs/Dockerfile
-    container_name: vaultnotary-jobs
-    environment:
-      - DOTNET_ENVIRONMENT=Test
-      - ConnectionStrings__RabbitMQ=amqp://admin:password@rabbitmq:5672
-      - Aws__Region=us-east-1
-      - Aws__AccessKey=AKIARXO2YC5AF6QISK4Z
-      - Aws__SecretKey=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
-      - Aws__S3__BucketName=vaultnotary-files-dev-119107229504
-      - Aws__S3__FileKeyPrefix=files/
-      - Aws__Kms__SymmetricKeyId=f9998863-7bd3-4682-98cc-cdecc2df87b2
-    depends_on:
-      - rabbitmq
-    networks:
-      - backend-network
-    restart: unless-stopped
+  # vaultnotary-jobs:
+  #   build:
+  #     context: ./backend/src
+  #     dockerfile: VaultNotary.BackgroundJobs/Dockerfile
+  #   container_name: vaultnotary-jobs
+  #   environment:
+  #     - DOTNET_ENVIRONMENT=Test
+  #     - ConnectionStrings__RabbitMQ=amqp://admin:password@rabbitmq:5672
+  #     - Aws__Region=us-east-1
+  #     - Aws__AccessKey=AKIARXO2YC5AF6QISK4Z
+  #     - Aws__SecretKey=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
+  #     - Aws__S3__BucketName=vaultnotary-files-dev-119107229504
+  #     - Aws__S3__FileKeyPrefix=files/
+  #     - Aws__Kms__SymmetricKeyId=f9998863-7bd3-4682-98cc-cdecc2df87b2
+  #   depends_on:
+  #     - rabbitmq
+  #   networks:
+  #     - backend-network
+  #   restart: unless-stopped
 
   # ======================
   # FRONTEND (Disabled for API testing)
