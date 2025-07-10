@@ -1,19 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback } from "react";
 import useApi from "./useApi";
+import { DocumentType, DocumentListType, CreateDocumentType, UpdateDocumentType } from "../types/document.type";
 import { PaginatedResponse } from "../types/pagination.type";
-import { DocumentType } from "../types/document.type";
-
-interface CreateDocumentData {
-  createdDate: string;
-  secretary: string;
-  notaryPublic: string;
-  transactionCode: string;
-  description: string;
-  documentType: string;
-}
-
-interface UpdateDocumentData extends Partial<CreateDocumentData> {}
+import { DOCUMENTS, SEARCH } from "../lib/constants";
 
 const useDocumentService = () => {
   const { callApi, loading } = useApi();
@@ -22,11 +12,11 @@ const useDocumentService = () => {
     async (
       pageNumber = 1,
       pageSize = 10
-    ): Promise<PaginatedResponse<DocumentType> | undefined> => {
+    ): Promise<PaginatedResponse<DocumentListType> | undefined> => {
       try {
         const response = await callApi(
           "get",
-          `/Documents/paginated?pageNumber=${pageNumber}&pageSize=${pageSize}`
+          `${DOCUMENTS.PAGINATED}?pageNumber=${pageNumber}&pageSize=${pageSize}`
         );
         return response?.data;
       } catch (error) {
@@ -37,10 +27,36 @@ const useDocumentService = () => {
     [callApi]
   );
 
-  const createDocument = useCallback(
-    async (documentData: CreateDocumentData): Promise<DocumentType | undefined> => {
+  const getAllDocuments = useCallback(
+    async (): Promise<DocumentListType[]> => {
       try {
-        const response = await callApi("post", "/Documents", documentData);
+        const response = await callApi("get", DOCUMENTS.DEFAULT);
+        return response?.data || [];
+      } catch (error) {
+        console.error("Lỗi khi lấy tất cả tài liệu:", error);
+        throw error;
+      }
+    },
+    [callApi]
+  );
+
+  const getDocumentById = useCallback(
+    async (id: string): Promise<DocumentType | undefined> => {
+      try {
+        const response = await callApi("get", `${DOCUMENTS.BY_ID}/${id}`);
+        return response?.data;
+      } catch (error) {
+        console.error("Lỗi khi lấy thông tin tài liệu:", error);
+        throw error;
+      }
+    },
+    [callApi]
+  );
+
+  const createDocument = useCallback(
+    async (documentData: CreateDocumentType): Promise<string> => {
+      try {
+        const response = await callApi("post", DOCUMENTS.DEFAULT, documentData);
         return response?.data;
       } catch (error) {
         console.error("Lỗi khi tạo tài liệu:", error);
@@ -51,13 +67,9 @@ const useDocumentService = () => {
   );
 
   const updateDocument = useCallback(
-    async (
-      id: string,
-      documentData: UpdateDocumentData
-    ): Promise<DocumentType | undefined> => {
+    async (id: string, documentData: UpdateDocumentType): Promise<void> => {
       try {
-        const response = await callApi("put", `/Documents/${id}`, documentData);
-        return response?.data;
+        await callApi("put", `${DOCUMENTS.BY_ID}/${id}`, documentData);
       } catch (error) {
         console.error("Lỗi khi cập nhật tài liệu:", error);
         throw error;
@@ -67,10 +79,9 @@ const useDocumentService = () => {
   );
 
   const deleteDocument = useCallback(
-    async (id: string): Promise<boolean> => {
+    async (id: string): Promise<void> => {
       try {
-        await callApi("delete", `/Documents/${id}`);
-        return true;
+        await callApi("delete", `${DOCUMENTS.BY_ID}/${id}`);
       } catch (error) {
         console.error("Lỗi khi xóa tài liệu:", error);
         throw error;
@@ -79,33 +90,101 @@ const useDocumentService = () => {
     [callApi]
   );
 
-  const getDocumentById = useCallback(
-    async (id: string): Promise<DocumentType | undefined> => {
+  const searchDocumentsByCustomer = useCallback(
+    async (
+      customerId: string,
+      pageNumber = 1,
+      pageSize = 10
+    ): Promise<PaginatedResponse<DocumentListType> | undefined> => {
       try {
-        const response = await callApi("get", `/Documents/${id}`);
+        const response = await callApi(
+          "get",
+          `${SEARCH.DOCUMENTS_BY_CUSTOMER}/${customerId}?pageNumber=${pageNumber}&pageSize=${pageSize}`
+        );
         return response?.data;
       } catch (error) {
-        console.error("Lỗi khi lấy thông tin tài liệu:", error);
+        console.error("Lỗi khi tìm kiếm tài liệu theo khách hàng:", error);
         throw error;
       }
     },
     [callApi]
   );
 
-  const searchDocuments = useCallback(
+  const searchDocumentsByTransactionCode = useCallback(
     async (
-      searchTerm: string,
+      transactionCode: string,
       pageNumber = 1,
       pageSize = 10
-    ): Promise<PaginatedResponse<DocumentType> | undefined> => {
+    ): Promise<PaginatedResponse<DocumentListType> | undefined> => {
       try {
         const response = await callApi(
           "get",
-          `/Documents/search?searchTerm=${encodeURIComponent(searchTerm)}&pageNumber=${pageNumber}&pageSize=${pageSize}`
+          `${SEARCH.DOCUMENTS_BY_TRANSACTION}/${transactionCode}?pageNumber=${pageNumber}&pageSize=${pageSize}`
         );
         return response?.data;
       } catch (error) {
-        console.error("Lỗi khi tìm kiếm tài liệu:", error);
+        console.error("Lỗi khi tìm kiếm tài liệu theo mã giao dịch:", error);
+        throw error;
+      }
+    },
+    [callApi]
+  );
+
+  const searchDocumentsByPassport = useCallback(
+    async (
+      passportId: string,
+      pageNumber = 1,
+      pageSize = 10
+    ): Promise<PaginatedResponse<DocumentListType> | undefined> => {
+      try {
+        const response = await callApi(
+          "get",
+          `${SEARCH.DOCUMENTS_BY_PASSPORT}/${passportId}?pageNumber=${pageNumber}&pageSize=${pageSize}`
+        );
+        return response?.data;
+      } catch (error) {
+        console.error("Lỗi khi tìm kiếm tài liệu theo passport:", error);
+        throw error;
+      }
+    },
+    [callApi]
+  );
+
+  const searchDocumentsByBusiness = useCallback(
+    async (
+      registrationNumber: string,
+      pageNumber = 1,
+      pageSize = 10
+    ): Promise<PaginatedResponse<DocumentListType> | undefined> => {
+      try {
+        const response = await callApi(
+          "get",
+          `${SEARCH.DOCUMENTS_BY_BUSINESS}/${registrationNumber}?pageNumber=${pageNumber}&pageSize=${pageSize}`
+        );
+        return response?.data;
+      } catch (error) {
+        console.error("Lỗi khi tìm kiếm tài liệu theo đăng ký kinh doanh:", error);
+        throw error;
+      }
+    },
+    [callApi]
+  );
+
+  const searchDocumentsByDateRange = useCallback(
+    async (
+      from: string,
+      to: string,
+      pageNumber = 1,
+      pageSize = 10
+    ): Promise<PaginatedResponse<DocumentListType> | undefined> => {
+      try {
+        const response = await callApi(
+          "get",
+          `${SEARCH.DOCUMENTS_BY_DATE_RANGE}?from=${from}&to=${to}&pageNumber=${pageNumber}&pageSize=${pageSize}`
+        );
+        return response?.data;
+      } catch (error) {
+        console.error("Lỗi khi tìm kiếm tài liệu theo khoảng thời gian:", error);
         throw error;
       }
     },
@@ -115,11 +194,16 @@ const useDocumentService = () => {
   return {
     loading,
     getPaginatedDocuments,
+    getAllDocuments,
+    getDocumentById,
     createDocument,
     updateDocument,
     deleteDocument,
-    getDocumentById,
-    searchDocuments,
+    searchDocumentsByCustomer,
+    searchDocumentsByTransactionCode,
+    searchDocumentsByPassport,
+    searchDocumentsByBusiness,
+    searchDocumentsByDateRange,
   };
 };
 
