@@ -1,0 +1,76 @@
+{
+  "family": "vaultnotary",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::119107229504:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::119107229504:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "vaultnotary-api",
+      "image": "119107229504.dkr.ecr.ap-southeast-1.amazonaws.com/vaultnotary:latest",
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "name": "ASPNETCORE_ENVIRONMENT",
+          "value": "Test"
+        },
+        {
+          "name": "ASPNETCORE_URLS",
+          "value": "http://+:80"
+        },
+        {
+          "name": "ConnectionStrings__DefaultConnection",
+          "value": "Host=vaultnotary-db-prod.cx0ewaugo94q.ap-southeast-1.rds.amazonaws.com;Port=5432;Database=vaultnotary;Username=vaultnotary_user;Password=CatTu0ng080503"
+        },
+        {
+          "name": "Aws__Region",
+          "value": "ap-southeast-1"
+        },
+        {
+          "name": "Aws__UseIamRole",
+          "value": "false"
+        },
+        {
+          "name": "Aws__AccessKey",
+          "value": "${AWS_ACCESS_KEY}"
+        },
+        {
+          "name": "Aws__SecretKey",
+          "value": "3plE9X4ou5Vnq3F5dY4xLUKeskn+MilH/42onqZd"
+        },
+        {
+          "name": "Aws__S3__BucketName",
+          "value": "vaultnotary-files-prod-119107229504"
+        },
+        {
+          "name": "Aws__S3__FileKeyPrefix",
+          "value": "files/"
+        },
+        {
+          "name": "Aws__S3__PresignedUrlExpirationHours",
+          "value": "24"
+        },
+        {
+          "name": "Aws__Kms__SymmetricKeyId",
+          "value": "6db124ee-f212-47a7-bbe4-c93d472af3ab"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/aws/vaultnotary/app-prod",
+          "awslogs-region": "ap-southeast-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "essential": true
+    }
+  ]
+}

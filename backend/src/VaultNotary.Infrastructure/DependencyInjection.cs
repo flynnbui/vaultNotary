@@ -26,27 +26,49 @@ public static class DependencyInjection
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"))
                    .UseSnakeCaseNamingConvention());
 
-        // Configure AWS clients with credentials and region
+        // Configure AWS clients with flexible authentication
         services.AddSingleton<IAmazonS3>(provider =>
         {
             var awsConfig = configuration.GetSection("Aws").Get<AwsConfiguration>();
-            var credentials = new BasicAWSCredentials(awsConfig?.AccessKey, awsConfig?.SecretKey);
             var config = new AmazonS3Config 
             { 
                 RegionEndpoint = RegionEndpoint.GetBySystemName(awsConfig?.Region ?? "us-east-1")
             };
-            return new AmazonS3Client(credentials, config);
+
+            // Use IAM role if UseIamRole is true or no credentials provided
+            if (awsConfig?.UseIamRole == true || string.IsNullOrEmpty(awsConfig?.AccessKey))
+            {
+                // Use default credential chain (IAM role, instance profile, environment variables)
+                return new AmazonS3Client(config);
+            }
+            else
+            {
+                // Use provided credentials for development
+                var credentials = new BasicAWSCredentials(awsConfig.AccessKey, awsConfig.SecretKey);
+                return new AmazonS3Client(credentials, config);
+            }
         });
 
         services.AddSingleton<IAmazonKeyManagementService>(provider =>
         {
             var awsConfig = configuration.GetSection("Aws").Get<AwsConfiguration>();
-            var credentials = new BasicAWSCredentials(awsConfig?.AccessKey, awsConfig?.SecretKey);
             var config = new AmazonKeyManagementServiceConfig 
             { 
                 RegionEndpoint = RegionEndpoint.GetBySystemName(awsConfig?.Region ?? "us-east-1")
             };
-            return new AmazonKeyManagementServiceClient(credentials, config);
+
+            // Use IAM role if UseIamRole is true or no credentials provided
+            if (awsConfig?.UseIamRole == true || string.IsNullOrEmpty(awsConfig?.AccessKey))
+            {
+                // Use default credential chain (IAM role, instance profile, environment variables)
+                return new AmazonKeyManagementServiceClient(config);
+            }
+            else
+            {
+                // Use provided credentials for development
+                var credentials = new BasicAWSCredentials(awsConfig.AccessKey, awsConfig.SecretKey);
+                return new AmazonKeyManagementServiceClient(credentials, config);
+            }
         });
 
         // Register Entity Framework repositories

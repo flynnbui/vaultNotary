@@ -3,8 +3,10 @@ namespace VaultNotary.Infrastructure.Configuration;
 public class AwsConfiguration
 {
     public string Region { get; set; } = "us-east-1";
-    public string AccessKey { get; set; } = string.Empty;
-    public string SecretKey { get; set; } = string.Empty;
+    public string? AccessKey { get; set; } = null;
+    public string? SecretKey { get; set; } = null;
+    public string? Profile { get; set; } = null;
+    public bool UseIamRole { get; set; } = true;
     public S3Configuration S3 { get; set; } = new();
     public KmsConfiguration Kms { get; set; } = new();
 }

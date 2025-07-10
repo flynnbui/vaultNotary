@@ -56,6 +56,15 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+.env.staging
+
+# AWS credentials
+.aws/
+aws-credentials.json
+
+# Application secrets
+appsettings.secrets.json
+secrets.json
 
 # OS generated files
 .DS_Store

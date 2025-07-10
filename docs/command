@@ -1,0 +1,24 @@
+aws sts get-caller-identity
+./deploy-vaultnotary.sh vaultnotary-prod prod ap-southeast-1 #Name #Password
+Update the project configuration with the deployment outputs
+dotnet ef database update --project ../VaultNotary.Infrastructure --connection ""
+Deploy
+
+☐ Build and push Docker image to ECR
+☐ Create ECS cluster and task definition
+☐ Create Application Load Balancer
+☐ Deploy ECS service
+☐ Test deployed application
+
+Step 1: Create ECR Repository
+aws ecr create-repository --repository-name vaultnotary --region ap-southeast-1
+
+Step 2: Build and Push Docker Image to ECR
+aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin 119107229504.dkr.ecr.ap-southeast-1.amazonaws.com
+docker tag vaultnotary-vaultnotary-api:latest 119107229504.dkr.ecr.ap-southeast-1.amazonaws.com/vaultnotary:latest
+docker push 119107229504.dkr.ecr.ap-southeast-1.amazonaws.com/vaultnotary:latest
+
+● Step 3: Create ECS Cluster
+aws ecs create-cluster --cluster-name vaultnotary-cluster --region ap-southeast-1
+    Create the ECS task execution role:
+    aws iam create-role --role-name ecsTaskExecutionRole --assume-role-policy-document

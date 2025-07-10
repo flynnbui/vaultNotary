@@ -2,9 +2,10 @@
 
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/src/components/ui/button';
-import { Menu, FileText, User } from 'lucide-react';
+import { Menu, FileText } from 'lucide-react';
 import { useAppStore } from '@/src/lib/store';
 import { ModeToggle } from '@/src/components/ui/mode-toggle';
+import { Auth } from '@/src/components/auth';
 
 export function Navbar() {
   const { t } = useTranslation();
@@ -32,10 +33,7 @@ export function Navbar() {
           </div>
           <div className="flex items-center space-x-4">
             <ModeToggle />
-            <Button variant="ghost" size="sm">
-              <User className="h-5 w-5 mr-2" />
-              Admin
-            </Button>
+            <Auth />
           </div>
         </div>
       </div>

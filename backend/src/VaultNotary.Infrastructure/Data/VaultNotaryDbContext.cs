@@ -26,38 +26,21 @@ public class VaultNotaryDbContext : DbContext
         modelBuilder.Entity<DocumentFile>()
             .ToTable("document_files");
 
+        // Configure all entity table names to match snake_case database
+        modelBuilder.Entity<Document>()
+            .ToTable("documents");
+
+        modelBuilder.Entity<Customer>()
+            .ToTable("customers");
+
+        modelBuilder.Entity<PartyDocumentLink>()
+            .ToTable("party_document_links");
+
         // Configure column names for snake_case database
-        modelBuilder.Entity<DocumentFile>()
-            .Property(f => f.DocumentId)
-            .HasColumnName("document_id");
-
-        modelBuilder.Entity<DocumentFile>()
-            .Property(f => f.FileName)
-            .HasColumnName("file_name");
-
-        modelBuilder.Entity<DocumentFile>()
-            .Property(f => f.FileSize)
-            .HasColumnName("file_size");
-
-        modelBuilder.Entity<DocumentFile>()
-            .Property(f => f.ContentType)
-            .HasColumnName("content_type");
-
-        modelBuilder.Entity<DocumentFile>()
-            .Property(f => f.S3Key)
-            .HasColumnName("s3_key");
-
-        modelBuilder.Entity<DocumentFile>()
-            .Property(f => f.S3Bucket)
-            .HasColumnName("s3_bucket");
-
-        modelBuilder.Entity<DocumentFile>()
-            .Property(f => f.CreatedAt)
-            .HasColumnName("created_at");
-
-        modelBuilder.Entity<DocumentFile>()
-            .Property(f => f.UpdatedAt)
-            .HasColumnName("updated_at");
+        ConfigureDocumentFileColumns(modelBuilder);
+        ConfigureDocumentColumns(modelBuilder);
+        ConfigureCustomerColumns(modelBuilder);
+        ConfigurePartyDocumentLinkColumns(modelBuilder);
 
         // Configure Document relationships
         modelBuilder.Entity<Document>()
@@ -129,5 +112,129 @@ public class VaultNotaryDbContext : DbContext
         modelBuilder.Entity<PartyDocumentLink>()
             .Property(pdl => pdl.UpdatedAt)
             .HasDefaultValueSql("NOW()");
+    }
+
+    private void ConfigureDocumentFileColumns(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<DocumentFile>()
+            .Property(f => f.DocumentId)
+            .HasColumnName("document_id");
+
+        modelBuilder.Entity<DocumentFile>()
+            .Property(f => f.FileName)
+            .HasColumnName("file_name");
+
+        modelBuilder.Entity<DocumentFile>()
+            .Property(f => f.FileSize)
+            .HasColumnName("file_size");
+
+        modelBuilder.Entity<DocumentFile>()
+            .Property(f => f.ContentType)
+            .HasColumnName("content_type");
+
+        modelBuilder.Entity<DocumentFile>()
+            .Property(f => f.S3Key)
+            .HasColumnName("s3_key");
+
+        modelBuilder.Entity<DocumentFile>()
+            .Property(f => f.S3Bucket)
+            .HasColumnName("s3_bucket");
+
+        modelBuilder.Entity<DocumentFile>()
+            .Property(f => f.CreatedAt)
+            .HasColumnName("created_at");
+
+        modelBuilder.Entity<DocumentFile>()
+            .Property(f => f.UpdatedAt)
+            .HasColumnName("updated_at");
+    }
+
+    private void ConfigureDocumentColumns(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Document>()
+            .Property(d => d.CreatedDate)
+            .HasColumnName("created_date");
+
+        modelBuilder.Entity<Document>()
+            .Property(d => d.NotaryPublic)
+            .HasColumnName("notary_public");
+
+        modelBuilder.Entity<Document>()
+            .Property(d => d.TransactionCode)
+            .HasColumnName("transaction_code");
+
+        modelBuilder.Entity<Document>()
+            .Property(d => d.DocumentType)
+            .HasColumnName("document_type");
+
+        modelBuilder.Entity<Document>()
+            .Property(d => d.CreatedAt)
+            .HasColumnName("created_at");
+
+        modelBuilder.Entity<Document>()
+            .Property(d => d.UpdatedAt)
+            .HasColumnName("updated_at");
+    }
+
+    private void ConfigureCustomerColumns(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Customer>()
+            .Property(c => c.FullName)
+            .HasColumnName("full_name");
+
+        modelBuilder.Entity<Customer>()
+            .Property(c => c.DocumentId)
+            .HasColumnName("document_id");
+
+        modelBuilder.Entity<Customer>()
+            .Property(c => c.PassportId)
+            .HasColumnName("passport_id");
+
+        modelBuilder.Entity<Customer>()
+            .Property(c => c.BusinessRegistrationNumber)
+            .HasColumnName("business_registration_number");
+
+        modelBuilder.Entity<Customer>()
+            .Property(c => c.BusinessName)
+            .HasColumnName("business_name");
+
+        modelBuilder.Entity<Customer>()
+            .Property(c => c.CreatedAt)
+            .HasColumnName("created_at");
+
+        modelBuilder.Entity<Customer>()
+            .Property(c => c.UpdatedAt)
+            .HasColumnName("updated_at");
+    }
+
+    private void ConfigurePartyDocumentLinkColumns(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<PartyDocumentLink>()
+            .Property(pdl => pdl.DocumentId)
+            .HasColumnName("document_id");
+
+        modelBuilder.Entity<PartyDocumentLink>()
+            .Property(pdl => pdl.CustomerId)
+            .HasColumnName("customer_id");
+
+        modelBuilder.Entity<PartyDocumentLink>()
+            .Property(pdl => pdl.PartyRole)
+            .HasColumnName("party_role");
+
+        modelBuilder.Entity<PartyDocumentLink>()
+            .Property(pdl => pdl.SignatureStatus)
+            .HasColumnName("signature_status");
+
+        modelBuilder.Entity<PartyDocumentLink>()
+            .Property(pdl => pdl.NotaryDate)
+            .HasColumnName("notary_date");
+
+        modelBuilder.Entity<PartyDocumentLink>()
+            .Property(pdl => pdl.CreatedAt)
+            .HasColumnName("created_at");
+
+        modelBuilder.Entity<PartyDocumentLink>()
+            .Property(pdl => pdl.UpdatedAt)
+            .HasColumnName("updated_at");
     }
 }

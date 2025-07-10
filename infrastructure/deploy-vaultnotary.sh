@@ -6,7 +6,7 @@ set -e
 # Configuration
 STACK_NAME="${1:-vaultnotary-simplified}"
 ENVIRONMENT="${2:-dev}"
-REGION="${3:-us-east-1}"
+REGION="${3:-ap-southeast-1}"
 S3_BUCKET_NAME="${4:-vaultnotary-files}"
 DB_PASSWORD="${5:-}"
 VPC_ID="${6:-}"
@@ -77,7 +77,7 @@ echo ""
 # Deploy CloudFormation stack
 echo -e "${BLUE}📦 Deploying CloudFormation stack...${NC}"
 aws cloudformation deploy \
-    --template-file /home/flynn/code/vaultNotary/infrastructure/cloudformation/vaultnotary-simplified.yml \
+    --template-file cloudformation/vaultnotary-deploy.yml \
     --stack-name "$STACK_NAME" \
     --parameter-overrides \
         Environment="$ENVIRONMENT" \

@@ -24,6 +24,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Add health checks
+builder.Services.AddHealthChecks();
+
 // Configure Rate Limiting
 builder.Services.AddRateLimiter(options =>
 {
@@ -201,6 +204,9 @@ using (var scope = app.Services.CreateScope())
 // Configure Serilog request logging
 app.UseSerilogRequestLogging();
 
+// Global exception handling middleware
+app.UseMiddleware<GlobalExceptionMiddleware>();
+
 if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Test"))
 {
     app.UseSwagger();
@@ -217,6 +223,9 @@ app.UseRateLimiter();
 app.UseAuthentication();
 app.UseMiddleware<Auth0PermissionsMiddleware>();
 app.UseAuthorization();
+
+// Map health check endpoint
+app.MapHealthChecks("/health");
 
 app.MapControllers();
 

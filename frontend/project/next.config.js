@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
+  // Commented out 'output: export' to enable middleware for Auth0
+  // output: 'export',
   eslint: {
     ignoreDuringBuilds: true,
   },

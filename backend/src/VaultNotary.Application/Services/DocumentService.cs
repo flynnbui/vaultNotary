@@ -128,6 +128,26 @@ public class DocumentService : IDocumentService
 
     public async Task<string> CreateAsync(CreateDocumentDto createDocumentDto)
     {
+        // Validate transaction code uniqueness
+        var existingDocument = await GetByTransactionCodeAsync(createDocumentDto.TransactionCode);
+        if (existingDocument != null)
+        {
+            throw new InvalidOperationException($"Document with transaction code '{createDocumentDto.TransactionCode}' already exists.");
+        }
+
+        // Validate all customers exist before creating document
+        foreach (var partyDto in createDocumentDto.Parties)
+        {
+            if (!string.IsNullOrWhiteSpace(partyDto.CustomerId))
+            {
+                var customerExists = await _customerRepository.ExistsAsync(partyDto.CustomerId);
+                if (!customerExists)
+                {
+                    throw new InvalidOperationException($"Customer with ID '{partyDto.CustomerId}' does not exist.");
+                }
+            }
+        }
+
         var document = new Document
         {
             Id = Guid.NewGuid().ToString(),
@@ -143,21 +163,24 @@ public class DocumentService : IDocumentService
 
         var documentId = await _documentRepository.CreateAsync(document);
 
-        // Create party document links
+        // Create party document links (validation already done above)
         foreach (var partyDto in createDocumentDto.Parties)
         {
-            var partyLink = new PartyDocumentLink
+            if (!string.IsNullOrWhiteSpace(partyDto.CustomerId))
             {
-                DocumentId = documentId,
-                CustomerId = partyDto.CustomerId,
-                PartyRole = partyDto.PartyRole,
-                SignatureStatus = partyDto.SignatureStatus,
-                NotaryDate = partyDto.NotaryDate,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
+                var partyLink = new PartyDocumentLink
+                {
+                    DocumentId = documentId,
+                    CustomerId = partyDto.CustomerId,
+                    PartyRole = partyDto.PartyRole,
+                    SignatureStatus = partyDto.SignatureStatus,
+                    NotaryDate = partyDto.NotaryDate,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
 
-            await _partyDocumentRepository.CreateAsync(partyLink);
+                await _partyDocumentRepository.CreateAsync(partyLink);
+            }
         }
 
         return documentId;
@@ -191,6 +214,13 @@ public class DocumentService : IDocumentService
 
     public async Task LinkPartyAsync(string documentId, string customerId, CreatePartyDocumentLinkDto linkDto)
     {
+        // Validate customer exists
+        var customerExists = await _customerRepository.ExistsAsync(customerId);
+        if (!customerExists)
+        {
+            throw new InvalidOperationException($"Customer with ID '{customerId}' does not exist.");
+        }
+
         var partyLink = new PartyDocumentLink
         {
             DocumentId = documentId,

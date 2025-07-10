@@ -60,12 +60,13 @@ public class DocumentsController : ControllerBase
 
 
     [HttpPost]
-    [HasPermission(Permissions.CreateDocuments)]
+    [AllowAnonymous]
     public async Task<ActionResult<string>> Create([FromBody] CreateDocumentDto createDocumentDto)
     {
         var documentId = await _documentService.CreateAsync(createDocumentDto);
         return CreatedAtAction(nameof(GetById), new { id = documentId }, documentId);
     }
+
 
     [HttpPut("{id}")]
     [HasPermission(Permissions.UpdateDocuments)]
