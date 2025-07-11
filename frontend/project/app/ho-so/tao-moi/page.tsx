@@ -56,7 +56,7 @@ import useDocumentService, {
 } from "@/src/services/useDocumentService";
 import { FileItem, FileListCard } from "@/src/components/forms/FileListCard";
 import useUploadService from "@/src/services/useUploadService";
-import { DocumentType } from "@/src/types/document.type";
+import { DocumentType, DocumentWithPopulatedParties } from "@/src/types/document.type";
 import useCustomerService from "@/src/services/useCustomerService";
 
 // Interface cho response pagination (để match với service)
@@ -93,7 +93,7 @@ export default function CustomersPage() {
   const [showDialog, setShowDialog] = useState(false);
   const [dialogMode, setDialogMode] = useState<DialogMode>("create");
   const [editingDocument, setEditingDocument] = useState<
-    DocumentType | undefined
+    DocumentType | DocumentWithPopulatedParties | undefined
   >();
   const [documents, setDocuments] = useState<DocumentType[]>([]);
   const [uploadingDocumentId, setUploadingDocumentId] = useState<string | null>(
@@ -109,6 +109,7 @@ export default function CustomersPage() {
     createDocument,
     updateDocument,
     deleteDocument,
+    getDocumentWithPopulatedParties,
     getDocumentFiles,
     deleteDocumentFile,
     getFileDownloadUrl,
@@ -196,48 +197,8 @@ useEffect(() => {
     console.log("🔍 [DocumentPage] Document data:", editingDocument);
     console.log("🔍 [DocumentPage] partyDocumentLinks:", editingDocument.partyDocumentLinks);
 
-    // Function để load thông tin khách hàng và set vào form
+    // New simplified logic using populated parties
     const loadPartiesData = async () => {
-      // Step 1: Map partyDocumentLinks theo role trước
-      const partyMapping: {
-        A: string[]; // Array của customerIds
-        B: string[];
-        C: string[];
-      } = {
-        A: [],
-        B: [],
-        C: [],
-      };
-
-      if (editingDocument.partyDocumentLinks && editingDocument.partyDocumentLinks.length > 0) {
-        console.log(`🔍 [DocumentPage] Found ${editingDocument.partyDocumentLinks.length} party links`);
-        
-        // Map customerIds theo party role
-        editingDocument.partyDocumentLinks.forEach((partyLink) => {
-          console.log(`🔗 [DocumentPage] Mapping customer ${partyLink.customerId} to role ${partyLink.partyRole}`);
-          
-          switch (partyLink.partyRole) {
-            case 0:
-              partyMapping.A.push(partyLink.customerId);
-              break;
-            case 1:
-              partyMapping.B.push(partyLink.customerId);
-              break;
-            case 2:
-              partyMapping.C.push(partyLink.customerId);
-              break;
-            default:
-              console.warn(`❌ [DocumentPage] Unknown partyRole: ${partyLink.partyRole}`);
-          }
-        });
-      }
-
-      console.log("🗺️ [DocumentPage] Party mapping:", partyMapping);
-      console.log("🗺️ [DocumentPage] - Party A customer IDs:", partyMapping.A);
-      console.log("🗺️ [DocumentPage] - Party B customer IDs:", partyMapping.B);
-      console.log("🗺️ [DocumentPage] - Party C customer IDs:", partyMapping.C);
-
-      // Step 2: Load chi tiết khách hàng cho từng party
       const partiesData: {
         A: any[];
         B: any[];
@@ -248,15 +209,19 @@ useEffect(() => {
         C: [],
       };
 
-      // Load Party A customers
-      console.log("🔄 [DocumentPage] Loading Party A customers...");
-      for (const customerId of partyMapping.A) {
-        try {
-          console.log(`🔄 [DocumentPage] Loading customer details for Party A: ${customerId}`);
-          const customerData = await getCustomerById(customerId);
+      if (editingDocument.partyDocumentLinks && editingDocument.partyDocumentLinks.length > 0) {
+        console.log(`🔍 [DocumentPage] Found ${editingDocument.partyDocumentLinks.length} party links`);
+        
+        // Map populated parties to form structure
+        editingDocument.partyDocumentLinks.forEach((partyLink) => {
+          console.log(`🔗 [DocumentPage] Processing party with role ${partyLink.partyRole}:`, partyLink);
           
-          if (customerData) {
-            console.log(`✅ [DocumentPage] Loaded Party A customer:`, customerData);
+          // Check if this is a populated party link with customer data
+          const populatedParty = partyLink as any; // Type assertion for populated party
+          if (populatedParty.customer) {
+            const customerData = populatedParty.customer;
+            console.log(`✅ [DocumentPage] Found populated customer:`, customerData);
+            
             const customerSummary = {
               id: customerData.id,
               fullName: customerData.fullName,
@@ -271,80 +236,27 @@ useEffect(() => {
               createdAt: customerData.createdAt,
               updatedAt: customerData.updatedAt,
             };
-            partiesData.A.push(customerSummary);
-            console.log(`➕ [DocumentPage] Added to Party A:`, customerSummary);
+            
+            switch (partyLink.partyRole) {
+              case 0:
+                partiesData.A.push(customerSummary);
+                console.log(`➕ [DocumentPage] Added to Party A:`, customerSummary);
+                break;
+              case 1:
+                partiesData.B.push(customerSummary);
+                console.log(`➕ [DocumentPage] Added to Party B:`, customerSummary);
+                break;
+              case 2:
+                partiesData.C.push(customerSummary);
+                console.log(`➕ [DocumentPage] Added to Party C:`, customerSummary);
+                break;
+              default:
+                console.warn(`❌ [DocumentPage] Unknown partyRole: ${partyLink.partyRole}`);
+            }
           } else {
-            console.warn(`⚠️ [DocumentPage] No data for Party A customer: ${customerId}`);
+            console.warn(`⚠️ [DocumentPage] Party link missing customer data:`, partyLink);
           }
-        } catch (error) {
-          console.error(`❌ [DocumentPage] Error loading Party A customer ${customerId}:`, error);
-        }
-      }
-
-      // Load Party B customers
-      console.log("🔄 [DocumentPage] Loading Party B customers...");
-      for (const customerId of partyMapping.B) {
-        try {
-          console.log(`🔄 [DocumentPage] Loading customer details for Party B: ${customerId}`);
-          const customerData = await getCustomerById(customerId);
-          
-          if (customerData) {
-            console.log(`✅ [DocumentPage] Loaded Party B customer:`, customerData);
-            const customerSummary = {
-              id: customerData.id,
-              fullName: customerData.fullName,
-              address: customerData.address,
-              phone: customerData.phone,
-              email: customerData.email,
-              type: customerData.type,
-              documentId: customerData.documentId,
-              passportId: customerData.passportId,
-              businessRegistrationNumber: customerData.businessRegistrationNumber,
-              businessName: customerData.businessName,
-              createdAt: customerData.createdAt,
-              updatedAt: customerData.updatedAt,
-            };
-            partiesData.B.push(customerSummary);
-            console.log(`➕ [DocumentPage] Added to Party B:`, customerSummary);
-          } else {
-            console.warn(`⚠️ [DocumentPage] No data for Party B customer: ${customerId}`);
-          }
-        } catch (error) {
-          console.error(`❌ [DocumentPage] Error loading Party B customer ${customerId}:`, error);
-        }
-      }
-
-      // Load Party C customers
-      console.log("🔄 [DocumentPage] Loading Party C customers...");
-      for (const customerId of partyMapping.C) {
-        try {
-          console.log(`🔄 [DocumentPage] Loading customer details for Party C: ${customerId}`);
-          const customerData = await getCustomerById(customerId);
-          
-          if (customerData) {
-            console.log(`✅ [DocumentPage] Loaded Party C customer:`, customerData);
-            const customerSummary = {
-              id: customerData.id,
-              fullName: customerData.fullName,
-              address: customerData.address,
-              phone: customerData.phone,
-              email: customerData.email,
-              type: customerData.type,
-              documentId: customerData.documentId,
-              passportId: customerData.passportId,
-              businessRegistrationNumber: customerData.businessRegistrationNumber,
-              businessName: customerData.businessName,
-              createdAt: customerData.createdAt,
-              updatedAt: customerData.updatedAt,
-            };
-            partiesData.C.push(customerSummary);
-            console.log(`➕ [DocumentPage] Added to Party C:`, customerSummary);
-          } else {
-            console.warn(`⚠️ [DocumentPage] No data for Party C customer: ${customerId}`);
-          }
-        } catch (error) {
-          console.error(`❌ [DocumentPage] Error loading Party C customer ${customerId}:`, error);
-        }
+        });
       }
 
       console.log("🔍 [DocumentPage] Final partiesData:", partiesData);
@@ -352,7 +264,7 @@ useEffect(() => {
       console.log("🔍 [DocumentPage] - Party B count:", partiesData.B.length);
       console.log("🔍 [DocumentPage] - Party C count:", partiesData.C.length);
 
-      // Step 3: Set form data
+      // Set form data
       const resetData = {
         ngayTao: new Date(editingDocument.createdDate),
         thuKy: editingDocument.secretary,
@@ -384,7 +296,7 @@ useEffect(() => {
       console.log("🔍 [DocumentPage] methods.reset completed");
     };
 
-    // Gọi async function với error handling
+    // Call async function with error handling
     loadPartiesData().catch(error => {
       console.error("❌ [DocumentPage] Error in loadPartiesData:", error);
     });
@@ -405,7 +317,7 @@ useEffect(() => {
       },
     });
   }
-}, [editingDocument, dialogMode, methods, getCustomerById]);
+}, [editingDocument, dialogMode, methods]);
   const loadDocuments = async () => {
     try {
       setLoading(true);
@@ -452,16 +364,30 @@ useEffect(() => {
     setShowDialog(true);
   };
 
-  const handleEditDocument = (document: DocumentType) => {
-    setDialogMode("edit");
-    setEditingDocument(document);
-    setShowDialog(true);
+  const handleEditDocument = async (document: DocumentType) => {
+    try {
+      setDialogMode("edit");
+      console.log("🔄 Loading document with populated parties for edit:", document.id);
+      const populatedDocument = await getDocumentWithPopulatedParties(document.id);
+      setEditingDocument(populatedDocument);
+      setShowDialog(true);
+    } catch (error) {
+      console.error("Error loading document for edit:", error);
+      toast.error("Có lỗi khi tải thông tin hồ sơ");
+    }
   };
 
-  const handleViewDocument = (document: DocumentType) => {
-    setDialogMode("view");
-    setEditingDocument(document);
-    setShowDialog(true);
+  const handleViewDocument = async (document: DocumentType) => {
+    try {
+      setDialogMode("view");
+      console.log("🔄 Loading document with populated parties for view:", document.id);
+      const populatedDocument = await getDocumentWithPopulatedParties(document.id);
+      setEditingDocument(populatedDocument);
+      setShowDialog(true);
+    } catch (error) {
+      console.error("Error loading document for view:", error);
+      toast.error("Có lỗi khi tải thông tin hồ sơ");
+    }
   };
 
   // Add this import at the top of your file

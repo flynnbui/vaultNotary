@@ -2,7 +2,8 @@
 import { useCallback } from "react";
 import useApi from "./useApi";
 import { PaginatedResponse } from "../types/pagination.type";
-import { DocumentType } from "../types/document.type";
+import { DocumentType, DocumentWithPopulatedParties, PopulatedPartyDocumentLinkType } from "../types/document.type";
+import useCustomerService from "./useCustomerService";
 
 interface CreateDocumentData {
   createdDate: string;
@@ -90,6 +91,7 @@ export const validatePartiesData = (partiesData: any): PartyData[] => {
 
 const useDocumentService = () => {
   const { callApi, loading } = useApi();
+  const { getCustomerById } = useCustomerService();
 
   const getPaginatedDocuments = useCallback(
     async (
@@ -256,7 +258,59 @@ const useDocumentService = () => {
     [callApi]
   );
 
-  
+  const getDocumentWithPopulatedParties = useCallback(
+    async (id: string): Promise<DocumentWithPopulatedParties | undefined> => {
+      try {
+        console.log("🔍 Getting document with populated parties:", id);
+        const document = await getDocumentById(id);
+        
+        if (!document) {
+          console.log("❌ Document not found");
+          return undefined;
+        }
+
+        if (!document.partyDocumentLinks || document.partyDocumentLinks.length === 0) {
+          console.log("✅ Document has no parties to populate");
+          return {
+            ...document,
+            partyDocumentLinks: []
+          };
+        }
+
+        console.log("🔄 Fetching customer details for", document.partyDocumentLinks.length, "parties");
+        
+        const populatedParties = await Promise.all(
+          document.partyDocumentLinks.map(async (partyLink): Promise<PopulatedPartyDocumentLinkType> => {
+            try {
+              const customer = await getCustomerById(partyLink.customerId);
+              if (!customer) {
+                console.warn("⚠️ Customer not found for ID:", partyLink.customerId);
+                throw new Error(`Customer not found: ${partyLink.customerId}`);
+              }
+              return {
+                ...partyLink,
+                customer
+              };
+            } catch (error) {
+              console.error("❌ Error fetching customer:", partyLink.customerId, error);
+              throw error;
+            }
+          })
+        );
+
+        console.log("✅ Successfully populated", populatedParties.length, "parties");
+        
+        return {
+          ...document,
+          partyDocumentLinks: populatedParties
+        };
+      } catch (error) {
+        console.error("❌ Error getting document with populated parties:", error);
+        throw error;
+      }
+    },
+    [getDocumentById, getCustomerById]
+  );
 
   return {
     loading,
@@ -265,6 +319,7 @@ const useDocumentService = () => {
     updateDocument,
     deleteDocument,
     getDocumentById,
+    getDocumentWithPopulatedParties,
     getDocumentFiles,
     deleteDocumentFile,
     getFileDownloadUrl,

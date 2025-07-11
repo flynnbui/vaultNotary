@@ -19,7 +19,10 @@ export interface DocumentType {
   createdAt: string;
   updatedAt: string;
   partyDocumentLinks: PartyDocumentLinkType[];
+}
 
+export interface DocumentWithPopulatedParties extends Omit<DocumentType, 'partyDocumentLinks'> {
+  partyDocumentLinks: PopulatedPartyDocumentLinkType[];
 }
 
 export interface DocumentListType {
@@ -55,6 +58,10 @@ export interface PartyDocumentLinkType {
   notaryDate: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface PopulatedPartyDocumentLinkType extends PartyDocumentLinkType {
+  customer: import('./customer.type').CustomerType;
 }
 export interface CreateDocumentType {
   createdDate: string;
