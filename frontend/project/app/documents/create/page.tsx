@@ -3,12 +3,12 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-export default function LegacyDocumentPage() {
+export default function CreateDocumentPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Redirect to new route
-    router.replace("/documents/manage");
+    // Redirect to manage page with create mode
+    router.replace("/documents/manage?mode=create");
   }, [router]);
 
   return (

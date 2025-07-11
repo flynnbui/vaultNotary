@@ -479,17 +479,6 @@ export function FileMetaCard({ readOnly = false }: FileMetaCardProps) {
   const loaiHoSo = watch("loaiHoSo");
   const description = watch("description");
 
-  // Auto-generate transaction code if empty (only for create mode)
-  React.useEffect(() => {
-    if (!readOnly && !maGiaoDich && selectedDate) {
-      const dateStr = selectedDate.toISOString().slice(0, 10).replace(/-/g, "");
-      const randomNum = Math.floor(Math.random() * 1000)
-        .toString()
-        .padStart(3, "0");
-      const autoCode = `HD${dateStr}${randomNum}`;
-      setValue("maGiaoDich", autoCode);
-    }
-  }, [selectedDate, maGiaoDich, readOnly, setValue]);
 
   return (
     <Card className="shadow-md border-0">
@@ -640,7 +629,7 @@ export function FileMetaCard({ readOnly = false }: FileMetaCardProps) {
               htmlFor="maGiaoDich"
               className="text-sm font-medium text-muted-foreground"
             >
-              Mã giao dịch *
+              Mã giao dịch
             </Label>
             {readOnly ? (
               <ReadOnlyInput
@@ -650,22 +639,13 @@ export function FileMetaCard({ readOnly = false }: FileMetaCardProps) {
               />
             ) : (
               <>
-                <div className="relative">
-                  <Input
-                    id="maGiaoDich"
-                    value={maGiaoDich || ""}
-                    onChange={(e) => setValue("maGiaoDich", e.target.value)}
-                    placeholder="Nhập mã giao dịch (tự động tạo)"
-                    className={errors.maGiaoDich ? "border-red-500" : ""}
-                  />
-                  {!maGiaoDich && (
-                    <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                      <span className="text-xs text-muted-foreground">
-                        Tự động
-                      </span>
-                    </div>
-                  )}
-                </div>
+                <Input
+                  id="maGiaoDich"
+                  value={maGiaoDich || ""}
+                  onChange={(e) => setValue("maGiaoDich", e.target.value)}
+                  placeholder="Nhập mã giao dịch (tùy chọn)"
+                  className={errors.maGiaoDich ? "border-red-500" : ""}
+                />
                 {errors.maGiaoDich && (
                   <p className="text-sm text-red-500 mt-1">
                     {(errors.maGiaoDich as any)?.message || "Lỗi mã giao dịch"}

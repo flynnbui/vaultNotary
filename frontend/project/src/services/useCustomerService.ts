@@ -69,7 +69,7 @@ const useCustomerService = () => {
     async (customerData: CreateCustomerType): Promise<string> => {
       console.log("Hello");
       try {
-        const response = await callApi("post", CUSTOMER.DEFAULT, customerData);
+        const response = await callApi("post", CUSTOMER.DEFAULT, customerData as unknown as Record<string, unknown>);
         return response?.data;
       } catch (error) {
         console.error("Lỗi khi tạo khách hàng:", error);
@@ -82,7 +82,7 @@ const useCustomerService = () => {
   const updateCustomer = useCallback(
     async (id: string, customerData: UpdateCustomerType): Promise<void> => {
       try {
-        await callApi("put", `${CUSTOMER.BY_ID}/${id}`, customerData);
+        await callApi("put", `${CUSTOMER.BY_ID}/${id}`, customerData as unknown as Record<string, unknown>);
       } catch (error) {
         console.error("Lỗi khi cập nhật khách hàng:", error);
         throw error;

@@ -146,6 +146,11 @@ export function PartiesAccordion({
     }
   };
 
+  const getParties = (party: PartyKey): CustomerSummary[] => {
+    const fieldArray = getFieldArray(party);
+    return fieldArray.fields as CustomerSummary[];
+  };
+
   const getPartyLabel = (party: PartyKey) => {
     switch (party) {
       case "A":
@@ -173,7 +178,7 @@ export function PartiesAccordion({
   ) => {
     if (readOnly) return;
     setCurrentParty(party);
-    setEditingCustomer({ ...customer, index });
+    setEditingCustomer(customer);
     handleDialogOpenChange(true);
   };
 
@@ -188,10 +193,20 @@ export function PartiesAccordion({
     if (readOnly) return;
     const fieldArray = getFieldArray(currentParty);
 
-    if (editingCustomer && "index" in editingCustomer) {
-      // Edit existing customer
-      fieldArray.update(editingCustomer.index ?? 0, customerData);
-      toast.success("Đã cập nhật thông tin khách hàng");
+    if (editingCustomer) {
+      // Find the index of the existing customer by ID
+      const customers = getParties(currentParty);
+      const existingIndex = customers.findIndex(c => c.id === editingCustomer.id);
+      
+      if (existingIndex !== -1) {
+        // Edit existing customer
+        fieldArray.update(existingIndex, customerData);
+        toast.success("Đã cập nhật thông tin khách hàng");
+      } else {
+        // Add new customer if not found
+        fieldArray.append(customerData);
+        toast.success("Đã thêm khách hàng mới");
+      }
     } else {
       // Add new customer
       fieldArray.append(customerData);
