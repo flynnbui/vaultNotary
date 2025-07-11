@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback } from "react";
 import useApi from "./useApi";
 import {

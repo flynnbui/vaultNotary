@@ -15,25 +15,13 @@ export default function Home() {
       icon: FileText,
       title: 'Quản lý hồ sơ hiệu quả',
       description: 'Tạo, chỉnh sửa và theo dõi hồ sơ công chứng một cách dễ dàng và chính xác.',
-      href: '/ho-so/tao-moi'
-    },
-    {
-      icon: Search,
-      title: 'Tra cứu nhanh chóng',
-      description: 'Tìm kiếm hồ sơ theo số CMND/CCCD hoặc mã hồ sơ trong vài giây.',
-      href: '/tra-cuu'
+      href: '/documents/manage'
     },
     {
       icon: Users,
       title: 'Quản lý khách hàng',
       description: 'Lưu trữ và quản lý thông tin khách hàng một cách an toàn và bảo mật.',
-      href: '/khach-hang'
-    },
-    {
-      icon: BarChart3,
-      title: 'Báo cáo chi tiết',
-      description: 'Thống kê và báo cáo hoạt động của văn phòng công chứng.',
-      href: '/bao-cao'
+      href: '/customers'
     }
   ];
 
@@ -55,15 +43,15 @@ export default function Home() {
               {t('landing.subtitle')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link href="/ho-so/tao-moi">
+              <Link href="/documents/manage">
                 <Button size="lg" className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 text-lg">
                   Bắt đầu ngay
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
-              <Link href="/tra-cuu">
+              <Link href="/customers">
                 <Button variant="outline" size="lg" className="border-orange-600 text-orange-600 hover:bg-orange-50 px-8 py-3 text-lg">
-                  {t('landing.loginButton')}
+                  Quản lý khách hàng
                 </Button>
               </Link>
             </div>
@@ -120,9 +108,9 @@ export default function Home() {
             <p className="text-xl mb-8 opacity-90">
               Tạo hồ sơ công chứng đầu tiên của bạn ngay hôm nay
             </p>
-            <Link href="/ho-so/tao-moi">
+            <Link href="/documents/manage">
               <Button size="lg" variant="secondary" className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-3 text-lg">
-                Tạo hồ sơ mới
+                Quản lý hồ sơ
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/src/components/layout/Layout";
 import {
@@ -99,7 +99,7 @@ export default function CustomersPage() {
     searchCustomers 
   } = useCustomerService();
 
-  const loadCustomers = async () => {
+  const loadCustomers = useCallback(async () => {
     try {
       setLoading(true);
       let response;
@@ -128,7 +128,7 @@ export default function CustomersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchTerm, pageNumber, pageSize, filters, searchCustomers, getPaginatedCustomers]);
 
   const handlePageChange = (page: number) => {
     setPageNumber(page);
@@ -238,7 +238,7 @@ export default function CustomersPage() {
 
   useEffect(() => {
     loadCustomers();
-  }, [pageNumber, filters, searchTerm]);
+  }, [pageNumber, filters, searchTerm, loadCustomers]);
 
   // Memoized computed values
   const displayCustomers = useMemo(() => customers, [customers]);

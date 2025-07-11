@@ -22,11 +22,6 @@ export const useDocumentSearch = ({
 
   const { getPaginatedDocuments } = useDocumentApiService();
 
-  // Load documents when page or search term changes
-  useEffect(() => {
-    loadDocuments();
-  }, [currentPage, searchTerm]);
-
   const loadDocuments = useCallback(async () => {
     try {
       setLoading(true);
@@ -63,6 +58,11 @@ export const useDocumentSearch = ({
       setLoading(false);
     }
   }, [currentPage, itemsPerPage, searchTerm, getPaginatedDocuments]);
+
+  // Load documents when page or search term changes
+  useEffect(() => {
+    loadDocuments();
+  }, [currentPage, searchTerm, loadDocuments]);
 
   const handleSearchChange = useCallback((newSearchTerm: string) => {
     setSearchTerm(newSearchTerm);

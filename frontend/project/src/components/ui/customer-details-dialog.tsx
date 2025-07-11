@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/src/components/ui/dialog";
 import { Button } from "@/src/components/ui/button";
 import { Badge } from "@/src/components/ui/badge";
@@ -51,13 +51,7 @@ export function CustomerDetailsDialog({
   const { getCustomerDocuments } = useCustomerService();
   const { getDocumentById } = useDocumentService();
 
-  useEffect(() => {
-    if (customer && open) {
-      loadCustomerDocuments();
-    }
-  }, [customer, open]);
-
-  const loadCustomerDocuments = async () => {
+  const loadCustomerDocuments = useCallback(async () => {
     if (!customer) return;
     
     try {
@@ -69,7 +63,13 @@ export function CustomerDetailsDialog({
     } finally {
       setDocumentsLoading(false);
     }
-  };
+  }, [customer, getCustomerDocuments]);
+
+  useEffect(() => {
+    if (customer && open) {
+      loadCustomerDocuments();
+    }
+  }, [customer, open, loadCustomerDocuments]);
 
   const handleDocumentClick = async (document: DocumentListType) => {
     setSelectedDocument(document);

@@ -20,9 +20,8 @@ import {
 } from 'lucide-react';
 
 const navigation = [
-  { name: 'newFile', href: '/ho-so/tao-moi', icon: FileText, label: 'Hồ sơ' },
-  { name: 'customers', href: '/khach-hang', icon: UsersRound, label: 'Khách hàng' },
-  { name: 'search', href: '/tra-cuu', icon: Search, label: 'Tra cứu' },
+  { name: 'documents', href: '/documents/manage', icon: FileText, label: 'Hồ sơ' },
+  { name: 'customers', href: '/customers', icon: UsersRound, label: 'Khách hàng' },
   { name: 'settings', href: '/cai-dat', icon: Settings, label: 'Cài đặt' },
 ];
 
