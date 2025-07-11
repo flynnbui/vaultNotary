@@ -13,6 +13,7 @@ import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
 import { Textarea } from "@/src/components/ui/textarea";
 import { Button } from "@/src/components/ui/button";
+import { Badge } from "@/src/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -21,7 +22,14 @@ import {
   SelectValue,
 } from "@/src/components/ui/select";
 import { CLERKS, NOTARIES, FILE_TYPES } from "@/src/lib/constants";
-import { CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  CalendarIcon,
+  ChevronLeft,
+  ChevronRight,
+  Hash,
+  User,
+  FileText,
+} from "lucide-react";
 
 // Custom DatePicker Component
 interface CustomDatePickerProps {
@@ -29,6 +37,7 @@ interface CustomDatePickerProps {
   onChange: (date: Date | null) => void;
   placeholder?: string;
   error?: boolean;
+  readOnly?: boolean;
 }
 
 function CustomDatePicker({
@@ -36,6 +45,7 @@ function CustomDatePicker({
   onChange,
   placeholder = "Chọn ngày",
   error = false,
+  readOnly = false,
 }: CustomDatePickerProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [currentMonth, setCurrentMonth] = React.useState(value || new Date());
@@ -109,6 +119,8 @@ function CustomDatePicker({
 
   // Handle input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (readOnly) return;
+
     const inputVal = e.target.value;
     setInputValue(inputVal);
 
@@ -121,6 +133,8 @@ function CustomDatePicker({
 
   // Handle date selection
   const handleDateSelect = (date: Date) => {
+    if (readOnly) return;
+
     onChange(date);
     setInputValue(formatDate(date));
     setIsOpen(false);
@@ -128,6 +142,8 @@ function CustomDatePicker({
 
   // Navigate months
   const navigateMonth = (direction: "prev" | "next") => {
+    if (readOnly) return;
+
     setCurrentMonth((prev) => {
       const newMonth = new Date(prev);
       if (direction === "prev") {
@@ -179,6 +195,15 @@ function CustomDatePicker({
   ];
   const dayNames = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
 
+  if (readOnly) {
+    return (
+      <div className="flex items-center gap-2 p-3 bg-muted rounded-md border">
+        <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+        <span className="text-foreground">{inputValue || "Chưa có ngày"}</span>
+      </div>
+    );
+  }
+
   return (
     <div className="relative" ref={dropdownRef}>
       <div className="relative">
@@ -189,19 +214,21 @@ function CustomDatePicker({
           placeholder={placeholder}
           className={`pr-10 ${error ? "border-red-500" : ""}`}
           onClick={() => setIsOpen(false)} // Close calendar when clicking input
+          readOnly={readOnly}
         />
         <Button
           type="button"
           variant="ghost"
           size="sm"
           className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => !readOnly && setIsOpen(!isOpen)}
+          disabled={readOnly}
         >
           <CalendarIcon className="h-4 w-4 text-muted-foreground" />
         </Button>
       </div>
 
-      {isOpen && (
+      {isOpen && !readOnly && (
         <div className="absolute top-full left-0 z-50 mt-1 rounded-md border bg-popover p-0 text-popover-foreground shadow-md outline-none">
           <div className="p-3">
             {/* Header with Month/Year Selectors */}
@@ -307,20 +334,20 @@ function CustomDatePicker({
                     key={index}
                     type="button"
                     className={`
-                                            h-8 w-8 text-sm rounded-md font-normal
-                                            hover:bg-accent hover:text-accent-foreground
-                                            focus:bg-accent focus:text-accent-foreground
-                                            ${
-                                              isSelected
-                                                ? "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
-                                                : ""
-                                            }
-                                            ${
-                                              isToday && !isSelected
-                                                ? "bg-accent text-accent-foreground"
-                                                : ""
-                                            }
-                                        `}
+                      h-8 w-8 text-sm rounded-md font-normal
+                      hover:bg-accent hover:text-accent-foreground
+                      focus:bg-accent focus:text-accent-foreground
+                      ${
+                        isSelected
+                          ? "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
+                          : ""
+                      }
+                      ${
+                        isToday && !isSelected
+                          ? "bg-accent text-accent-foreground"
+                          : ""
+                      }
+                    `}
                     onClick={() => handleDateSelect(day)}
                   >
                     {day.getDate()}
@@ -335,7 +362,109 @@ function CustomDatePicker({
   );
 }
 
-export function FileMetaCard() {
+// ReadOnly Select Component
+interface ReadOnlySelectProps {
+  value: string;
+  options: Array<{ value: string; label: string }>;
+  icon?: React.ReactNode;
+}
+
+function ReadOnlySelect({ value, options, icon }: ReadOnlySelectProps) {
+  const selectedOption = options.find((option) => option.value === value);
+
+  return (
+    <div className="flex items-center gap-2 p-3 bg-muted rounded-md border">
+      {icon}
+      <span className="text-foreground">
+        {selectedOption?.label || value || "Chưa chọn"}
+      </span>
+    </div>
+  );
+}
+
+// ReadOnly Input Component
+interface ReadOnlyInputProps {
+  value: string;
+  icon?: React.ReactNode;
+  placeholder?: string;
+}
+
+function ReadOnlyInput({
+  value,
+  icon,
+  placeholder = "Chưa nhập",
+}: ReadOnlyInputProps) {
+  return (
+    <div className="flex items-center gap-2 p-3 bg-muted rounded-md border">
+      {icon}
+      <span className={value ? "text-foreground" : "text-muted-foreground"}>
+        {value || placeholder}
+      </span>
+    </div>
+  );
+}
+
+// ReadOnly Textarea Component
+interface ReadOnlyTextareaProps {
+  value: string;
+  placeholder?: string;
+}
+
+function ReadOnlyTextarea({
+  value,
+  placeholder = "Chưa có mô tả",
+}: ReadOnlyTextareaProps) {
+  return (
+    <div className="p-3 bg-muted rounded-md border min-h-[80px]">
+      <p className="text-sm whitespace-pre-wrap">
+        {value ? (
+          <span className="text-foreground">{value}</span>
+        ) : (
+          <span className="text-muted-foreground">{placeholder}</span>
+        )}
+      </p>
+    </div>
+  );
+}
+
+// Helper function to get document type color
+function getDocumentTypeColor(documentType: string) {
+  const colors = {
+    "Hợp đồng": "bg-green-100 text-green-800",
+    "Thỏa thuận": "bg-blue-100 text-blue-800",
+    "Công chứng": "bg-purple-100 text-purple-800",
+    "Chứng thực": "bg-yellow-100 text-yellow-800",
+    Khác: "bg-gray-100 text-gray-800",
+  };
+  return (
+    colors[documentType as keyof typeof colors] || "bg-gray-100 text-gray-800"
+  );
+}
+
+// ReadOnly Badge Select Component
+interface ReadOnlyBadgeSelectProps {
+  value: string;
+  options: Array<{ value: string; label: string }>;
+}
+
+function ReadOnlyBadgeSelect({ value, options }: ReadOnlyBadgeSelectProps) {
+  const selectedOption = options.find((option) => option.value === value);
+
+  return (
+    <div className="flex items-center gap-2 p-3 bg-muted rounded-md border">
+      <FileText className="h-4 w-4 text-muted-foreground" />
+      <Badge className={getDocumentTypeColor(value)}>
+        {selectedOption?.label || value || "Chưa chọn"}
+      </Badge>
+    </div>
+  );
+}
+
+interface FileMetaCardProps {
+  readOnly?: boolean;
+}
+
+export function FileMetaCard({ readOnly = false }: FileMetaCardProps) {
   const { t } = useTranslation();
   const {
     watch,
@@ -344,6 +473,23 @@ export function FileMetaCard() {
   } = useFormContext();
 
   const selectedDate = watch("ngayTao");
+  const thuKy = watch("thuKy");
+  const congChungVien = watch("congChungVien");
+  const maGiaoDich = watch("maGiaoDich");
+  const loaiHoSo = watch("loaiHoSo");
+  const moTa = watch("moTa");
+
+  // Auto-generate transaction code if empty (only for create mode)
+  React.useEffect(() => {
+    if (!readOnly && !maGiaoDich && selectedDate) {
+      const dateStr = selectedDate.toISOString().slice(0, 10).replace(/-/g, "");
+      const randomNum = Math.floor(Math.random() * 1000)
+        .toString()
+        .padStart(3, "0");
+      const autoCode = `HD${dateStr}${randomNum}`;
+      setValue("maGiaoDich", autoCode);
+    }
+  }, [selectedDate, maGiaoDich, readOnly, setValue]);
 
   return (
     <Card className="shadow-md border-0">
@@ -355,136 +501,243 @@ export function FileMetaCard() {
       </CardHeader>
       <CardContent className="p-6 space-y-6">
         <div>
-          <Label htmlFor="ngayTao">
+          <Label
+            htmlFor="ngayTao"
+            className="text-sm font-medium text-muted-foreground"
+          >
             {t("fileForm.creationDate", "Ngày tạo")} *
           </Label>
-          <CustomDatePicker
-            value={selectedDate || null}
-            onChange={(date) => setValue("ngayTao", date)}
-            placeholder="dd/MM/yyyy"
-            error={!!errors.ngayTao}
-          />
-          {errors.ngayTao && (
-            <p className="text-sm text-red-500 mt-1">
-              {(errors.ngayTao as any)?.message || "Lỗi ngày tạo"}
-            </p>
+          {readOnly ? (
+            <CustomDatePicker
+              value={selectedDate || null}
+              onChange={() => {}} // No-op for readonly
+              placeholder="dd/MM/yyyy"
+              readOnly={true}
+            />
+          ) : (
+            <>
+              <CustomDatePicker
+                value={selectedDate || null}
+                onChange={(date) => setValue("ngayTao", date)}
+                placeholder="dd/MM/yyyy"
+                error={!!errors.ngayTao}
+                readOnly={false}
+              />
+              {errors.ngayTao && (
+                <p className="text-sm text-red-500 mt-1">
+                  {(errors.ngayTao as any)?.message || "Lỗi ngày tạo"}
+                </p>
+              )}
+            </>
           )}
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
           <div>
-            <Label htmlFor="thuKy">{t("fileForm.clerk", "Thư ký")} *</Label>
-            <Select
-              value={watch("thuKy")}
-              onValueChange={(value) => setValue("thuKy", value)}
+            <Label
+              htmlFor="thuKy"
+              className="text-sm font-medium text-muted-foreground"
             >
-              <SelectTrigger className={errors.thuKy ? "border-red-500" : ""}>
-                <SelectValue
-                  placeholder={t("common.selectOption", "Chọn lựa chọn")}
+              {t("fileForm.clerk", "Thư ký")} *
+            </Label>
+            {readOnly ? (
+              <ReadOnlySelect
+                value={thuKy}
+                options={CLERKS}
+                icon={<User className="h-4 w-4 text-muted-foreground" />}
+              />
+            ) : (
+              <>
+                {/* <Select
+                  value={thuKy}
+                  onValueChange={(value) => setValue("thuKy", value)}
+                >
+                  <SelectTrigger className={errors.thuKy ? "border-red-500" : ""}>
+                    <SelectValue
+                      placeholder={t("common.selectOption", "Chọn lựa chọn")}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CLERKS.map((clerk) => (
+                      <SelectItem key={clerk.value} value={clerk.value}>
+                        {clerk.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select> */}
+                <Input
+                  id="thuKy"
+                  value={thuKy || ""} 
+                  onChange={(e) => setValue("thuKy", e.target.value)}
+                  placeholder="Nhập tên thư ký"
+                  className={errors.thuKy ? "border-red-500" : ""}
                 />
-              </SelectTrigger>
-              <SelectContent>
-                {CLERKS.map((clerk) => (
-                  <SelectItem key={clerk.value} value={clerk.value}>
-                    {clerk.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.thuKy && (
-              <p className="text-sm text-red-500 mt-1">
-                {(errors.thuKy as any)?.message || "Lỗi thư ký"}
-              </p>
+                {errors.thuKy && (
+                  <p className="text-sm text-red-500 mt-1">
+                    {(errors.thuKy as any)?.message || "Lỗi thư ký"}
+                  </p>
+                )}
+              </>
             )}
           </div>
 
           <div>
-            <Label htmlFor="congChungVien">
+            <Label
+              htmlFor="congChungVien"
+              className="text-sm font-medium text-muted-foreground"
+            >
               {t("fileForm.notary", "Công chứng viên")} *
             </Label>
-            <Select
-              value={watch("congChungVien")}
-              onValueChange={(value) => setValue("congChungVien", value)}
-            >
-              <SelectTrigger
-                className={errors.congChungVien ? "border-red-500" : ""}
-              >
-                <SelectValue
-                  placeholder={t("common.selectOption", "Chọn lựa chọn")}
+            {readOnly ? (
+              <ReadOnlySelect
+                value={congChungVien}
+                options={NOTARIES}
+                icon={<User className="h-4 w-4 text-muted-foreground" />}
+              />
+            ) : (
+              <>
+                {/* <Select
+                  value={congChungVien}
+                  onValueChange={(value) => setValue("congChungVien", value)}
+                >
+                  <SelectTrigger
+                    className={errors.congChungVien ? "border-red-500" : ""}
+                  >
+                    <SelectValue
+                      placeholder={t("common.selectOption", "Chọn lựa chọn")}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {NOTARIES.map((notary) => (
+                      <SelectItem key={notary.value} value={notary.value}>
+                        {notary.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select> */}
+
+                <Input
+                  id="congChungVien"
+                    value={congChungVien || ""}
+                    onChange={(e) => setValue("congChungVien", e.target.value)}
+                    placeholder="Nhập tên công chứng viên"
+                    className={errors.congChungVien ? "border-red-500" : ""}
                 />
-              </SelectTrigger>
-              <SelectContent>
-                {NOTARIES.map((notary) => (
-                  <SelectItem key={notary.value} value={notary.value}>
-                    {notary.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.congChungVien && (
-              <p className="text-sm text-red-500 mt-1">
-                {(errors.congChungVien as any)?.message ||
-                  "Lỗi công chứng viên"}
-              </p>
+                {errors.congChungVien && (
+                  <p className="text-sm text-red-500 mt-1">
+                    {(errors.congChungVien as any)?.message ||
+                      "Lỗi công chứng viên"}
+                  </p>
+                )}
+              </>
             )}
           </div>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
           <div>
-            <Label htmlFor="maGiaoDich">Mã giao dịch *</Label>
-            <Input
-              id="maGiaoDich"
-              value={watch("maGiaoDich") || ""}
-              onChange={(e) => setValue("maGiaoDich", e.target.value)}
-              placeholder="Nhập mã giao dịch"
-              className={errors.maGiaoDich ? "border-red-500" : ""}
-            />
-            {errors.maGiaoDich && (
-              <p className="text-sm text-red-500 mt-1">
-                {(errors.maGiaoDich as any)?.message || "Lỗi mã giao dịch"}
-              </p>
+            <Label
+              htmlFor="maGiaoDich"
+              className="text-sm font-medium text-muted-foreground"
+            >
+              Mã giao dịch *
+            </Label>
+            {readOnly ? (
+              <ReadOnlyInput
+                value={maGiaoDich}
+                icon={<Hash className="h-4 w-4 text-muted-foreground" />}
+                placeholder="Chưa có mã giao dịch"
+              />
+            ) : (
+              <>
+                <div className="relative">
+                  <Input
+                    id="maGiaoDich"
+                    value={maGiaoDich || ""}
+                    onChange={(e) => setValue("maGiaoDich", e.target.value)}
+                    placeholder="Nhập mã giao dịch (tự động tạo)"
+                    className={errors.maGiaoDich ? "border-red-500" : ""}
+                  />
+                  {!maGiaoDich && (
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                      <span className="text-xs text-muted-foreground">
+                        Tự động
+                      </span>
+                    </div>
+                  )}
+                </div>
+                {errors.maGiaoDich && (
+                  <p className="text-sm text-red-500 mt-1">
+                    {(errors.maGiaoDich as any)?.message || "Lỗi mã giao dịch"}
+                  </p>
+                )}
+              </>
             )}
           </div>
 
           <div>
-            <Label htmlFor="loaiHoSo">
+            <Label
+              htmlFor="loaiHoSo"
+              className="text-sm font-medium text-muted-foreground"
+            >
               {t("fileForm.fileType", "Loại hồ sơ")} *
             </Label>
-            <Select
-              value={watch("loaiHoSo")}
-              onValueChange={(value) => setValue("loaiHoSo", value)}
-            >
-              <SelectTrigger
-                className={errors.loaiHoSo ? "border-red-500" : ""}
-              >
-                <SelectValue placeholder="Chọn loại hồ sơ" />
-              </SelectTrigger>
-              <SelectContent>
-                {FILE_TYPES.map((type) => (
-                  <SelectItem key={type.value} value={type.value}>
-                    {type.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.loaiHoSo && (
-              <p className="text-sm text-red-500 mt-1">
-                {(errors.loaiHoSo as any)?.message || "Lỗi loại hồ sơ"}
-              </p>
+            {readOnly ? (
+              <ReadOnlyBadgeSelect value={loaiHoSo} options={FILE_TYPES} />
+            ) : (
+              <>
+                {/* <Select
+                  value={loaiHoSo}
+                  onValueChange={(value) => setValue("loaiHoSo", value)}
+                >
+                  <SelectTrigger
+                    className={errors.loaiHoSo ? "border-red-500" : ""}
+                  >
+                    <SelectValue placeholder="Chọn loại hồ sơ" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {FILE_TYPES.map((type) => (
+                      <SelectItem key={type.value} value={type.value}>
+                        {type.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select> */}
+                <Input
+                  id="loaiHoSo"
+                    value={loaiHoSo || ""}
+                    onChange={(e) => setValue("loaiHoSo", e.target.value)}
+                    placeholder="Nhập loại hồ sơ"
+                    className={errors.loaiHoSo ? "border-red-500" : ""}
+                />
+                {errors.loaiHoSo && (
+                  <p className="text-sm text-red-500 mt-1">
+                    {(errors.loaiHoSo as any)?.message || "Lỗi loại hồ sơ"}
+                  </p>
+                )}
+              </>
             )}
           </div>
         </div>
 
         <div>
-          <Label htmlFor="moTa">Mô tả</Label>
-          <Textarea
-            id="moTa"
-            value={watch("moTa") || ""}
-            onChange={(e) => setValue("moTa", e.target.value)}
-            placeholder="Nhập mô tả giao dịch"
-            rows={3}
-          />
+          <Label
+            htmlFor="moTa"
+            className="text-sm font-medium text-muted-foreground"
+          >
+            Mô tả
+          </Label>
+          {readOnly ? (
+            <ReadOnlyTextarea value={moTa} placeholder="Không có mô tả" />
+          ) : (
+            <Textarea
+              id="moTa"
+              value={moTa || ""}
+              onChange={(e) => setValue("moTa", e.target.value)}
+              placeholder="Nhập mô tả giao dịch"
+              rows={3}
+            />
+          )}
         </div>
       </CardContent>
     </Card>
