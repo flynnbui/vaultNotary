@@ -54,7 +54,6 @@ export const customerSchema = z.object({
 
 export const extendedCustomerSchema = z.object({
   customerType: z.enum(['individual', 'organization']),
-  isVip: z.boolean().optional(),
   cmndNumber: z.string().optional(),
   cmndIssueDate: z.date().optional(),
   cmndIssuePlace: z.string().optional(),
