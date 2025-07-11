@@ -51,11 +51,13 @@ import {
 import { toast } from "sonner";
 
 import "@/src/lib/i18n";
-import useDocumentService from "@/src/services/useDocumentService";
+import useDocumentService, {
+  validatePartiesData,
+} from "@/src/services/useDocumentService";
 import { FileItem, FileListCard } from "@/src/components/forms/FileListCard";
 import useUploadService from "@/src/services/useUploadService";
 import { DocumentType } from "@/src/types/document.type";
-
+import useCustomerService from "@/src/services/useCustomerService";
 
 // Interface cho response pagination (để match với service)
 interface PaginatedResponse<T> {
@@ -66,7 +68,11 @@ interface PaginatedResponse<T> {
 }
 
 // Helper function để transform API response thành FileItem
-export function transformApiFileToFileItem(apiFile: any, fileName: string, fileSize: number): FileItem {
+export function transformApiFileToFileItem(
+  apiFile: any,
+  fileName: string,
+  fileSize: number
+): FileItem {
   return {
     id: apiFile.id,
     name: fileName,
@@ -95,7 +101,7 @@ export default function CustomersPage() {
   );
   const [attachedFiles, setAttachedFiles] = useState<FileItem[]>([]);
   const [customerDialogOpen, setCustomerDialogOpen] = useState(false);
-  
+
   const { uploadDocumentFile } = useUploadService();
   // Import all document service methods
   const {
@@ -114,7 +120,7 @@ export default function CustomersPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
   const [totalItems, setTotalItems] = useState(0);
-
+  const { getCustomerById } = useCustomerService();
   // Form methods for creating new file
   const methods = useForm<FileFormData>({
     resolver: zodResolver(fileSchema),
@@ -141,13 +147,18 @@ export default function CustomersPage() {
   // Load files when viewing/editing a document
   useEffect(() => {
     const loadDocumentFiles = async () => {
-      if (editingDocument && (dialogMode === "view" || dialogMode === "edit" || dialogMode === "upload")) {
+      if (
+        editingDocument &&
+        (dialogMode === "view" ||
+          dialogMode === "edit" ||
+          dialogMode === "upload")
+      ) {
         try {
           console.log("🔄 Loading files for document:", editingDocument.id);
           const files = await getDocumentFiles(editingDocument.id);
-          
+
           // Transform API files to FileItem format
-          const transformedFiles = files.map(apiFile => ({
+          const transformedFiles = files.map((apiFile) => ({
             id: apiFile.id,
             name: apiFile.fileName,
             size: apiFile.fileSize,
@@ -155,7 +166,7 @@ export default function CustomersPage() {
             uploadDate: apiFile.createdAt,
             url: getFileDownloadUrl(apiFile.id),
           }));
-          
+
           setAttachedFiles(transformedFiles);
           console.log("✅ Loaded files:", transformedFiles);
         } catch (error) {
@@ -169,38 +180,232 @@ export default function CustomersPage() {
 
     loadDocumentFiles();
   }, [editingDocument, dialogMode, getDocumentFiles, getFileDownloadUrl]);
-  useEffect(() => {
-    if (editingDocument && (dialogMode === "edit" || dialogMode === "view")) {
-      methods.reset({
+ // Thêm vào DocumentPage - useEffect để reset form khi edit/view document
+
+// Sửa lỗi TypeScript trong useEffect của DocumentPage
+
+// Thay thế useEffect trong DocumentPage (paste.txt)
+// Thay thế useEffect trong DocumentPage
+useEffect(() => {
+  console.log("🔍 [DocumentPage] useEffect triggered");
+  console.log("🔍 [DocumentPage] editingDocument:", editingDocument);
+  console.log("🔍 [DocumentPage] dialogMode:", dialogMode);
+  
+  if (editingDocument && (dialogMode === "edit" || dialogMode === "view")) {
+    console.log("🔍 [DocumentPage] Processing edit/view mode");
+    console.log("🔍 [DocumentPage] Document data:", editingDocument);
+    console.log("🔍 [DocumentPage] partyDocumentLinks:", editingDocument.partyDocumentLinks);
+
+    // Function để load thông tin khách hàng và set vào form
+    const loadPartiesData = async () => {
+      // Step 1: Map partyDocumentLinks theo role trước
+      const partyMapping: {
+        A: string[]; // Array của customerIds
+        B: string[];
+        C: string[];
+      } = {
+        A: [],
+        B: [],
+        C: [],
+      };
+
+      if (editingDocument.partyDocumentLinks && editingDocument.partyDocumentLinks.length > 0) {
+        console.log(`🔍 [DocumentPage] Found ${editingDocument.partyDocumentLinks.length} party links`);
+        
+        // Map customerIds theo party role
+        editingDocument.partyDocumentLinks.forEach((partyLink) => {
+          console.log(`🔗 [DocumentPage] Mapping customer ${partyLink.customerId} to role ${partyLink.partyRole}`);
+          
+          switch (partyLink.partyRole) {
+            case 0:
+              partyMapping.A.push(partyLink.customerId);
+              break;
+            case 1:
+              partyMapping.B.push(partyLink.customerId);
+              break;
+            case 2:
+              partyMapping.C.push(partyLink.customerId);
+              break;
+            default:
+              console.warn(`❌ [DocumentPage] Unknown partyRole: ${partyLink.partyRole}`);
+          }
+        });
+      }
+
+      console.log("🗺️ [DocumentPage] Party mapping:", partyMapping);
+      console.log("🗺️ [DocumentPage] - Party A customer IDs:", partyMapping.A);
+      console.log("🗺️ [DocumentPage] - Party B customer IDs:", partyMapping.B);
+      console.log("🗺️ [DocumentPage] - Party C customer IDs:", partyMapping.C);
+
+      // Step 2: Load chi tiết khách hàng cho từng party
+      const partiesData: {
+        A: any[];
+        B: any[];
+        C: any[];
+      } = {
+        A: [],
+        B: [],
+        C: [],
+      };
+
+      // Load Party A customers
+      console.log("🔄 [DocumentPage] Loading Party A customers...");
+      for (const customerId of partyMapping.A) {
+        try {
+          console.log(`🔄 [DocumentPage] Loading customer details for Party A: ${customerId}`);
+          const customerData = await getCustomerById(customerId);
+          
+          if (customerData) {
+            console.log(`✅ [DocumentPage] Loaded Party A customer:`, customerData);
+            const customerSummary = {
+              id: customerData.id,
+              fullName: customerData.fullName,
+              address: customerData.address,
+              phone: customerData.phone,
+              email: customerData.email,
+              type: customerData.type,
+              documentId: customerData.documentId,
+              passportId: customerData.passportId,
+              businessRegistrationNumber: customerData.businessRegistrationNumber,
+              businessName: customerData.businessName,
+              createdAt: customerData.createdAt,
+              updatedAt: customerData.updatedAt,
+            };
+            partiesData.A.push(customerSummary);
+            console.log(`➕ [DocumentPage] Added to Party A:`, customerSummary);
+          } else {
+            console.warn(`⚠️ [DocumentPage] No data for Party A customer: ${customerId}`);
+          }
+        } catch (error) {
+          console.error(`❌ [DocumentPage] Error loading Party A customer ${customerId}:`, error);
+        }
+      }
+
+      // Load Party B customers
+      console.log("🔄 [DocumentPage] Loading Party B customers...");
+      for (const customerId of partyMapping.B) {
+        try {
+          console.log(`🔄 [DocumentPage] Loading customer details for Party B: ${customerId}`);
+          const customerData = await getCustomerById(customerId);
+          
+          if (customerData) {
+            console.log(`✅ [DocumentPage] Loaded Party B customer:`, customerData);
+            const customerSummary = {
+              id: customerData.id,
+              fullName: customerData.fullName,
+              address: customerData.address,
+              phone: customerData.phone,
+              email: customerData.email,
+              type: customerData.type,
+              documentId: customerData.documentId,
+              passportId: customerData.passportId,
+              businessRegistrationNumber: customerData.businessRegistrationNumber,
+              businessName: customerData.businessName,
+              createdAt: customerData.createdAt,
+              updatedAt: customerData.updatedAt,
+            };
+            partiesData.B.push(customerSummary);
+            console.log(`➕ [DocumentPage] Added to Party B:`, customerSummary);
+          } else {
+            console.warn(`⚠️ [DocumentPage] No data for Party B customer: ${customerId}`);
+          }
+        } catch (error) {
+          console.error(`❌ [DocumentPage] Error loading Party B customer ${customerId}:`, error);
+        }
+      }
+
+      // Load Party C customers
+      console.log("🔄 [DocumentPage] Loading Party C customers...");
+      for (const customerId of partyMapping.C) {
+        try {
+          console.log(`🔄 [DocumentPage] Loading customer details for Party C: ${customerId}`);
+          const customerData = await getCustomerById(customerId);
+          
+          if (customerData) {
+            console.log(`✅ [DocumentPage] Loaded Party C customer:`, customerData);
+            const customerSummary = {
+              id: customerData.id,
+              fullName: customerData.fullName,
+              address: customerData.address,
+              phone: customerData.phone,
+              email: customerData.email,
+              type: customerData.type,
+              documentId: customerData.documentId,
+              passportId: customerData.passportId,
+              businessRegistrationNumber: customerData.businessRegistrationNumber,
+              businessName: customerData.businessName,
+              createdAt: customerData.createdAt,
+              updatedAt: customerData.updatedAt,
+            };
+            partiesData.C.push(customerSummary);
+            console.log(`➕ [DocumentPage] Added to Party C:`, customerSummary);
+          } else {
+            console.warn(`⚠️ [DocumentPage] No data for Party C customer: ${customerId}`);
+          }
+        } catch (error) {
+          console.error(`❌ [DocumentPage] Error loading Party C customer ${customerId}:`, error);
+        }
+      }
+
+      console.log("🔍 [DocumentPage] Final partiesData:", partiesData);
+      console.log("🔍 [DocumentPage] - Party A count:", partiesData.A.length);
+      console.log("🔍 [DocumentPage] - Party B count:", partiesData.B.length);
+      console.log("🔍 [DocumentPage] - Party C count:", partiesData.C.length);
+
+      // Step 3: Set form data
+      const resetData = {
         ngayTao: new Date(editingDocument.createdDate),
         thuKy: editingDocument.secretary,
         congChungVien: editingDocument.notaryPublic,
         maGiaoDich: editingDocument.transactionCode,
-description: editingDocument?.description ?? "",
+        description: editingDocument?.description ?? "",
         loaiHoSo: editingDocument.documentType,
-        parties: {
-          A: [],
-          B: [],
-          C: [],
-        },
-      });
-    } else {
-      methods.reset({
-        ngayTao: new Date(),
-        thuKy: "",
-        congChungVien: "",
-        maGiaoDich: "",
-        description: "",
-        loaiHoSo: "",
-        parties: {
-          A: [],
-          B: [],
-          C: [],
-        },
-      });
-    }
-  }, [editingDocument, dialogMode, methods]);
+        parties: partiesData,
+      };
 
+      console.log("🔍 [DocumentPage] Calling methods.reset with:", resetData);
+      methods.reset(resetData);
+      
+      // Force update để đảm bảo form nhận data
+      setTimeout(() => {
+        console.log("🔄 [DocumentPage] Force updating form values");
+        methods.setValue("parties.A", partiesData.A, { shouldValidate: true });
+        methods.setValue("parties.B", partiesData.B, { shouldValidate: true });
+        methods.setValue("parties.C", partiesData.C, { shouldValidate: true });
+        
+        // Verify data đã được set
+        const currentValues = methods.getValues();
+        console.log("✅ [DocumentPage] Form updated successfully:");
+        console.log("- Party A in form:", currentValues.parties?.A);
+        console.log("- Party B in form:", currentValues.parties?.B);
+        console.log("- Party C in form:", currentValues.parties?.C);
+      }, 200);
+      
+      console.log("🔍 [DocumentPage] methods.reset completed");
+    };
+
+    // Gọi async function với error handling
+    loadPartiesData().catch(error => {
+      console.error("❌ [DocumentPage] Error in loadPartiesData:", error);
+    });
+    
+  } else {
+    console.log("🔍 [DocumentPage] Resetting form for create mode");
+    methods.reset({
+      ngayTao: new Date(),
+      thuKy: "",
+      congChungVien: "",
+      maGiaoDich: "",
+      description: "",
+      loaiHoSo: "",
+      parties: {
+        A: [],
+        B: [],
+        C: [],
+      },
+    });
+  }
+}, [editingDocument, dialogMode, methods, getCustomerById]);
   const loadDocuments = async () => {
     try {
       setLoading(true);
@@ -259,47 +464,112 @@ description: editingDocument?.description ?? "",
     setShowDialog(true);
   };
 
-  const onSubmit = async (data: FileFormData) => {
-    console.log("submitting...", data);
-    try {
-      // Prepare document data for API
-      const documentData = {
-        createdDate: data.ngayTao.toISOString(),
-        secretary: data.thuKy,
-        notaryPublic: data.congChungVien,
-        transactionCode: data.maGiaoDich || "",
-        description: data.description || "",
-        documentType: data.loaiHoSo,
-      };
+  // Add this import at the top of your file
 
-      console.log("Document data to save:", documentData);
+  // File: DocumentPage (paste.txt đầu tiên)
+  // Tìm và THAY THẾ đoạn code này:
 
-      if (editingDocument) {
-        // Update existing document
-        const updatedDocument = await updateDocument(
-          editingDocument.id,
-          documentData
-        );
-        if (updatedDocument) {
-          toast.success("Hồ sơ đã được cập nhật thành công!");
-        }
-      } else {
-        // Create new document
-        const newDocument = await createDocument(documentData);
-        if (newDocument) {
-          toast.success("Hồ sơ đã được tạo thành công!");
-        }
+  
+
+ const onSubmit = async (data: FileFormData) => {
+  console.log("submitting...", data);
+  try {
+    // Prepare parties data với format đúng cho API
+    const parties: Array<{
+      documentId: string;
+      customerId: string;
+      partyRole: number;
+      signatureStatus: number;
+      notaryDate: string;
+      createdAt: string;
+      updatedAt: string;
+    }> = [];
+
+    // Process Party A (partyRole = 0)
+    data.parties.A.forEach((customer) => {
+      if (customer.id) {
+        parties.push({
+          documentId: "", // Will be set after document creation
+          customerId: customer.id,
+          partyRole: 0, // Bên A
+          signatureStatus: 0, // Default value
+          notaryDate: data.ngayTao.toISOString(),
+          createdAt: data.ngayTao.toISOString(),
+          updatedAt: data.ngayTao.toISOString(),
+        });
       }
+    });
 
-      setShowDialog(false);
-      methods.reset();
-      setEditingDocument(undefined);
-      await loadDocuments(); // Reload the table
-    } catch (error) {
-      console.error("Error saving document:", error);
-      toast.error("Có lỗi xảy ra khi lưu hồ sơ. Vui lòng thử lại.");
+    // Process Party B (partyRole = 1)
+    data.parties.B.forEach((customer) => {
+      if (customer.id) {
+        parties.push({
+          documentId: "", // Will be set after document creation
+          customerId: customer.id,
+          partyRole: 1, // Bên B
+          signatureStatus: 0, // Default value
+          notaryDate: data.ngayTao.toISOString(),
+          createdAt: data.ngayTao.toISOString(),
+          updatedAt: data.ngayTao.toISOString(),
+        });
+      }
+    });
+
+    // Process Party C (partyRole = 2)
+    data.parties.C.forEach((customer) => {
+      if (customer.id) {
+        parties.push({
+          documentId: "", // Will be set after document creation
+          customerId: customer.id,
+          partyRole: 2, // Bên C
+          signatureStatus: 0, // Default value
+          notaryDate: data.ngayTao.toISOString(),
+          createdAt: data.ngayTao.toISOString(),
+          updatedAt: data.ngayTao.toISOString(),
+        });
+      }
+    });
+
+    // Prepare document data for API
+    const documentData = {
+      createdDate: data.ngayTao.toISOString(),
+      secretary: data.thuKy,
+      notaryPublic: data.congChungVien,
+      transactionCode: data.maGiaoDich || "",
+      description: data.description || "",
+      documentType: data.loaiHoSo,
+      parties: parties, // API expects 'parties' field
+    };
+
+    console.log("Document data to save:", documentData);
+    console.log("Parties data:", parties);
+
+    if (editingDocument) {
+      // Update existing document
+      const updatedDocument = await updateDocument(
+        editingDocument.id,
+        documentData
+      );
+      if (updatedDocument) {
+        toast.success("Hồ sơ đã được cập nhật thành công!");
+      }
+    } else {
+      // Create new document
+      const newDocument = await createDocument(documentData);
+      if (newDocument) {
+        toast.success("Hồ sơ đã được tạo thành công!");
+      }
     }
-  };
+
+    setShowDialog(false);
+    methods.reset();
+    setEditingDocument(undefined);
+    await loadDocuments(); // Reload the table
+  } catch (error) {
+    console.error("Error saving document:", error);
+    toast.error("Có lỗi xảy ra khi lưu hồ sơ. Vui lòng thử lại.");
+  }
+};
 
   const handleFileUpload = async (fileList: FileList) => {
     if (!uploadingDocumentId) {
@@ -312,7 +582,7 @@ description: editingDocument?.description ?? "",
     for (const file of Array.from(fileList)) {
       try {
         const result = await uploadDocumentFile({
-          documentId: uploadingDocumentId, 
+          documentId: uploadingDocumentId,
           file: file,
         });
 
@@ -332,12 +602,12 @@ description: editingDocument?.description ?? "",
 
     setAttachedFiles((prev) => [...prev, ...uploadedFiles]);
     toast.success(`Đã upload ${uploadedFiles.length} file`);
-    
+
     // 🆕 Reload files from server to ensure consistency
     if (editingDocument) {
       try {
         const serverFiles = await getDocumentFiles(editingDocument.id);
-        const transformedFiles = serverFiles.map(apiFile => ({
+        const transformedFiles = serverFiles.map((apiFile) => ({
           id: apiFile.id,
           name: apiFile.fileName,
           size: apiFile.fileSize,
@@ -357,7 +627,7 @@ description: editingDocument?.description ?? "",
     if (dialogMode === "view") {
       setShowDialog(false);
       setEditingDocument(undefined);
-      setUploadingDocumentId(null); 
+      setUploadingDocumentId(null);
       return;
     }
 
@@ -375,56 +645,61 @@ description: editingDocument?.description ?? "",
   const handleFileDownload = async (file: FileItem) => {
     try {
       console.log("🔄 Downloading file:", file.name);
-      
+
       // Method 1: Try presigned URL download
       try {
         const presignedUrl = await getFilePresignedUrl(file.id);
-        
+
         if (presignedUrl) {
           // Create a temporary link to trigger download
-          const link = document.createElement('a');
+          const link = document.createElement("a");
           link.href = presignedUrl;
           link.download = file.name;
-          link.target = '_blank';
-          
+          link.target = "_blank";
+
           // Add to DOM temporarily
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
-          
+
           toast.success(`Đang tải xuống: ${file.name}`);
           return;
         }
       } catch (presignedError) {
-        console.warn("Presigned URL failed, trying direct download:", presignedError);
+        console.warn(
+          "Presigned URL failed, trying direct download:",
+          presignedError
+        );
       }
 
       // Method 2: Fallback to direct API download
       const directDownloadUrl = getFileDownloadUrl(file.id);
-      
+
       // Try using fetch to download and create blob
       const response = await fetch(directDownloadUrl);
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-      
+
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      
-      const link = document.createElement('a');
+
+      const link = document.createElement("a");
       link.href = url;
       link.download = file.name;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
+
       // Clean up
       window.URL.revokeObjectURL(url);
-      
+
       toast.success(`Đã tải xuống: ${file.name}`);
     } catch (error) {
       console.error("Download error:", error);
-      toast.error(`Không thể tải xuống file: ${file.name}. Chi tiết: ${error.message}`);
+      toast.error(
+        `Không thể tải xuống file: ${file.name}. Chi tiết: ${error.message}`
+      );
     }
   };
 
@@ -432,18 +707,18 @@ description: editingDocument?.description ?? "",
   const handleFilePreview = async (file: FileItem) => {
     try {
       toast.info("Đang tạo link xem trước...");
-      
+
       // Get presigned URL for preview
       const presignedUrl = await getFilePresignedUrl(file.id);
-      
+
       if (presignedUrl) {
         // Open in new tab for preview
-        window.open(presignedUrl, '_blank');
+        window.open(presignedUrl, "_blank");
         toast.success("Đã mở file xem trước");
       } else {
         // Fallback to direct download URL
         const downloadUrl = getFileDownloadUrl(file.id);
-        window.open(downloadUrl, '_blank');
+        window.open(downloadUrl, "_blank");
         toast.success("Đã mở file");
       }
     } catch (error) {
@@ -457,15 +732,15 @@ description: editingDocument?.description ?? "",
     if (confirm(`Bạn có chắc chắn muốn xóa file "${file.name}"?`)) {
       try {
         await deleteDocumentFile(file.id);
-        
+
         // Remove from local state
-        setAttachedFiles(prev => prev.filter(f => f.id !== file.id));
+        setAttachedFiles((prev) => prev.filter((f) => f.id !== file.id));
         toast.success(`Đã xóa file: ${file.name}`);
-        
+
         // Reload files from server to ensure consistency
         if (editingDocument) {
           const serverFiles = await getDocumentFiles(editingDocument.id);
-          const transformedFiles = serverFiles.map(apiFile => ({
+          const transformedFiles = serverFiles.map((apiFile) => ({
             id: apiFile.id,
             name: apiFile.fileName,
             size: apiFile.fileSize,
@@ -561,8 +836,8 @@ description: editingDocument?.description ?? "",
             <FileMetaCard readOnly={true} />
 
             {/* Parties Section - Read Only */}
-            <PartiesAccordion 
-              readOnly={true} 
+            <PartiesAccordion
+              readOnly={true}
               onCustomerDialogChange={setCustomerDialogOpen}
             />
 
@@ -649,8 +924,8 @@ description: editingDocument?.description ?? "",
           <FileMetaCard readOnly={false} />
 
           {/* Parties Section */}
-          <PartiesAccordion 
-            readOnly={false} 
+          <PartiesAccordion
+            readOnly={false}
             onCustomerDialogChange={setCustomerDialogOpen}
           />
 
@@ -872,7 +1147,7 @@ description: editingDocument?.description ?? "",
                               onClick={() => {
                                 setDialogMode("upload");
                                 setEditingDocument(document);
-                                setUploadingDocumentId(document.id); 
+                                setUploadingDocumentId(document.id);
                                 setAttachedFiles([]);
                                 setShowDialog(true);
                               }}

@@ -48,14 +48,14 @@ export interface DocumentFileType {
 }
 
 export interface PartyDocumentLinkType {
-  id: string;
-  customerId: string;
   documentId: string;
-  role: string;
+  customerId: string;
+  partyRole: number;
+  signatureStatus: number;
+  notaryDate: string;
   createdAt: string;
   updatedAt: string;
 }
-
 export interface CreateDocumentType {
   createdDate: string;
   secretary: string;
