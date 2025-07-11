@@ -94,7 +94,10 @@ export function CustomerBulkActions({
           <Checkbox
             checked={allSelected}
             ref={(el) => {
-              if (el) el.indeterminate = someSelected;
+              if (el) {
+                const checkbox = el as HTMLInputElement;
+                checkbox.indeterminate = someSelected;
+              }
             }}
             onCheckedChange={handleSelectAll}
             disabled={loading}

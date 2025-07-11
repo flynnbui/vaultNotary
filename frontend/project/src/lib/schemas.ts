@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { ValidationUtils } from '@/src/shared/utils/validationUtils';
+
 export type PartyKey = 'A' | 'B' | 'C';
 
 export interface CustomerSummary {
@@ -16,30 +18,17 @@ export interface CustomerSummary {
   updatedAt: string;
 }
 
-const passportOrId = z.object({
-  cmndNumber: z.string().trim().optional(),
-  passportNumber: z.string().trim().optional(),
-}).refine(data => {
-  if (data.cmndNumber && data.cmndNumber.length > 0) {
-    return /^[0-9]{9}$|^[0-9]{12}$/.test(data.cmndNumber);
-  }
-  if (data.passportNumber && data.passportNumber.length > 0) {
-    return /^[A-Z0-9]{8,9}$/.test(data.passportNumber);
-  }
-  return data.cmndNumber || data.passportNumber;
-}, {
-  message: 'Phải nhập CMND/CCCD hoặc Passport hợp lệ',
-});
+const passportOrId = ValidationUtils.createIdValidationSchema();
 
 export const customerSchema = z.object({
   id: z.string().optional(),
   type: z.enum(['individual', 'organization']),
-  fullName: z.string().min(1, 'Họ và tên là bắt buộc'),
-  organizationName: z.string().optional(),
-  businessRegistrationNumber: z.string().optional(),
-  phone: z.string().regex(/^[0-9]{10}$/, 'Số điện thoại phải có 10 chữ số').optional().or(z.literal('')),
-  email: z.string().email('Email không hợp lệ').optional().or(z.literal('')),
-  address: z.string().min(1, 'Địa chỉ là bắt buộc'),
+  fullName: ValidationUtils.createNameSchema('Họ và tên'),
+  organizationName: ValidationUtils.createOptionalStringSchema(),
+  businessRegistrationNumber: ValidationUtils.createOptionalStringSchema(),
+  phone: ValidationUtils.createPhoneSchema(),
+  email: ValidationUtils.createEmailSchema(),
+  address: ValidationUtils.createAddressSchema(),
 }).and(passportOrId).refine(data => {
   if (data.type === 'organization') {
     return data.organizationName && data.organizationName.length > 0;
@@ -50,11 +39,11 @@ export const customerSchema = z.object({
   path: ['organizationName']
 }).refine(data => {
   if (data.type === 'organization') {
-    return data.businessRegistrationNumber && data.businessRegistrationNumber.length > 0;
+    return data.businessRegistrationNumber && ValidationUtils.isValidBusinessRegistration(data.businessRegistrationNumber);
   }
   return true;
 }, {
-  message: 'Số đăng ký kinh doanh là bắt buộc',
+  message: 'Số đăng ký kinh doanh không hợp lệ',
   path: ['businessRegistrationNumber']
 });
 
@@ -151,12 +140,12 @@ export const partiesSchema = z.object({
 });
 
 export const fileSchema = z.object({
-  ngayTao: z.date(),
-  thuKy: z.string().min(1, 'Thư ký là bắt buộc'),
-  congChungVien: z.string().min(1, 'Công chứng viên là bắt buộc'),
-  maGiaoDich: z.string().min(1, 'Mã giao dịch là bắt buộc'),
-  description: z.string().optional(),
-  loaiHoSo: z.string().min(1, 'Loại hồ sơ là bắt buộc'),
+  ngayTao: ValidationUtils.createDateSchema(true, 'Ngày tạo không hợp lệ'),
+  thuKy: ValidationUtils.createRequiredStringSchema('Thư ký là bắt buộc'),
+  congChungVien: ValidationUtils.createRequiredStringSchema('Công chứng viên là bắt buộc'),
+  maGiaoDich: ValidationUtils.createOptionalStringSchema(),
+  description: ValidationUtils.createOptionalStringSchema(),
+  loaiHoSo: ValidationUtils.createRequiredStringSchema('Loại hồ sơ là bắt buộc'),
   parties: partiesSchema
 });
 

@@ -326,8 +326,7 @@ export function CustomerDialog({
             permanentAddress: '',
             phone: '',
             dateOfBirth: undefined,
-            gender: undefined,
-            idType: 'CMND'
+            gender: undefined
         }
     });
 
@@ -338,7 +337,7 @@ export function CustomerDialog({
                     setValue(key as any, (initialData as any)[key]);
                 }
             });
-            setIdType(initialData.idType);
+            setIdType(initialData.documentId ? 'CMND' : 'Passport');
         } else if (open) {
             reset({
                 customerType: 'individual',
@@ -347,8 +346,7 @@ export function CustomerDialog({
                 permanentAddress: '',
                 phone: '',
                 dateOfBirth: undefined,
-                gender: undefined,
-                idType: 'CMND'
+                gender: undefined
             });
             setIdType('CMND');
         }
@@ -378,7 +376,6 @@ export function CustomerDialog({
 
     const handleIdTypeChange = (type: 'CMND' | 'Passport') => {
         setIdType(type);
-        setValue('idType', type);
         if (type === 'CMND') {
             setValue('passportNumber', '');
             setValue('passportIssueDate', undefined);

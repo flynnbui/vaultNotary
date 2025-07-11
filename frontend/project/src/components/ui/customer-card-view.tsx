@@ -124,7 +124,7 @@ export function CustomerCardView({
                     <h3 className="font-semibold text-lg truncate max-w-[150px]">
                       {customer.fullName}
                     </h3>
-                    <Badge variant={typeInfo.variant} className="text-xs">
+                    <Badge variant={typeInfo.variant as "default" | "destructive" | "outline" | "secondary"} className="text-xs">
                       <TypeIcon className="h-3 w-3 mr-1" />
                       {typeInfo.label}
                     </Badge>

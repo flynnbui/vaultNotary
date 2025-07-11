@@ -10,17 +10,17 @@ const useApi = () => {
     async (
       method: "get" | "post" | "put" | "delete" | "patch",
       url: string,
-      data?: any,
+      data?: Record<string, unknown> | FormData | null,
       message?: string
     ) => {
       try {
         setIsLoading(true);
-        const response = await api[method](url, data);
+        const response = await api[method](url, data || undefined);
         if (message) console.log(message);
         return response;
-      } catch (e: any) {
-        console.error(e);
-        throw e;
+      } catch (error: unknown) {
+        console.error(error);
+        throw error;
       } finally {
         setIsLoading(false);
       }

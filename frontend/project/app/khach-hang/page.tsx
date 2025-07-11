@@ -77,22 +77,16 @@ export default function CustomersPage() {
     return {
       id: customer.id,
       fullName: customer.fullName,
-      idType: customer.documentId ? 'CMND' : 'Passport',
-      idNumber: customer.documentId || customer.passportId || '',
-      dob: customer.createdAt ? new Date(customer.createdAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-      // Additional fields needed for form prefill
-      customerType: customer.type === 0 ? 'individual' : 'organization',
+      address: customer.address || '',
       phone: customer.phone || '',
       email: customer.email || '',
-      permanentAddress: customer.address || '',
-      currentAddress: customer.address || '',
-      businessName: customer.businessName || '',
+      type: customer.type,
+      documentId: customer.documentId || '',
+      passportId: customer.passportId || '',
       businessRegistrationNumber: customer.businessRegistrationNumber || '',
-      cmndNumber: customer.documentId || '',
-      passportNumber: customer.passportId || '',
-      isVip: false,
-      gender: 'male' as const,
-      dateOfBirth: customer.createdAt ? new Date(customer.createdAt) : new Date()
+      businessName: customer.businessName || '',
+      createdAt: customer.createdAt,
+      updatedAt: customer.updatedAt
     };
   };
 

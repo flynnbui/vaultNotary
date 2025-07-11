@@ -128,7 +128,7 @@ export function CustomerDetailsDialog({
                     <TypeIcon className="h-5 w-5 text-orange-600" />
                     Thông tin cơ bản
                   </div>
-                  <Badge variant={typeInfo.variant}>
+                  <Badge variant={typeInfo.variant as "default" | "destructive" | "outline" | "secondary"}>
                     {typeInfo.label}
                   </Badge>
                 </CardTitle>
