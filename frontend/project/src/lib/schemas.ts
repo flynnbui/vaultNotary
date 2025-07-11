@@ -88,29 +88,13 @@ export const extendedCustomerSchema = z.object({
 });
 
 export const partiesSchema = z.object({
-  A: z.array(z.object({
-    id: z.string(),
-    fullName: z.string(),
-    idType: z.enum(['CMND', 'Passport']),
-    idNumber: z.string(),
-    dob: z.string()
-  })).optional(),
-  
-  B: z.array(z.object({
-    id: z.string(),
-    fullName: z.string(),
-    idType: z.enum(['CMND', 'Passport']),
-    idNumber: z.string(),
-    dob: z.string()
-  })).optional(),
-  
   // A: z.array(z.object({
   //   id: z.string(),
   //   fullName: z.string(),
   //   idType: z.enum(['CMND', 'Passport']),
   //   idNumber: z.string(),
   //   dob: z.string()
-  // })).min(1, 'Bên A phải có ít nhất 1 khách hàng'),
+  // })).optional(),
   
   // B: z.array(z.object({
   //   id: z.string(),
@@ -118,7 +102,23 @@ export const partiesSchema = z.object({
   //   idType: z.enum(['CMND', 'Passport']),
   //   idNumber: z.string(),
   //   dob: z.string()
-  // })).min(1, 'Bên B phải có ít nhất 1 khách hàng'),
+  // })).optional(),
+  
+  A: z.array(z.object({
+    id: z.string(),
+    fullName: z.string(),
+    idType: z.enum(['CMND', 'Passport']),
+    idNumber: z.string(),
+    dob: z.string()
+  })).min(1, 'Bên A phải có ít nhất 1 khách hàng'),
+  
+  B: z.array(z.object({
+    id: z.string(),
+    fullName: z.string(),
+    idType: z.enum(['CMND', 'Passport']),
+    idNumber: z.string(),
+    dob: z.string()
+  })).min(1, 'Bên B phải có ít nhất 1 khách hàng'),
   
   C: z.array(z.object({
     id: z.string(),
@@ -149,7 +149,7 @@ export const fileSchema = z.object({
   thuKy: z.string().min(1, 'Thư ký là bắt buộc'),
   congChungVien: z.string().min(1, 'Công chứng viên là bắt buộc'),
   maGiaoDich: z.string().min(1, 'Mã giao dịch là bắt buộc'),
-  moTa: z.string().optional(),
+  description: z.string().optional(),
   loaiHoSo: z.string().min(1, 'Loại hồ sơ là bắt buộc'),
   parties: partiesSchema
 });

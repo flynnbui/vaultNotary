@@ -16,9 +16,10 @@ import type { CustomerSummary, PartyKey } from '@/src/lib/schemas';
 
 interface PartiesAccordionProps {
     readOnly?: boolean;
+    onCustomerDialogChange?: (isOpen: boolean) => void;
 }
 
-export function PartiesAccordion({ readOnly = false }: PartiesAccordionProps) {
+export function PartiesAccordion({ readOnly = false, onCustomerDialogChange }: PartiesAccordionProps) {
     const { control, formState: { errors } } = useFormContext();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [currentParty, setCurrentParty] = useState<PartyKey>('A');
@@ -28,8 +29,16 @@ export function PartiesAccordion({ readOnly = false }: PartiesAccordionProps) {
     const partiesB = useFieldArray({ control, name: 'parties.B' });
     const partiesC = useFieldArray({ control, name: 'parties.C' });
 
-    // Fake data for demo - remove this in production
-    
+    // Notify parent when dialog state changes
+    const handleDialogOpenChange = (open: boolean) => {
+        setDialogOpen(open);
+        onCustomerDialogChange?.(open);
+        
+        if (!open) {
+            setEditingCustomer(null);
+        }
+    };
+
     const getFieldArray = (party: PartyKey) => {
         switch (party) {
             case 'A': return partiesA;
@@ -60,14 +69,14 @@ export function PartiesAccordion({ readOnly = false }: PartiesAccordionProps) {
         if (readOnly) return;
         setCurrentParty(party);
         setEditingCustomer(null);
-        setDialogOpen(true);
+        handleDialogOpenChange(true);
     };
 
     const handleEditCustomer = (party: PartyKey, customer: CustomerSummary, index: number) => {
         if (readOnly) return;
         setCurrentParty(party);
         setEditingCustomer({ ...customer, index });
-        setDialogOpen(true);
+        handleDialogOpenChange(true);
     };
 
     const handleRemoveCustomer = (party: PartyKey, index: number) => {
@@ -91,8 +100,7 @@ export function PartiesAccordion({ readOnly = false }: PartiesAccordionProps) {
             toast.success('Đã thêm khách hàng mới');
         }
 
-        setDialogOpen(false);
-        setEditingCustomer(null);
+        handleDialogOpenChange(false);
     };
 
     const getCustomerTypeBadge = (customer: CustomerSummary) => {
@@ -271,7 +279,7 @@ export function PartiesAccordion({ readOnly = false }: PartiesAccordionProps) {
             {!readOnly && (
                 <CustomerDialog
                     open={dialogOpen}
-                    onOpenChange={setDialogOpen}
+                    onOpenChange={handleDialogOpenChange}
                     onSave={handleCustomerSave}
                     initialData={editingCustomer}
                     title={editingCustomer ? 'Chỉnh sửa khách hàng' : `Thêm khách hàng - ${getPartyLabel(currentParty)}`}

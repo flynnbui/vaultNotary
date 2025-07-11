@@ -477,7 +477,7 @@ export function FileMetaCard({ readOnly = false }: FileMetaCardProps) {
   const congChungVien = watch("congChungVien");
   const maGiaoDich = watch("maGiaoDich");
   const loaiHoSo = watch("loaiHoSo");
-  const moTa = watch("moTa");
+  const description = watch("description");
 
   // Auto-generate transaction code if empty (only for create mode)
   React.useEffect(() => {
@@ -722,18 +722,18 @@ export function FileMetaCard({ readOnly = false }: FileMetaCardProps) {
 
         <div>
           <Label
-            htmlFor="moTa"
+            htmlFor="description"
             className="text-sm font-medium text-muted-foreground"
           >
             Mô tả
           </Label>
           {readOnly ? (
-            <ReadOnlyTextarea value={moTa} placeholder="Không có mô tả" />
+            <ReadOnlyTextarea value={description} placeholder="Không có mô tả" />
           ) : (
             <Textarea
-              id="moTa"
-              value={moTa || ""}
-              onChange={(e) => setValue("moTa", e.target.value)}
+              id="description"
+              value={description || ""}
+              onChange={(e) => setValue("description", e.target.value)}
               placeholder="Nhập mô tả giao dịch"
               rows={3}
             />
