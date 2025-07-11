@@ -1,3 +1,13 @@
+export interface Party {
+  documentId: string;
+  customerId: string;
+  partyRole: string;
+  signatureStatus: number;
+  notaryDate: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface DocumentType {
   id: string;
   createdDate: string;
@@ -8,4 +18,5 @@ export interface DocumentType {
   documentType: string;
   createdAt: string;
   updatedAt: string;
+  parties: Party[]; 
 }

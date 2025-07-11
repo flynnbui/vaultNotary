@@ -95,7 +95,7 @@ export const partiesSchema = z.object({
     idType: z.enum(['CMND', 'Passport']),
     idNumber: z.string(),
     dob: z.string()
-  })).min(1, 'Bên A phải có ít nhất 1 khách hàng'),
+  })).optional(),
   
   B: z.array(z.object({
     id: z.string(),
@@ -103,7 +103,23 @@ export const partiesSchema = z.object({
     idType: z.enum(['CMND', 'Passport']),
     idNumber: z.string(),
     dob: z.string()
-  })).min(1, 'Bên B phải có ít nhất 1 khách hàng'),
+  })).optional(),
+  
+  // A: z.array(z.object({
+  //   id: z.string(),
+  //   fullName: z.string(),
+  //   idType: z.enum(['CMND', 'Passport']),
+  //   idNumber: z.string(),
+  //   dob: z.string()
+  // })).min(1, 'Bên A phải có ít nhất 1 khách hàng'),
+  
+  // B: z.array(z.object({
+  //   id: z.string(),
+  //   fullName: z.string(),
+  //   idType: z.enum(['CMND', 'Passport']),
+  //   idNumber: z.string(),
+  //   dob: z.string()
+  // })).min(1, 'Bên B phải có ít nhất 1 khách hàng'),
   
   C: z.array(z.object({
     id: z.string(),

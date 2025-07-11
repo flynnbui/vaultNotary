@@ -42,11 +42,18 @@ import {
   Trash2,
   ChevronLeft,
   ChevronRight,
+  Upload,
+  Calendar,
+  FileText,
+  User,
+  Hash,
 } from "lucide-react";
 import { toast } from "sonner";
 
 import "@/src/lib/i18n";
 import useDocumentService from "@/src/services/useDocumentService";
+import { FileItem, FileListCard } from "@/src/components/forms/FileListCard";
+import useUploadService from "@/src/services/useUploadService";
 
 // Interface cho DocumentType
 export interface DocumentType {
@@ -69,14 +76,53 @@ interface PaginatedResponse<T> {
   totalPages: number;
 }
 
+// Helper function để transform API response thành FileItem
+export function transformApiFileToFileItem(
+  apiFile: any,
+  fileName: string,
+  fileSize: number
+): FileItem {
+  return {
+    id: apiFile.id,
+    name: fileName,
+    size: fileSize,
+    type: apiFile.contentType,
+    uploadDate: apiFile.createdAt,
+    url: `/api/files/download/${apiFile.id}`, // Construct download URL
+  };
+}
+
+// Dialog modes
+type DialogMode = "create" | "edit" | "view" | "upload";
+
 export default function CustomersPage() {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [showDialog, setShowDialog] = useState(false);
-  const [editingDocument, setEditingDocument] = useState<DocumentType | undefined>();
+  const [dialogMode, setDialogMode] = useState<DialogMode>("create");
+  const [editingDocument, setEditingDocument] = useState<
+    DocumentType | undefined
+  >();
   const [documents, setDocuments] = useState<DocumentType[]>([]);
-  const { getPaginatedDocuments, loading: apiLoading } = useDocumentService();
+  const [uploadingDocumentId, setUploadingDocumentId] = useState<string | null>(
+    null
+  );
+  const [attachedFiles, setAttachedFiles] = useState<FileItem[]>([]);
+
+  const { uploadDocumentFile } = useUploadService();
+  // Import all document service methods
+  const {
+    getPaginatedDocuments,
+    createDocument,
+    updateDocument,
+    deleteDocument,
+    getDocumentFiles,
+    deleteDocumentFile,
+    getFileDownloadUrl,
+    getFilePresignedUrl,
+    loading: apiLoading,
+  } = useDocumentService();
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -101,13 +147,49 @@ export default function CustomersPage() {
     },
   });
 
+  // Reset form khi edit document
   useEffect(() => {
     loadDocuments();
   }, [currentPage, searchTerm]);
 
-  // Reset form khi edit document
+  // Load files when viewing/editing a document
   useEffect(() => {
-    if (editingDocument) {
+    const loadDocumentFiles = async () => {
+      if (
+        editingDocument &&
+        (dialogMode === "view" ||
+          dialogMode === "edit" ||
+          dialogMode === "upload")
+      ) {
+        try {
+          console.log("🔄 Loading files for document:", editingDocument.id);
+          const files = await getDocumentFiles(editingDocument.id);
+
+          // Transform API files to FileItem format
+          const transformedFiles = files.map((apiFile) => ({
+            id: apiFile.id,
+            name: apiFile.fileName,
+            size: apiFile.fileSize,
+            type: apiFile.contentType,
+            uploadDate: apiFile.createdAt,
+            url: getFileDownloadUrl(apiFile.id),
+          }));
+
+          setAttachedFiles(transformedFiles);
+          console.log("✅ Loaded files:", transformedFiles);
+        } catch (error) {
+          console.error("❌ Error loading files:", error);
+          setAttachedFiles([]);
+        }
+      } else {
+        setAttachedFiles([]);
+      }
+    };
+
+    loadDocumentFiles();
+  }, [editingDocument, dialogMode, getDocumentFiles, getFileDownloadUrl]);
+  useEffect(() => {
+    if (editingDocument && (dialogMode === "edit" || dialogMode === "view")) {
       methods.reset({
         ngayTao: new Date(editingDocument.createdDate),
         thuKy: editingDocument.secretary,
@@ -136,31 +218,34 @@ export default function CustomersPage() {
         },
       });
     }
-  }, [editingDocument, methods]);
+  }, [editingDocument, dialogMode, methods]);
 
   const loadDocuments = async () => {
     try {
       setLoading(true);
-      
+
       const response = await getPaginatedDocuments(currentPage, itemsPerPage);
 
       if (response) {
         // Filter documents based on search term locally if needed
         let filteredItems = response.items || [];
-        
+
         if (searchTerm.trim()) {
           const searchLower = searchTerm.toLowerCase();
-          filteredItems = filteredItems.filter(doc => 
-            doc.transactionCode?.toLowerCase().includes(searchLower) ||
-            doc.description?.toLowerCase().includes(searchLower) ||
-            doc.secretary?.toLowerCase().includes(searchLower) ||
-            doc.notaryPublic?.toLowerCase().includes(searchLower) ||
-            doc.documentType?.toLowerCase().includes(searchLower)
+          filteredItems = filteredItems.filter(
+            (doc) =>
+              doc.transactionCode?.toLowerCase().includes(searchLower) ||
+              doc.description?.toLowerCase().includes(searchLower) ||
+              doc.secretary?.toLowerCase().includes(searchLower) ||
+              doc.notaryPublic?.toLowerCase().includes(searchLower) ||
+              doc.documentType?.toLowerCase().includes(searchLower)
           );
         }
 
         setDocuments(filteredItems);
-        setTotalItems(searchTerm.trim() ? filteredItems.length : response.totalPages || 0);
+        setTotalItems(
+          searchTerm.trim() ? filteredItems.length : response.totalPages || 0
+        );
       } else {
         setDocuments([]);
         setTotalItems(0);
@@ -176,33 +261,53 @@ export default function CustomersPage() {
   };
 
   const handleAddDocument = () => {
+    setDialogMode("create");
     setEditingDocument(undefined);
     setShowDialog(true);
   };
 
+  const handleEditDocument = (document: DocumentType) => {
+    setDialogMode("edit");
+    setEditingDocument(document);
+    setShowDialog(true);
+  };
+
+  const handleViewDocument = (document: DocumentType) => {
+    setDialogMode("view");
+    setEditingDocument(document);
+    setShowDialog(true);
+  };
+
   const onSubmit = async (data: FileFormData) => {
+    console.log("submitting...", data);
     try {
-      // Tạm thời comment out việc gọi API create/update
-      // vì service chưa có các method này
+      // Prepare document data for API
       const documentData = {
         createdDate: data.ngayTao.toISOString(),
         secretary: data.thuKy,
         notaryPublic: data.congChungVien,
-        transactionCode: data.maGiaoDich,
-        description: data.moTa,
+        transactionCode: data.maGiaoDich || "",
+        description: data.moTa || "",
         documentType: data.loaiHoSo,
       };
 
       console.log("Document data to save:", documentData);
 
       if (editingDocument) {
-        // TODO: Implement updateDocument in service
-        // await updateDocument(editingDocument.id, documentData);
-        toast.success('Hồ sơ đã được cập nhật thành công!');
+        // Update existing document
+        const updatedDocument = await updateDocument(
+          editingDocument.id,
+          documentData
+        );
+        if (updatedDocument) {
+          toast.success("Hồ sơ đã được cập nhật thành công!");
+        }
       } else {
-        // TODO: Implement createDocument in service
-        // await createDocument(documentData);
-        toast.success('Hồ sơ đã được tạo thành công!');
+        // Create new document
+        const newDocument = await createDocument(documentData);
+        if (newDocument) {
+          toast.success("Hồ sơ đã được tạo thành công!");
+        }
       }
 
       setShowDialog(false);
@@ -215,28 +320,168 @@ export default function CustomersPage() {
     }
   };
 
+  const handleFileUpload = async (fileList: FileList) => {
+    if (!uploadingDocumentId) {
+      toast.error("Không tìm thấy ID hồ sơ để upload.");
+      return;
+    }
+
+    const uploadedFiles: FileItem[] = [];
+
+    for (const file of Array.from(fileList)) {
+      try {
+        const result = await uploadDocumentFile({
+          documentId: uploadingDocumentId,
+          file: file,
+        });
+
+        uploadedFiles.push({
+          id: result.id,
+          name: result.name,
+          size: result.size,
+          type: result.type,
+          uploadDate: result.uploadDate,
+          url: result.url,
+        });
+      } catch (err) {
+        console.error("Upload error:", err);
+        toast.error(`Upload thất bại: ${file.name}`);
+      }
+    }
+
+    setAttachedFiles((prev) => [...prev, ...uploadedFiles]);
+    toast.success(`Đã upload ${uploadedFiles.length} file`);
+
+    // 🆕 Reload files from server to ensure consistency
+    if (editingDocument) {
+      try {
+        const serverFiles = await getDocumentFiles(editingDocument.id);
+        const transformedFiles = serverFiles.map((apiFile) => ({
+          id: apiFile.id,
+          name: apiFile.fileName,
+          size: apiFile.fileSize,
+          type: apiFile.contentType,
+          uploadDate: apiFile.createdAt,
+          url: getFileDownloadUrl(apiFile.id),
+        }));
+        setAttachedFiles(transformedFiles);
+        console.log("🔄 Reloaded files from server:", transformedFiles);
+      } catch (error) {
+        console.error("❌ Error reloading files:", error);
+      }
+    }
+  };
+
   const handleCancel = () => {
+    if (dialogMode === "view") {
+      setShowDialog(false);
+      setEditingDocument(undefined);
+      setUploadingDocumentId(null);
+      return;
+    }
+
     if (confirm("Bạn có chắc chắn muốn hủy? Tất cả dữ liệu sẽ bị mất.")) {
       methods.reset();
       setEditingDocument(undefined);
+      setUploadingDocumentId(null);
+      setAttachedFiles([]);
       toast.info("Đã hủy thao tác");
       setShowDialog(false);
     }
   };
 
-  const handleEditDocument = (document: DocumentType) => {
-    setEditingDocument(document);
-    setShowDialog(true);
+  // 🆕 Handle file download
+  const handleFileDownload = async (file: FileItem) => {
+    try {
+      console.log("🔄 Downloading file:", file.name);
+
+      // Get presigned URL for download
+      const presignedUrl = await getFilePresignedUrl(file.id);
+
+      if (presignedUrl) {
+        // Create a temporary link to trigger download
+        const link = document.createElement("a");
+        link.href = presignedUrl;
+        link.download = file.name;
+        link.target = "_blank";
+
+        // Add to DOM temporarily
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        toast.success(`Đang tải xuống: ${file.name}`);
+      } else {
+        throw new Error("Không thể lấy link download");
+      }
+    } catch (error) {
+      console.error("Download error:", error);
+      toast.error(`Không thể tải xuống file: ${file.name}`);
+    }
+  };
+
+  // 🆕 Handle file preview
+  const handleFilePreview = async (file: FileItem) => {
+    try {
+      toast.info("Đang tạo link xem trước...");
+
+      // Get presigned URL for preview
+      const presignedUrl = await getFilePresignedUrl(file.id);
+
+      if (presignedUrl) {
+        // Open in new tab for preview
+        window.open(presignedUrl, "_blank");
+        toast.success("Đã mở file xem trước");
+      } else {
+        // Fallback to direct download URL
+        const downloadUrl = getFileDownloadUrl(file.id);
+        window.open(downloadUrl, "_blank");
+        toast.success("Đã mở file");
+      }
+    } catch (error) {
+      console.error("Preview error:", error);
+      toast.error(`Không thể xem trước file: ${file.name}`);
+    }
+  };
+
+  // 🆕 Handle file delete
+  const handleFileDelete = async (file: FileItem) => {
+    if (confirm(`Bạn có chắc chắn muốn xóa file "${file.name}"?`)) {
+      try {
+        await deleteDocumentFile(file.id);
+
+        // Remove from local state
+        setAttachedFiles((prev) => prev.filter((f) => f.id !== file.id));
+        toast.success(`Đã xóa file: ${file.name}`);
+
+        // Reload files from server to ensure consistency
+        if (editingDocument) {
+          const serverFiles = await getDocumentFiles(editingDocument.id);
+          const transformedFiles = serverFiles.map((apiFile) => ({
+            id: apiFile.id,
+            name: apiFile.fileName,
+            size: apiFile.fileSize,
+            type: apiFile.contentType,
+            uploadDate: apiFile.createdAt,
+            url: getFileDownloadUrl(apiFile.id),
+          }));
+          setAttachedFiles(transformedFiles);
+        }
+      } catch (error) {
+        console.error("Delete error:", error);
+        toast.error(`Không thể xóa file: ${file.name}`);
+      }
+    }
   };
 
   const handleDeleteDocument = async (id: string) => {
     if (confirm("Bạn có chắc chắn muốn xóa hồ sơ này?")) {
       try {
-        // TODO: Implement deleteDocument in service
-        // await deleteDocument(id);
-        console.log("Delete document with id:", id);
-        toast.success("Đã xóa hồ sơ thành công!");
-        await loadDocuments();
+        const success = await deleteDocument(id);
+        if (success) {
+          toast.success("Đã xóa hồ sơ thành công!");
+          await loadDocuments();
+        }
       } catch (error) {
         console.error("Error deleting document:", error);
         toast.error("Có lỗi xảy ra khi xóa hồ sơ");
@@ -245,15 +490,16 @@ export default function CustomersPage() {
   };
 
   const getDocumentTypeColor = (documentType: string) => {
-    
     const colors = {
       "Hợp đồng": "bg-green-100 text-green-800",
-      "Thỏa thuận": "bg-blue-100 text-blue-800", 
+      "Thỏa thuận": "bg-blue-100 text-blue-800",
       "Công chứng": "bg-purple-100 text-purple-800",
       "Chứng thực": "bg-yellow-100 text-yellow-800",
-      "Khác": "bg-gray-100 text-gray-800",
+      Khác: "bg-gray-100 text-gray-800",
     };
-    return colors[documentType as keyof typeof colors] || "bg-gray-100 text-gray-800";
+    return (
+      colors[documentType as keyof typeof colors] || "bg-gray-100 text-gray-800"
+    );
   };
 
   // Pagination calculations
@@ -281,6 +527,199 @@ export default function CustomersPage() {
     });
   };
 
+  const getDialogTitle = () => {
+    switch (dialogMode) {
+      case "create":
+        return "Tạo hồ sơ mới";
+      case "edit":
+        return "Chỉnh sửa hồ sơ";
+      case "view":
+        return "Xem chi tiết hồ sơ";
+      case "upload":
+        return "Thêm tài liệu";
+      default:
+        return "Hồ sơ";
+    }
+  };
+
+  const renderDialogContent = () => {
+    const isReadOnly = dialogMode === "view";
+
+    if (isReadOnly) {
+      return (
+        <FormProvider {...methods}>
+          <div className="space-y-6 mt-6">
+            {/* File Meta Information - Read Only */}
+            <FileMetaCard readOnly={true} />
+
+            {/* Parties Section - Read Only */}
+            <PartiesAccordion readOnly={true} />
+
+            <FileListCard
+              files={attachedFiles}
+              onFilesChange={setAttachedFiles}
+              onFileDownload={handleFileDownload}
+              onFilePreview={handleFilePreview}
+              readOnly={true}
+            />
+
+            {/* Action Buttons for Preview Mode */}
+            <div className="flex justify-end gap-4 pt-6 border-t">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowDialog(false)}
+              >
+                Đóng
+              </Button>
+              <Button
+                type="button"
+                onClick={() => {
+                  setDialogMode("edit");
+                  // Form sẽ tự động reset với dữ liệu của editingDocument
+                }}
+                className="bg-orange-700 hover:bg-orange-900"
+              >
+                <Edit className="h-4 w-4 mr-2" />
+                Chỉnh sửa
+              </Button>
+            </div>
+          </div>
+        </FormProvider>
+      );
+    }
+
+    if (dialogMode === "upload") {
+      return (
+        <FormProvider {...methods}>
+          <div className="space-y-6 mt-6">
+            <FileListCard
+              files={attachedFiles}
+              onFilesChange={setAttachedFiles}
+              onFileUpload={handleFileUpload}
+              onFileDownload={handleFileDownload}
+              onFilePreview={handleFilePreview}
+              onFileDelete={handleFileDelete}
+              readOnly={false}
+              allowDelete={true}
+              allowUpload={true}
+            />
+
+            {/* Action Buttons for Upload Mode */}
+            <div className="flex justify-end gap-4 pt-6 border-t">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCancel}
+                className="border-red-500 text-red-500 hover:bg-red-50"
+              >
+                Hủy
+              </Button>
+              <Button
+                type="button"
+                onClick={() => setShowDialog(false)}
+                className="bg-orange-700 hover:bg-orange-900"
+              >
+                Hoàn thành
+              </Button>
+            </div>
+          </div>
+        </FormProvider>
+      );
+    }
+    if (dialogMode === "create") {
+      return (
+   <FormProvider {...methods}>
+        <form
+          onSubmit={methods.handleSubmit(onSubmit)}
+          className="space-y-6 mt-6"
+        >
+          {/* File Meta Information */}
+          <FileMetaCard readOnly={false} />
+
+          {/* Parties Section */}
+          <PartiesAccordion readOnly={false} />
+
+       
+          {/* Action Buttons */}
+          <div className="flex justify-end gap-4 pt-6 border-t">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleCancel}
+              className="border-red-500 text-red-500 hover:bg-red-50"
+            >
+              Huỷ
+            </Button>
+            <Button
+              type="submit"
+              className="bg-orange-700 hover:bg-orange-900 px-8"
+              disabled={methods.formState.isSubmitting || apiLoading}
+            >
+              {methods.formState.isSubmitting || apiLoading
+                ? "Đang lưu..."
+                : editingDocument
+                ? "Cập nhật hồ sơ"
+                : "Lưu hồ sơ"}
+            </Button>
+          </div>
+        </form>
+      </FormProvider>
+      );
+    }
+
+    // Form mode (create/edit)
+    return (
+      <FormProvider {...methods}>
+        <form
+          onSubmit={methods.handleSubmit(onSubmit)}
+          className="space-y-6 mt-6"
+        >
+          {/* File Meta Information */}
+          <FileMetaCard readOnly={false} />
+
+          {/* Parties Section */}
+          <PartiesAccordion readOnly={false} />
+
+          <FileListCard
+            files={attachedFiles}
+            onFilesChange={setAttachedFiles}
+            onFileDownload={handleFileDownload}
+            onFilePreview={handleFilePreview}
+            onFileDelete={handleFileDelete}
+            readOnly={false}
+            allowDelete={true}
+            allowUpload={false}
+            title="File đính kèm"
+          />
+
+          {/* Action Buttons */}
+          <div className="flex justify-end gap-4 pt-6 border-t">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleCancel}
+              className="border-red-500 text-red-500 hover:bg-red-50"
+            >
+              Huỷ
+            </Button>
+            <Button
+              type="submit"
+              className="bg-orange-700 hover:bg-orange-900 px-8"
+              disabled={methods.formState.isSubmitting || apiLoading}
+            >
+              {methods.formState.isSubmitting || apiLoading
+                ? "Đang lưu..."
+                : editingDocument
+                ? "Cập nhật hồ sơ"
+                : "Lưu hồ sơ"}
+            </Button>
+          </div>
+        </form>
+      </FormProvider>
+    );
+  };
+
   return (
     <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -301,8 +740,8 @@ export default function CustomersPage() {
 
             <Dialog open={showDialog} onOpenChange={setShowDialog}>
               <DialogTrigger asChild>
-                <Button 
-                  size="lg" 
+                <Button
+                  size="lg"
                   className="bg-orange-700 hover:bg-orange-900"
                   onClick={handleAddDocument}
                 >
@@ -313,43 +752,9 @@ export default function CustomersPage() {
 
               <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto">
                 <DialogHeader>
-                  <DialogTitle>
-                    {editingDocument ? "Chỉnh sửa hồ sơ" : "Tạo hồ sơ mới"}
-                  </DialogTitle>
+                  <DialogTitle>{getDialogTitle()}</DialogTitle>
                 </DialogHeader>
-                <FormProvider {...methods}>
-                  <form
-                    onSubmit={methods.handleSubmit(onSubmit)}
-                    className="space-y-6 mt-6"
-                  >
-                    {/* File Meta Information */}
-                    <FileMetaCard />
-
-                    {/* Parties Section */}
-                    <PartiesAccordion />
-
-                    {/* Action Buttons */}
-                    <div className="flex justify-end gap-4 pt-6 border-t">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={handleCancel}
-                        className="border-red-500 text-red-500 hover:bg-red-50"
-                      >
-                        Huỷ
-                      </Button>
-                      <Button
-                        type="submit"
-                        className="bg-orange-700 hover:bg-orange-900 px-8"
-                        disabled={methods.formState.isSubmitting}
-                      >
-                        {methods.formState.isSubmitting
-                          ? "Đang lưu..."
-                          : editingDocument ? "Cập nhật hồ sơ" : "Lưu hồ sơ"}
-                      </Button>
-                    </div>
-                  </form>
-                </FormProvider>
+                {renderDialogContent()}
               </DialogContent>
             </Dialog>
           </div>
@@ -386,7 +791,7 @@ export default function CustomersPage() {
           <CardHeader className="bg-muted/50 border-b">
             <CardTitle className="flex items-center gap-2">
               <Users className="h-5 w-5 text-orange-600" />
-              Danh sách hồ sơ tài liệu 
+              Danh sách hồ sơ tài liệu
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
@@ -394,15 +799,15 @@ export default function CustomersPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-muted/50">
-                    <TableHead className="font-semibold">Mã giao dịch</TableHead>
+                    <TableHead className="font-semibold">
+                      Mã giao dịch
+                    </TableHead>
                     <TableHead className="font-semibold">Loại hồ sơ</TableHead>
                     <TableHead className="font-semibold">Mô tả</TableHead>
                     <TableHead className="font-semibold">
                       Thư ký / Công chứng viên
                     </TableHead>
-                    <TableHead className="font-semibold">
-                      Ngày tạo
-                    </TableHead>
+                    <TableHead className="font-semibold">Ngày tạo</TableHead>
                     <TableHead className="font-semibold">Thao tác</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -440,13 +845,18 @@ export default function CustomersPage() {
                         </TableCell>
                         <TableCell>
                           <Badge
-                            className={getDocumentTypeColor(document.documentType)}
+                            className={getDocumentTypeColor(
+                              document.documentType
+                            )}
                           >
                             {document.documentType}
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <div className="max-w-xs truncate" title={document.description}>
+                          <div
+                            className="max-w-xs "
+                            title={document.description}
+                          >
                             {document.description}
                           </div>
                         </TableCell>
@@ -478,6 +888,7 @@ export default function CustomersPage() {
                             <Button
                               variant="outline"
                               size="sm"
+                              onClick={() => handleViewDocument(document)}
                               title="Xem chi tiết"
                             >
                               <Eye className="h-4 w-4" />
@@ -485,11 +896,16 @@ export default function CustomersPage() {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => handleDeleteDocument(document.id)}
-                              title="Xóa"
-                              className="border-red-200 text-red-600 hover:bg-red-50"
+                              onClick={() => {
+                                setDialogMode("upload");
+                                setEditingDocument(document);
+                                setUploadingDocumentId(document.id);
+                                setAttachedFiles([]);
+                                setShowDialog(true);
+                              }}
+                              title="Thêm file"
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Upload className="h-4 w-4" />
                             </Button>
                           </div>
                         </TableCell>
