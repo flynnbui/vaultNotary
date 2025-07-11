@@ -15,7 +15,7 @@ import { Alert, AlertDescription } from '@/src/components/ui/alert';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/src/components/ui/accordion';
 import { Search, Info, User, CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
-import { customerSchema, type CustomerSummary } from '@/src/lib/schemas';
+import { extendedCustomerSchema, type CustomerSummary } from '@/src/lib/schemas';
 import { apiService } from '@/src/lib/api';
 
 // Custom DatePicker Component
@@ -316,10 +316,9 @@ export function CustomerDialog({
         businessName?: string;
         businessRegistrationNumber?: string;
     }>({
-        resolver: zodResolver(customerSchema),
+        resolver: zodResolver(extendedCustomerSchema),
         defaultValues: {
             customerType: 'individual',
-            isVip: false,
             fullName: '',
             permanentAddress: '',
             phone: '',
@@ -352,21 +351,13 @@ export function CustomerDialog({
         }
     }, [open, initialData, setValue, reset]);
 
+    // TODO: Implement proper lookup when API service is available
     const handleLookup = async (field: string, value: string) => {
         if (!value || value.length < 3) return;
 
         try {
-            let customer;
-            if (field === 'phone') {
-                customer = await apiService.lookupCustomerByPhone(value);
-            } else {
-                customer = await apiService.lookupCustomerByIdentity(value);
-            }
-            
-            if (customer) {
-                setExistingCustomerData(customer);
-                setShowExistingCustomer(true);
-            }
+            // For now, disable lookup functionality as apiService methods don't exist
+            console.log('Lookup not implemented for:', field, value);
         } catch (error) {
             console.log('Customer not found for lookup:', value);
         }
@@ -397,15 +388,32 @@ export function CustomerDialog({
     };
 
     const onSubmit = (data: any) => {
-        const customerSummary: CustomerSummary = {
+        console.log("🚀 CustomerDialog onSubmit called with data:", data);
+        console.log("🚀 Form errors:", errors);
+        
+        const completeCustomerData = {
+            ...data,
             id: initialData?.id || uuidv4(),
-            fullName: data.fullName,
-            idType: data.idType,
-            idNumber: data.idType === 'CMND' ? data.cmndNumber : data.passportNumber,
-            dob: data.dateOfBirth.toISOString()
+            idType: idType,
+            idNumber: idType === 'CMND' ? data.cmndNumber : data.passportNumber,
+            dob: data.dateOfBirth?.toISOString() || null
         };
 
-        onSave(customerSummary);
+        console.log("🚀 CustomerDialog submitting:", completeCustomerData);
+        onSave(completeCustomerData);
+    };
+
+    const onError = (errors: any) => {
+        console.log("❌ Form validation errors:", errors);
+        
+        // Display validation errors using toast
+        const errorMessages = Object.entries(errors).map(([field, error]: [string, any]) => {
+            return error.message || `Lỗi ở trường ${field}`;
+        });
+        
+        if (errorMessages.length > 0) {
+            toast.error(`Vui lòng kiểm tra lại thông tin: ${errorMessages.join(', ')}`);
+        }
     };
 
     return (
@@ -415,7 +423,7 @@ export function CustomerDialog({
                     <DialogTitle>{title}</DialogTitle>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 mt-6">
+                <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-8 mt-6">
                     {showExistingCustomer && (
                         <Alert>
                             <Info className="h-4 w-4" />
@@ -677,7 +685,12 @@ export function CustomerDialog({
                         <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                             Hủy
                         </Button>
-                        <Button type="submit" disabled={isSubmitting} className="px-8">
+                        <Button 
+                            type="submit" 
+                            disabled={isSubmitting} 
+                            className="px-8"
+                            onClick={() => console.log("🔥 Submit button clicked!")}
+                        >
                             {isSubmitting ? 'Đang lưu...' : (initialData ? 'Cập nhật' : 'Thêm')}
                         </Button>
                     </DialogFooter>
