@@ -18,11 +18,6 @@ export const useDocumentFiles = ({ editingDocument, dialogMode }: UseDocumentFil
   const { getDocumentFiles, deleteDocumentFile, getFileDownloadUrl, getFilePresignedUrl } = useDocumentApiService();
   const { uploadDocumentFile } = useUploadService();
 
-  // Load files when document changes
-  useEffect(() => {
-    loadDocumentFiles();
-  }, [editingDocument, dialogMode]);
-
   const loadDocumentFiles = useCallback(async () => {
     if (!editingDocument || !['view', 'edit', 'upload'].includes(dialogMode)) {
       setAttachedFiles([]);
@@ -48,6 +43,11 @@ export const useDocumentFiles = ({ editingDocument, dialogMode }: UseDocumentFil
       setLoading(false);
     }
   }, [editingDocument, dialogMode, getDocumentFiles]);
+
+  // Load files when document changes
+  useEffect(() => {
+    loadDocumentFiles();
+  }, [editingDocument, dialogMode, loadDocumentFiles]);
 
   const handleFileUpload = useCallback(async (fileList: FileList) => {
     if (!editingDocument) {

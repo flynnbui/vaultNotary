@@ -26,15 +26,6 @@ export const useDocumentForm = ({
     defaultValues: DocumentFormService.getDefaultFormValues(),
   });
 
-  // Reset form when editing document changes
-  useEffect(() => {
-    if (editingDocument && (dialogMode === "edit" || dialogMode === "view")) {
-      loadDocumentData(editingDocument);
-    } else {
-      methods.reset(DocumentFormService.getDefaultFormValues());
-    }
-  }, [editingDocument, dialogMode, methods]);
-
   const loadDocumentData = useCallback(async (document: DocumentType | DocumentWithPopulatedParties) => {
     try {
       // If document doesn't have populated parties, fetch them
@@ -62,6 +53,15 @@ export const useDocumentForm = ({
       toast.error("Có lỗi khi tải thông tin hồ sơ");
     }
   }, [getDocumentWithPopulatedParties, methods]);
+
+  // Reset form when editing document changes
+  useEffect(() => {
+    if (editingDocument && (dialogMode === "edit" || dialogMode === "view")) {
+      loadDocumentData(editingDocument);
+    } else {
+      methods.reset(DocumentFormService.getDefaultFormValues());
+    }
+  }, [editingDocument, dialogMode, methods, loadDocumentData]);
 
   const handleSubmit = useCallback(async (data: FileFormData) => {
     try {

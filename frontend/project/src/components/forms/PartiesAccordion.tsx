@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useFormContext, useFieldArray } from "react-hook-form";
 import { motion } from "framer-motion";
 import {
@@ -82,26 +82,15 @@ export function PartiesAccordion({
   const partiesC = useFieldArray({ control, name: "parties.C" });
 
   // Watch for changes in parties to load customer details
-  const watchedPartiesA = watch("parties.A") || [];
-  const watchedPartiesB = watch("parties.B") || [];
-  const watchedPartiesC = watch("parties.C") || [];
+  const partiesAData = watch("parties.A");
+  const partiesBData = watch("parties.B");
+  const partiesCData = watch("parties.C");
+  
+  const watchedPartiesA = useMemo(() => partiesAData || [], [partiesAData]);
+  const watchedPartiesB = useMemo(() => partiesBData || [], [partiesBData]);
+  const watchedPartiesC = useMemo(() => partiesCData || [], [partiesCData]);
 
-  // Load customer details when parties change
-  useEffect(() => {
-    const allCustomers = [
-      ...watchedPartiesA,
-      ...watchedPartiesB,
-      ...watchedPartiesC
-    ];
-    
-    allCustomers.forEach(customer => {
-      if (customer?.id && !customerDetails[customer.id]) {
-        loadCustomerDetails(customer.id);
-      }
-    });
-  }, [watchedPartiesA, watchedPartiesB, watchedPartiesC, customerDetails]);
-
-  const loadCustomerDetails = async (customerId: string) => {
+  const loadCustomerDetails = useCallback(async (customerId: string) => {
     if (!customerId || customerDetails[customerId] || loadingCustomers[customerId]) {
       return;
     }
@@ -121,7 +110,22 @@ export function PartiesAccordion({
     } finally {
       setLoadingCustomers((prev) => ({ ...prev, [customerId]: false }));
     }
-  };
+  }, [customerDetails, loadingCustomers, getCustomerById]);
+
+  // Load customer details when parties change
+  useEffect(() => {
+    const allCustomers = [
+      ...watchedPartiesA,
+      ...watchedPartiesB,
+      ...watchedPartiesC
+    ];
+    
+    allCustomers.forEach(customer => {
+      if (customer?.id && !customerDetails[customer.id]) {
+        loadCustomerDetails(customer.id);
+      }
+    });
+  }, [watchedPartiesA, watchedPartiesB, watchedPartiesC, customerDetails, loadCustomerDetails]);
 
   // Notify parent when dialog state changes
   const handleDialogOpenChange = (open: boolean) => {
