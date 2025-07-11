@@ -319,7 +319,6 @@ export function CustomerDialog({
         resolver: zodResolver(extendedCustomerSchema),
         defaultValues: {
             customerType: 'individual',
-            isVip: false,
             fullName: '',
             permanentAddress: '',
             phone: '',
@@ -352,21 +351,13 @@ export function CustomerDialog({
         }
     }, [open, initialData, setValue, reset]);
 
+    // TODO: Implement proper lookup when API service is available
     const handleLookup = async (field: string, value: string) => {
         if (!value || value.length < 3) return;
 
         try {
-            let customer;
-            if (field === 'phone') {
-                customer = await apiService.lookupCustomerByPhone(value);
-            } else {
-                customer = await apiService.lookupCustomerByIdentity(value);
-            }
-            
-            if (customer) {
-                setExistingCustomerData(customer);
-                setShowExistingCustomer(true);
-            }
+            // For now, disable lookup functionality as apiService methods don't exist
+            console.log('Lookup not implemented for:', field, value);
         } catch (error) {
             console.log('Customer not found for lookup:', value);
         }
@@ -400,7 +391,6 @@ export function CustomerDialog({
         console.log("🚀 CustomerDialog onSubmit called with data:", data);
         console.log("🚀 Form errors:", errors);
         
-        // Send the complete form data instead of just CustomerSummary
         const completeCustomerData = {
             ...data,
             id: initialData?.id || uuidv4(),
@@ -415,6 +405,15 @@ export function CustomerDialog({
 
     const onError = (errors: any) => {
         console.log("❌ Form validation errors:", errors);
+        
+        // Display validation errors using toast
+        const errorMessages = Object.entries(errors).map(([field, error]: [string, any]) => {
+            return error.message || `Lỗi ở trường ${field}`;
+        });
+        
+        if (errorMessages.length > 0) {
+            toast.error(`Vui lòng kiểm tra lại thông tin: ${errorMessages.join(', ')}`);
+        }
     };
 
     return (
