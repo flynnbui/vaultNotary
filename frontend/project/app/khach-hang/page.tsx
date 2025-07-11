@@ -122,7 +122,7 @@ export default function CustomersPage() {
     } catch (error: any) {
       console.error("Error loading customers:", error);
       
-      // Handle Axios errors properly
+      // Handle Axios errors 
       if (error.response) {
         const errorMessage = error.response.data || error.response.statusText || error.message;
         toast.error(`Lỗi ${error.response.status}: ${errorMessage}`);
@@ -415,7 +415,7 @@ export default function CustomersPage() {
                       <TableHead className="font-semibold">Họ tên</TableHead>
                       <TableHead className="font-semibold">Tổ chức</TableHead>
                       <TableHead className="font-semibold">Điện thoại</TableHead>
-                      <TableHead className="font-semibold">Email</TableHead>
+                      <TableHead className="font-semibold">Địa chỉ</TableHead>
                       <TableHead className="font-semibold">CMND/CCCD</TableHead>
                       <TableHead className="font-semibold">Passport</TableHead>
                       <TableHead className="font-semibold">Thao tác</TableHead>
@@ -444,7 +444,7 @@ export default function CustomersPage() {
                         </TableCell>
                         <TableCell>{customer.businessName || "-"}</TableCell>
                         <TableCell>{customer.phone || "-"}</TableCell>
-                        <TableCell>{customer.email || "-"}</TableCell>
+                        <TableCell>{customer.address || "-"}</TableCell>
                         <TableCell className="font-mono">
                           {customer.documentId || "-"}
                         </TableCell>
