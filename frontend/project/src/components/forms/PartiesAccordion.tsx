@@ -86,129 +86,42 @@ export function PartiesAccordion({
   const watchedPartiesB = watch("parties.B") || [];
   const watchedPartiesC = watch("parties.C") || [];
 
-  
-
-  // 🆕 Function để load chi tiết khách hàng
-// Thay thế useEffect trong PartiesAccordion (paste-2.txt)
-useEffect(() => {
-  console.log("🔍 [PartiesAccordion] useEffect triggered");
-  console.log("🔍 [PartiesAccordion] watchedPartiesA:", watchedPartiesA);
-  console.log("🔍 [PartiesAccordion] watchedPartiesB:", watchedPartiesB);
-  console.log("🔍 [PartiesAccordion] watchedPartiesC:", watchedPartiesC);
-  
-  const allCustomers = [
-    ...watchedPartiesA,
-    ...watchedPartiesB,
-    ...watchedPartiesC
-  ];
-  
-  console.log("🔍 [PartiesAccordion] allCustomers:", allCustomers);
-  console.log("🔍 [PartiesAccordion] allCustomers length:", allCustomers.length);
-
-  if (allCustomers.length === 0) {
-    console.warn("⚠️ [PartiesAccordion] No customers found in watched parties");
-    return;
-  }
-
-  allCustomers.forEach((customer, index) => {
-    console.log(`🔍 [PartiesAccordion] Processing customer ${index}:`, customer);
-    
-    if (customer?.id) {
-      console.log(`🔍 [PartiesAccordion] Customer ${index} has ID: ${customer.id}`);
-      
-      // Chỉ load nếu chưa có dữ liệu và không đang loading
-      if (!customerDetails[customer.id] && !loadingCustomers[customer.id]) {
-        console.log(`🔍 [PartiesAccordion] Loading details for customer: ${customer.id}`);
-        loadCustomerDetails(customer.id);
-      } else {
-        console.log(`✅ [PartiesAccordion] Customer ${customer.id} already loaded or loading`);
-      }
-    } else {
-      console.warn(`⚠️ [PartiesAccordion] Customer ${index} has no ID:`, customer);
-    }
-  });
-}, [watchedPartiesA, watchedPartiesB, watchedPartiesC, customerDetails, loadingCustomers]);
-
-// Cập nhật loadCustomerDetails function
-const loadCustomerDetails = async (customerId: string) => {
-  console.log(`🔍 [PartiesAccordion] loadCustomerDetails called with ID: ${customerId}`);
-  
-  if (!customerId) {
-    console.warn("⚠️ [PartiesAccordion] No customerId provided");
-    return;
-  }
-  
-  if (customerDetails[customerId]) {
-    console.log(`✅ [PartiesAccordion] Customer ${customerId} already loaded`);
-    return;
-  }
-  
-  if (loadingCustomers[customerId]) {
-    console.log(`⏳ [PartiesAccordion] Customer ${customerId} already loading`);
-    return;
-  }
-
-  console.log(`🔄 [PartiesAccordion] Starting to load customer: ${customerId}`);
-  setLoadingCustomers((prev) => ({ ...prev, [customerId]: true }));
-
-  try {
-    console.log(`🌐 [PartiesAccordion] Calling API getCustomerById(${customerId})`);
-    const customer = await getCustomerById(customerId);
-    
-    console.log(`🌐 [PartiesAccordion] API response for ${customerId}:`, customer);
-
-    if (customer) {
-      console.log(`✅ [PartiesAccordion] Successfully loaded customer ${customerId}`);
-      setCustomerDetails((prev) => ({
-        ...prev,
-        [customerId]: customer as CustomerDetails,
-      }));
-    } else {
-      console.warn(`⚠️ [PartiesAccordion] No customer data returned for ID: ${customerId}`);
-    }
-  } catch (error) {
-    console.error(`❌ [PartiesAccordion] Error loading customer ${customerId}:`, error);
-  } finally {
-    console.log(`🏁 [PartiesAccordion] Finished loading customer ${customerId}`);
-    setLoadingCustomers((prev) => ({ ...prev, [customerId]: false }));
-  }
-};
-
-
-  // 🔍 Load customer details when parties change
+  // Load customer details when parties change
   useEffect(() => {
-    console.log("🔍 Debug - Watched parties:");
-    console.log("- Bên A:", watchedPartiesA);
-    console.log("- Bên B:", watchedPartiesB);
-    console.log("- Bên C:", watchedPartiesC);
-    
     const allCustomers = [
       ...watchedPartiesA,
       ...watchedPartiesB,
       ...watchedPartiesC
     ];
     
-    console.log("🔍 All customers to load:", allCustomers);
-
     allCustomers.forEach(customer => {
-      if (customer?.id) {
-        console.log(`🔍 Found customer ID: ${customer.id}`);
-        if (!customerDetails[customer.id]) {
-          loadCustomerDetails(customer.id);
-        } else {
-          console.log(`✅ Customer ${customer.id} already loaded`);
-        }
-      } else {
-        console.log("⚠️ Customer without ID:", customer);
+      if (customer?.id && !customerDetails[customer.id]) {
+        loadCustomerDetails(customer.id);
       }
     });
-  }, [watchedPartiesA, watchedPartiesB, watchedPartiesC]);
+  }, [watchedPartiesA, watchedPartiesB, watchedPartiesC, customerDetails]);
 
-  // 🔍 Debug customer details state
-  useEffect(() => {
-    console.log("🔍 Customer details state updated:", customerDetails);
-    console.log("🔍 Loading customers state:", loadingCustomers);
-  }, [customerDetails, loadingCustomers]);
+  const loadCustomerDetails = async (customerId: string) => {
+    if (!customerId || customerDetails[customerId] || loadingCustomers[customerId]) {
+      return;
+    }
+
+    setLoadingCustomers((prev) => ({ ...prev, [customerId]: true }));
+
+    try {
+      const customer = await getCustomerById(customerId);
+      if (customer) {
+        setCustomerDetails((prev) => ({
+          ...prev,
+          [customerId]: customer as CustomerDetails,
+        }));
+      }
+    } catch (error) {
+      console.error(`Error loading customer ${customerId}:`, error);
+    } finally {
+      setLoadingCustomers((prev) => ({ ...prev, [customerId]: false }));
+    }
+  };
 
   // Notify parent when dialog state changes
   const handleDialogOpenChange = (open: boolean) => {
@@ -288,13 +201,13 @@ const loadCustomerDetails = async (customerId: string) => {
     handleDialogOpenChange(false);
   };
 
-  // 🆕 Enhanced function để lấy badge loại khách hàng từ API data
+  // Enhanced function to get customer type badge from API data or form data
   const getCustomerTypeBadge = (customer: CustomerSummary) => {
     const customerId = customer.id;
     const details = customerDetails[customerId];
 
-    if (details) {
-      // Sử dụng type từ API (0 = Individual, 1 = Business)
+    // Use API data if available
+    if (details && details.type !== undefined) {
       const isIndividual = details.type === 0;
       return isIndividual ? (
         <Badge variant="secondary">Cá nhân</Badge>
@@ -303,11 +216,20 @@ const loadCustomerDetails = async (customerId: string) => {
       );
     }
 
-    // Fallback nếu chưa có dữ liệu từ API
+    // Use form data as fallback
+    if (customer.type !== undefined) {
+      const isIndividual = customer.type === 0;
+      return isIndividual ? (
+        <Badge variant="secondary">Cá nhân</Badge>
+      ) : (
+        <Badge variant="outline">Tổ chức</Badge>
+      );
+    }
+
+    // Final fallback based on business fields
     const isOrganization =
-      (customer as any).businessName ||
-      (customer as any).businessRegistrationNumber ||
-      (customer as any).type === 1;
+      customer.businessName ||
+      customer.businessRegistrationNumber;
 
     return isOrganization ? (
       <Badge variant="outline">Tổ chức</Badge>
@@ -355,9 +277,9 @@ const loadCustomerDetails = async (customerId: string) => {
                       <div className="font-semibold">
                         {details?.fullName || customer.fullName}
                       </div>
-                      {details?.businessName && (
+                      {(details?.businessName || customer.businessName) && (
                         <div className="text-sm text-muted-foreground">
-                          {details.businessName}
+                          {details?.businessName || customer.businessName}
                         </div>
                       )}
                     </div>
@@ -366,27 +288,27 @@ const loadCustomerDetails = async (customerId: string) => {
                 <TableCell>{getCustomerTypeBadge(customer)}</TableCell>
                 <TableCell>
                   <div className="font-mono text-sm">
-                    {details?.phone || "-"}
+                    {details?.phone || customer.phone || "-"}
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div className="text-sm">{details?.email || "-"}</div>
+                  <div className="text-sm">{details?.email || customer.email || "-"}</div>
                 </TableCell>
-                <TableCell className="max-w-[200px]" title={details?.address}>
-                  <div className="text-sm">{details?.address || "-"}</div>
-                </TableCell>
-                <TableCell className="font-mono text-sm">
-                  {details?.documentId || "-"}
+                <TableCell className="max-w-[200px]" title={details?.address || customer.address}>
+                  <div className="text-sm">{details?.address || customer.address || "-"}</div>
                 </TableCell>
                 <TableCell className="font-mono text-sm">
-                  {details?.passportId || "-"}
+                  {details?.documentId || customer.documentId || "-"}
+                </TableCell>
+                <TableCell className="font-mono text-sm">
+                  {details?.passportId || customer.passportId || "-"}
                 </TableCell>
                 <TableCell>
                   <div className="text-sm">
-                    <div>{details?.businessName || "-"}</div>
-                    {details?.businessRegistrationNumber && (
+                    <div>{details?.businessName || customer.businessName || "-"}</div>
+                    {(details?.businessRegistrationNumber || customer.businessRegistrationNumber) && (
                       <div className="text-xs text-muted-foreground font-mono">
-                        {details.businessRegistrationNumber}
+                        {details?.businessRegistrationNumber || customer.businessRegistrationNumber}
                       </div>
                     )}
                   </div>
