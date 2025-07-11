@@ -43,18 +43,10 @@ public class DocumentsController : ControllerBase
     [HasPermission(Permissions.ReadDocuments)]
     public async Task<ActionResult<DocumentDto>> GetById(string id)
     {
-        try
-        {
-            var document = await _documentService.GetByIdAsync(id);
-            if (document == null)
-                return NotFound("Document not found");
-
-            return Ok(document);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"An error occurred while retrieving the document: {ex.Message}");
-        }
+        var document = await _documentService.GetByIdAsync(id);
+        if (document == null)
+            return NotFound("Document not found");
+        return Ok(document);
     }
 
 

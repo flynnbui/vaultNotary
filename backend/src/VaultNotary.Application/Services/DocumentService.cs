@@ -128,6 +128,23 @@ public class DocumentService : IDocumentService
 
     public async Task<string> CreateAsync(CreateDocumentDto createDocumentDto)
     {
+        var existingDocument = await GetByTransactionCodeAsync(createDocumentDto.TransactionCode);
+        if (existingDocument != null)
+        {
+            throw new InvalidOperationException($"Document with transaction code '{createDocumentDto.TransactionCode}' already exists.");
+        }
+        // Validate all customers exist before creating document
+        foreach (var partyDto in createDocumentDto.Parties)
+        {
+            if (!string.IsNullOrWhiteSpace(partyDto.CustomerId))
+            {
+                var customerExists = await _customerRepository.ExistsAsync(partyDto.CustomerId);
+                if (!customerExists)
+                {
+                    throw new InvalidOperationException($"Customer with ID '{partyDto.CustomerId}' does not exist.");
+                }
+            }
+        }
         var document = new Document
         {
             Id = Guid.NewGuid().ToString(),
@@ -152,7 +169,7 @@ public class DocumentService : IDocumentService
                 CustomerId = partyDto.CustomerId,
                 PartyRole = partyDto.PartyRole,
                 SignatureStatus = partyDto.SignatureStatus,
-                NotaryDate = partyDto.NotaryDate,
+                NotaryDate = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };

@@ -94,18 +94,18 @@ public class UploadController : ControllerBase
 
             var documentFileId = await _documentFileService.CreateAsync(createDto);
 
-            // Trigger PDF compression job if needed
-            if (AllowedFileTypes.IsPdf(request.File.ContentType))
-            {
-                var compressJob = new CompressFileJob
-                {
-                    FileKey = s3Key,
-                    DocumentId = request.DocumentId,
-                    FileName = request.File.FileName
-                };
+            // TODO: Trigger PDF compression job
+            // if (AllowedFileTypes.IsPdf(request.File.ContentType))
+            // {
+            //     var compressJob = new CompressFileJob
+            //     {
+            //         FileKey = s3Key,
+            //         DocumentId = request.DocumentId,
+            //         FileName = request.File.FileName
+            //     };
                 
-                await _jobQueue.PublishAsync(compressJob);
-            }
+            //     await _jobQueue.PublishAsync(compressJob);
+            // }
 
             return Ok(new FileUploadResponse
             {
