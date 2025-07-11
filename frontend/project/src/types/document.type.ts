@@ -19,7 +19,7 @@ export interface DocumentType {
   createdAt: string;
   updatedAt: string;
   partyDocumentLinks: PartyDocumentLinkType[];
-  files: DocumentFileType[];
+
 }
 
 export interface DocumentListType {

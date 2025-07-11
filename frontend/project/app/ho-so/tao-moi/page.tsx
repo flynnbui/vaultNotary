@@ -54,19 +54,8 @@ import "@/src/lib/i18n";
 import useDocumentService from "@/src/services/useDocumentService";
 import { FileItem, FileListCard } from "@/src/components/forms/FileListCard";
 import useUploadService from "@/src/services/useUploadService";
+import { DocumentType } from "@/src/types/document.type";
 
-// Interface cho DocumentType
-export interface DocumentType {
-  id: string;
-  createdDate: string;
-  secretary: string;
-  notaryPublic: string;
-  transactionCode: string;
-  description: string;
-  documentType: string;
-  createdAt: string;
-  updatedAt: string;
-}
 
 // Interface cho response pagination (để match với service)
 interface PaginatedResponse<T> {
@@ -77,11 +66,7 @@ interface PaginatedResponse<T> {
 }
 
 // Helper function để transform API response thành FileItem
-export function transformApiFileToFileItem(
-  apiFile: any,
-  fileName: string,
-  fileSize: number
-): FileItem {
+export function transformApiFileToFileItem(apiFile: any, fileName: string, fileSize: number): FileItem {
   return {
     id: apiFile.id,
     name: fileName,
@@ -109,7 +94,8 @@ export default function CustomersPage() {
     null
   );
   const [attachedFiles, setAttachedFiles] = useState<FileItem[]>([]);
-
+  const [customerDialogOpen, setCustomerDialogOpen] = useState(false);
+  
   const { uploadDocumentFile } = useUploadService();
   // Import all document service methods
   const {
@@ -137,7 +123,7 @@ export default function CustomersPage() {
       thuKy: "",
       congChungVien: "",
       maGiaoDich: "",
-      moTa: "",
+      description: "",
       loaiHoSo: "",
       parties: {
         A: [],
@@ -155,18 +141,13 @@ export default function CustomersPage() {
   // Load files when viewing/editing a document
   useEffect(() => {
     const loadDocumentFiles = async () => {
-      if (
-        editingDocument &&
-        (dialogMode === "view" ||
-          dialogMode === "edit" ||
-          dialogMode === "upload")
-      ) {
+      if (editingDocument && (dialogMode === "view" || dialogMode === "edit" || dialogMode === "upload")) {
         try {
           console.log("🔄 Loading files for document:", editingDocument.id);
           const files = await getDocumentFiles(editingDocument.id);
-
+          
           // Transform API files to FileItem format
-          const transformedFiles = files.map((apiFile) => ({
+          const transformedFiles = files.map(apiFile => ({
             id: apiFile.id,
             name: apiFile.fileName,
             size: apiFile.fileSize,
@@ -174,7 +155,7 @@ export default function CustomersPage() {
             uploadDate: apiFile.createdAt,
             url: getFileDownloadUrl(apiFile.id),
           }));
-
+          
           setAttachedFiles(transformedFiles);
           console.log("✅ Loaded files:", transformedFiles);
         } catch (error) {
@@ -195,7 +176,7 @@ export default function CustomersPage() {
         thuKy: editingDocument.secretary,
         congChungVien: editingDocument.notaryPublic,
         maGiaoDich: editingDocument.transactionCode,
-        moTa: editingDocument.description,
+description: editingDocument?.description ?? "",
         loaiHoSo: editingDocument.documentType,
         parties: {
           A: [],
@@ -209,7 +190,7 @@ export default function CustomersPage() {
         thuKy: "",
         congChungVien: "",
         maGiaoDich: "",
-        moTa: "",
+        description: "",
         loaiHoSo: "",
         parties: {
           A: [],
@@ -287,7 +268,7 @@ export default function CustomersPage() {
         secretary: data.thuKy,
         notaryPublic: data.congChungVien,
         transactionCode: data.maGiaoDich || "",
-        description: data.moTa || "",
+        description: data.description || "",
         documentType: data.loaiHoSo,
       };
 
@@ -331,7 +312,7 @@ export default function CustomersPage() {
     for (const file of Array.from(fileList)) {
       try {
         const result = await uploadDocumentFile({
-          documentId: uploadingDocumentId,
+          documentId: uploadingDocumentId, 
           file: file,
         });
 
@@ -351,12 +332,12 @@ export default function CustomersPage() {
 
     setAttachedFiles((prev) => [...prev, ...uploadedFiles]);
     toast.success(`Đã upload ${uploadedFiles.length} file`);
-
+    
     // 🆕 Reload files from server to ensure consistency
     if (editingDocument) {
       try {
         const serverFiles = await getDocumentFiles(editingDocument.id);
-        const transformedFiles = serverFiles.map((apiFile) => ({
+        const transformedFiles = serverFiles.map(apiFile => ({
           id: apiFile.id,
           name: apiFile.fileName,
           size: apiFile.fileSize,
@@ -376,7 +357,7 @@ export default function CustomersPage() {
     if (dialogMode === "view") {
       setShowDialog(false);
       setEditingDocument(undefined);
-      setUploadingDocumentId(null);
+      setUploadingDocumentId(null); 
       return;
     }
 
@@ -394,29 +375,56 @@ export default function CustomersPage() {
   const handleFileDownload = async (file: FileItem) => {
     try {
       console.log("🔄 Downloading file:", file.name);
-
-      // Get presigned URL for download
-      const presignedUrl = await getFilePresignedUrl(file.id);
-
-      if (presignedUrl) {
-        // Create a temporary link to trigger download
-        const link = document.createElement("a");
-        link.href = presignedUrl;
-        link.download = file.name;
-        link.target = "_blank";
-
-        // Add to DOM temporarily
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-        toast.success(`Đang tải xuống: ${file.name}`);
-      } else {
-        throw new Error("Không thể lấy link download");
+      
+      // Method 1: Try presigned URL download
+      try {
+        const presignedUrl = await getFilePresignedUrl(file.id);
+        
+        if (presignedUrl) {
+          // Create a temporary link to trigger download
+          const link = document.createElement('a');
+          link.href = presignedUrl;
+          link.download = file.name;
+          link.target = '_blank';
+          
+          // Add to DOM temporarily
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          
+          toast.success(`Đang tải xuống: ${file.name}`);
+          return;
+        }
+      } catch (presignedError) {
+        console.warn("Presigned URL failed, trying direct download:", presignedError);
       }
+
+      // Method 2: Fallback to direct API download
+      const directDownloadUrl = getFileDownloadUrl(file.id);
+      
+      // Try using fetch to download and create blob
+      const response = await fetch(directDownloadUrl);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = file.name;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Clean up
+      window.URL.revokeObjectURL(url);
+      
+      toast.success(`Đã tải xuống: ${file.name}`);
     } catch (error) {
       console.error("Download error:", error);
-      toast.error(`Không thể tải xuống file: ${file.name}`);
+      toast.error(`Không thể tải xuống file: ${file.name}. Chi tiết: ${error.message}`);
     }
   };
 
@@ -424,18 +432,18 @@ export default function CustomersPage() {
   const handleFilePreview = async (file: FileItem) => {
     try {
       toast.info("Đang tạo link xem trước...");
-
+      
       // Get presigned URL for preview
       const presignedUrl = await getFilePresignedUrl(file.id);
-
+      
       if (presignedUrl) {
         // Open in new tab for preview
-        window.open(presignedUrl, "_blank");
+        window.open(presignedUrl, '_blank');
         toast.success("Đã mở file xem trước");
       } else {
         // Fallback to direct download URL
         const downloadUrl = getFileDownloadUrl(file.id);
-        window.open(downloadUrl, "_blank");
+        window.open(downloadUrl, '_blank');
         toast.success("Đã mở file");
       }
     } catch (error) {
@@ -449,15 +457,15 @@ export default function CustomersPage() {
     if (confirm(`Bạn có chắc chắn muốn xóa file "${file.name}"?`)) {
       try {
         await deleteDocumentFile(file.id);
-
+        
         // Remove from local state
-        setAttachedFiles((prev) => prev.filter((f) => f.id !== file.id));
+        setAttachedFiles(prev => prev.filter(f => f.id !== file.id));
         toast.success(`Đã xóa file: ${file.name}`);
-
+        
         // Reload files from server to ensure consistency
         if (editingDocument) {
           const serverFiles = await getDocumentFiles(editingDocument.id);
-          const transformedFiles = serverFiles.map((apiFile) => ({
+          const transformedFiles = serverFiles.map(apiFile => ({
             id: apiFile.id,
             name: apiFile.fileName,
             size: apiFile.fileSize,
@@ -553,14 +561,18 @@ export default function CustomersPage() {
             <FileMetaCard readOnly={true} />
 
             {/* Parties Section - Read Only */}
-            <PartiesAccordion readOnly={true} />
+            <PartiesAccordion 
+              readOnly={true} 
+              onCustomerDialogChange={setCustomerDialogOpen}
+            />
 
             <FileListCard
+              readOnly={isReadOnly}
               files={attachedFiles}
               onFilesChange={setAttachedFiles}
               onFileDownload={handleFileDownload}
               onFilePreview={handleFilePreview}
-              readOnly={true}
+              title="File đính kèm"
             />
 
             {/* Action Buttons for Preview Mode */}
@@ -601,8 +613,6 @@ export default function CustomersPage() {
               onFilePreview={handleFilePreview}
               onFileDelete={handleFileDelete}
               readOnly={false}
-              allowDelete={true}
-              allowUpload={true}
             />
 
             {/* Action Buttons for Upload Mode */}
@@ -627,46 +637,6 @@ export default function CustomersPage() {
         </FormProvider>
       );
     }
-    if (dialogMode === "create") {
-      return (
-   <FormProvider {...methods}>
-        <form
-          onSubmit={methods.handleSubmit(onSubmit)}
-          className="space-y-6 mt-6"
-        >
-          {/* File Meta Information */}
-          <FileMetaCard readOnly={false} />
-
-          {/* Parties Section */}
-          <PartiesAccordion readOnly={false} />
-
-       
-          {/* Action Buttons */}
-          <div className="flex justify-end gap-4 pt-6 border-t">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleCancel}
-              className="border-red-500 text-red-500 hover:bg-red-50"
-            >
-              Huỷ
-            </Button>
-            <Button
-              type="submit"
-              className="bg-orange-700 hover:bg-orange-900 px-8"
-              disabled={methods.formState.isSubmitting || apiLoading}
-            >
-              {methods.formState.isSubmitting || apiLoading
-                ? "Đang lưu..."
-                : editingDocument
-                ? "Cập nhật hồ sơ"
-                : "Lưu hồ sơ"}
-            </Button>
-          </div>
-        </form>
-      </FormProvider>
-      );
-    }
 
     // Form mode (create/edit)
     return (
@@ -679,19 +649,22 @@ export default function CustomersPage() {
           <FileMetaCard readOnly={false} />
 
           {/* Parties Section */}
-          <PartiesAccordion readOnly={false} />
-
-          <FileListCard
-            files={attachedFiles}
-            onFilesChange={setAttachedFiles}
-            onFileDownload={handleFileDownload}
-            onFilePreview={handleFilePreview}
-            onFileDelete={handleFileDelete}
-            readOnly={false}
-            allowDelete={true}
-            allowUpload={false}
-            title="File đính kèm"
+          <PartiesAccordion 
+            readOnly={false} 
+            onCustomerDialogChange={setCustomerDialogOpen}
           />
+
+          {dialogMode !== "create" && (
+            <FileListCard
+              readOnly={false}
+              files={attachedFiles}
+              onFilesChange={setAttachedFiles}
+              onFileDownload={handleFileDownload}
+              onFilePreview={handleFilePreview}
+              onFileDelete={handleFileDelete}
+              title="File đính kèm"
+            />
+          )}
 
           {/* Action Buttons */}
           <div className="flex justify-end gap-4 pt-6 border-t">
@@ -899,7 +872,7 @@ export default function CustomersPage() {
                               onClick={() => {
                                 setDialogMode("upload");
                                 setEditingDocument(document);
-                                setUploadingDocumentId(document.id);
+                                setUploadingDocumentId(document.id); 
                                 setAttachedFiles([]);
                                 setShowDialog(true);
                               }}

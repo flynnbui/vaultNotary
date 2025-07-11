@@ -16,7 +16,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Search, Info, User, CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { extendedCustomerSchema, type CustomerSummary } from '@/src/lib/schemas';
-import { apiService } from '@/src/lib/api';
 
 // Custom DatePicker Component
 interface CustomDatePickerProps {
