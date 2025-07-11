@@ -168,7 +168,6 @@ public class DocumentService : IDocumentService
                 DocumentId = documentId,
                 CustomerId = partyDto.CustomerId,
                 PartyRole = partyDto.PartyRole,
-                SignatureStatus = partyDto.SignatureStatus,
                 NotaryDate = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
@@ -206,24 +205,32 @@ public class DocumentService : IDocumentService
         return await _documentRepository.ExistsAsync(id);
     }
 
-    public async Task LinkPartyAsync(string documentId, string customerId, CreatePartyDocumentLinkDto linkDto)
+    public async Task LinkPartyAsync(string documentId, CreatePartyDocumentLinkDto linkDto)
     {
+        var customerExists = await _customerRepository.ExistsAsync(linkDto.CustomerId);
+        if (!customerExists)
+        {
+            throw new InvalidOperationException($"Customer with ID '{linkDto.CustomerId}' does not exist.");
+        }
         var partyLink = new PartyDocumentLink
         {
             DocumentId = documentId,
-            CustomerId = customerId,
+            CustomerId = linkDto.CustomerId,
             PartyRole = linkDto.PartyRole,
-            SignatureStatus = linkDto.SignatureStatus,
-            NotaryDate = linkDto.NotaryDate,
+            NotaryDate = DateTime.UtcNow,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
-
         await _partyDocumentRepository.CreateAsync(partyLink);
     }
 
     public async Task UnlinkPartyAsync(string documentId, string customerId)
     {
+        var customerExists = await _customerRepository.ExistsAsync(customerId);
+        if (!customerExists)
+        {
+            throw new InvalidOperationException($"Customer with ID '{customerId}' does not exist.");
+        }
         await _partyDocumentRepository.DeleteAsync(documentId, customerId);
     }
 

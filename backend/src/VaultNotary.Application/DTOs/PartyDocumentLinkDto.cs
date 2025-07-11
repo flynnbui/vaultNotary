@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using VaultNotary.Domain.Entities;
 
 namespace VaultNotary.Application.DTOs;
@@ -17,9 +18,12 @@ public class PartyDocumentLinkDto
 
 public class CreatePartyDocumentLinkDto
 {
+    [Required(ErrorMessage = "Mã khách hàng là bắt buộc.")]
+    [MinLength(1, ErrorMessage = "Mã khách hàng không được để trống.")]
     public string CustomerId { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Vai trò của bên tham gia là bắt buộc.")]
     public PartyRole PartyRole { get; set; }
-    public DateTime NotaryDate { get; set; }
 }
 
 public class UpdatePartyDocumentLinkDto
@@ -27,3 +31,4 @@ public class UpdatePartyDocumentLinkDto
     public PartyRole PartyRole { get; set; }
     public DateTime NotaryDate { get; set; }
 }
+

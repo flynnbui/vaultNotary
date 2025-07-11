@@ -19,9 +19,9 @@ public class PartyDocumentLink
     
     [Required]
     public PartyRole PartyRole { get; set; }
-    
+
     [Required]
-    public SignatureStatus SignatureStatus { get; set; }
+    public SignatureStatus SignatureStatus { get; set; } = SignatureStatus.Signed;
     
     [Required]
     public DateTime NotaryDate { get; set; }

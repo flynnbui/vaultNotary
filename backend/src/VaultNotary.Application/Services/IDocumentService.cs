@@ -18,7 +18,7 @@ public interface IDocumentService
     Task UpdateAsync(string id, UpdateDocumentDto updateDocumentDto);
     Task DeleteAsync(string id);
     Task<bool> ExistsAsync(string id);
-    Task LinkPartyAsync(string documentId, string customerId, CreatePartyDocumentLinkDto linkDto);
+    Task LinkPartyAsync(string documentId, CreatePartyDocumentLinkDto linkDto);
     Task UnlinkPartyAsync(string documentId, string customerId);
     Task<List<DocumentDto>> GetByPartyIdAsync(string partyId);
 }
