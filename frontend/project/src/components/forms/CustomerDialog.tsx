@@ -16,6 +16,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Search, Info, User, CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { extendedCustomerSchema, type CustomerSummary } from '@/src/lib/schemas';
+import useCustomerService from '@/src/services/useCustomerService';
+import { CreateCustomerType } from '@/src/types/customer.type';
 
 // Custom DatePicker Component
 interface CustomDatePickerProps {
@@ -289,6 +291,8 @@ export function CustomerDialog({
     const [showExistingCustomer, setShowExistingCustomer] = useState(false);
     const [existingCustomerData, setExistingCustomerData] = useState<any>(null);
     const [idType, setIdType] = useState<'CMND' | 'Passport'>('CMND');
+    
+    const { createCustomer } = useCustomerService();
 
     const {
         register,
@@ -386,20 +390,48 @@ export function CustomerDialog({
         }
     };
 
-    const onSubmit = (data: any) => {
+    const onSubmit = async (data: any) => {
         console.log("🚀 CustomerDialog onSubmit called with data:", data);
         console.log("🚀 Form errors:", errors);
         
-        const completeCustomerData = {
-            ...data,
-            id: initialData?.id || uuidv4(),
-            idType: idType,
-            idNumber: idType === 'CMND' ? data.cmndNumber : data.passportNumber,
-            dob: data.dateOfBirth?.toISOString() || null
-        };
+        try {
+            let customerId = initialData?.id;
+            
+            // Only create customer via API if this is a new customer (not editing)
+            if (!initialData) {
+                // Transform form data to match backend customer format
+                const customerApiData: CreateCustomerType = {
+                    fullName: data.fullName,
+                    address: data.permanentAddress,
+                    phone: data.phone || null,
+                    email: data.email || null,
+                    type: data.customerType === 'organization' ? 1 : 0,
+                    documentId: idType === 'CMND' ? data.cmndNumber : null,
+                    passportId: idType === 'Passport' ? data.passportNumber : null,
+                    businessRegistrationNumber: data.businessRegistrationNumber || null,
+                    businessName: data.businessName || null,
+                };
+                
+                console.log("🚀 Creating customer via API:", customerApiData);
+                customerId = await createCustomer(customerApiData);
+                console.log("✅ Customer created with ID:", customerId);
+            }
+            
+            // Prepare data for the form (what gets added to parties)
+            const completeCustomerData = {
+                ...data,
+                id: customerId || uuidv4(),
+                idType: idType,
+                idNumber: idType === 'CMND' ? data.cmndNumber : data.passportNumber,
+                dob: data.dateOfBirth?.toISOString() || null
+            };
 
-        console.log("🚀 CustomerDialog submitting:", completeCustomerData);
-        onSave(completeCustomerData);
+            console.log("🚀 CustomerDialog submitting to form:", completeCustomerData);
+            onSave(completeCustomerData);
+        } catch (error) {
+            console.error("❌ Error creating customer:", error);
+            toast.error("Không thể tạo khách hàng. Vui lòng thử lại!");
+        }
     };
 
     const onError = (errors: any) => {
