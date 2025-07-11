@@ -70,6 +70,7 @@ public class CustomerService : ICustomerService
         {
             Id = Guid.NewGuid().ToString(),
             FullName = createCustomerDto.FullName,
+            Gender = createCustomerDto.Gender,
             Address = createCustomerDto.Address,
             Phone = createCustomerDto.Phone,
             Email = createCustomerDto.Email,
@@ -90,6 +91,7 @@ public class CustomerService : ICustomerService
         if (customer == null) throw new ArgumentException("Customer not found");
 
         customer.FullName = updateCustomerDto.FullName;
+        customer.Gender = updateCustomerDto.Gender;
         customer.Address = updateCustomerDto.Address;
         customer.Phone = updateCustomerDto.Phone;
         customer.Email = updateCustomerDto.Email;
