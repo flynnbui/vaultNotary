@@ -34,6 +34,7 @@ public class DocumentFileService : IDocumentFileService
         };
     }
 
+    //TODO
     public async Task<DocumentFileDto?> GetByHashAsync(string sha256Hash)
     {
         // Hash-based lookup not implemented in repository

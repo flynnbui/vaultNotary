@@ -55,6 +55,14 @@ public class DocumentsController : ControllerBase
     [HasPermission(Permissions.CreateDocuments)]
     public async Task<ActionResult<string>> Create([FromBody] CreateDocumentDto createDocumentDto)
     {
+        if (!ModelState.IsValid)
+        {
+            var errorMessages = ModelState.Values
+            .SelectMany(v => v.Errors)
+            .Select(e => e.ErrorMessage);
+            var fullErrorMessage = "Dữ liệu gửi lên không hợp lệ: " + string.Join("; ", errorMessages);
+            return BadRequest(fullErrorMessage);
+        }
         var documentId = await _documentService.CreateAsync(createDocumentDto);
         return CreatedAtAction(nameof(GetById), new { id = documentId }, documentId);
     }
@@ -63,6 +71,14 @@ public class DocumentsController : ControllerBase
     [HasPermission(Permissions.UpdateDocuments)]
     public async Task<ActionResult> Update(string id, [FromBody] UpdateDocumentDto updateDocumentDto)
     {
+        if (!ModelState.IsValid)
+        {
+            var errorMessages = ModelState.Values
+            .SelectMany(v => v.Errors)
+            .Select(e => e.ErrorMessage);
+            var fullErrorMessage = "Dữ liệu gửi lên không hợp lệ: " + string.Join("; ", errorMessages);
+            return BadRequest(fullErrorMessage);
+        }
         if (!await _documentService.ExistsAsync(id))
             return NotFound();
 
@@ -83,12 +99,20 @@ public class DocumentsController : ControllerBase
 
     [HttpPut("{id}/parties")]
     [HasPermission(Permissions.UpdateDocuments)]
-    public async Task<ActionResult> LinkParty(string id, [FromBody] LinkPartyRequest request)
+    public async Task<ActionResult> LinkParty(string id, [FromBody] CreatePartyDocumentLinkDto request)
     {
+        if (!ModelState.IsValid)
+        {
+            var errorMessages = ModelState.Values
+            .SelectMany(v => v.Errors)
+            .Select(e => e.ErrorMessage);
+            var fullErrorMessage = "Dữ liệu gửi lên không hợp lệ: " + string.Join("; ", errorMessages);
+            return BadRequest(fullErrorMessage);
+        }
         if (!await _documentService.ExistsAsync(id))
             return NotFound();
 
-        await _documentService.LinkPartyAsync(id, request.CustomerId, request.LinkDto);
+        await _documentService.LinkPartyAsync(id, request);
         return NoContent();
     }
 
@@ -105,8 +129,3 @@ public class DocumentsController : ControllerBase
 
 }
 
-public class LinkPartyRequest
-{
-    public string CustomerId { get; set; } = string.Empty;
-    public CreatePartyDocumentLinkDto LinkDto { get; set; } = new();
-}

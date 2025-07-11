@@ -56,7 +56,7 @@ public class CreateDocumentDto
 
     [Required(ErrorMessage = "Phải có ít nhất một bên tham gia.")]
     [MinLength(1, ErrorMessage = "Danh sách các bên tham gia không được để trống.")]
-    public List<PartyDocumentLinkDto> Parties { get; set; } = new();
+    public List<CreatePartyDocumentLinkDto> Parties { get; set; } = new();
 }
 
 
