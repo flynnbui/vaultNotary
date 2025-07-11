@@ -27,10 +27,66 @@ export interface DocumentFileFromApi {
   updatedAt: string;
 }
 
+interface PartyData {
+  documentId: string;
+  customerId: string;
+  partyRole: number; // 0 = Bên A, 1 = Bên B, 2 = Bên C
+  signatureStatus: number;
+  notaryDate: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface CreateDocumentData {
+  createdDate: string;
+  secretary: string;
+  notaryPublic: string;
+  transactionCode: string;
+  description: string;
+  documentType: string;
+  parties: PartyData[]; // Add parties array
+}
+
 // Interface cho document với files
 export interface DocumentWithFiles extends DocumentType {
   files: DocumentFileFromApi[];
 }
+
+export const validatePartiesData = (partiesData: any): PartyData[] => {
+  const validatedParties: PartyData[] = [];
+  
+  // Check if we have at least one customer in Party A and Party B
+  const partyACount = partiesData.A?.length || 0;
+  const partyBCount = partiesData.B?.length || 0;
+  
+  if (partyACount === 0) {
+    throw new Error("Bên A phải có ít nhất 1 khách hàng");
+  }
+  
+  if (partyBCount === 0) {
+    throw new Error("Bên B phải có ít nhất 1 khách hàng");
+  }
+  
+  // Process all parties
+  ['A', 'B', 'C'].forEach((party, partyIndex) => {
+    const customers = partiesData[party] || [];
+    customers.forEach((customer: any) => {
+      if (customer.id) {
+        validatedParties.push({
+          documentId: "", // Will be filled by backend
+          customerId: customer.id,
+          partyRole: partyIndex, // 0, 1, 2 for A, B, C respectively
+          signatureStatus: 0,
+          notaryDate: new Date().toISOString(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        });
+      }
+    });
+  });
+  
+  return validatedParties;
+};
 
 const useDocumentService = () => {
   const { callApi, loading } = useApi();
@@ -199,6 +255,8 @@ const useDocumentService = () => {
     },
     [callApi]
   );
+
+  
 
   return {
     loading,

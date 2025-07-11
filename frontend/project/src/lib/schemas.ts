@@ -2,12 +2,18 @@ import { z } from 'zod';
 export type PartyKey = 'A' | 'B' | 'C';
 
 export interface CustomerSummary {
-  id: string;            // uuid
+  id: string;
   fullName: string;
-  idType: 'CMND' | 'Passport';
-  idNumber: string;
-  dob: string;           
-  index?: number;        
+  address: string;
+  phone: string;
+  email: string;
+  type: number;
+  documentId: string;
+  passportId: string;
+  businessRegistrationNumber: string;
+  businessName: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 const passportOrId = z.object({
@@ -126,7 +132,7 @@ export const partiesSchema = z.object({
     idType: z.enum(['CMND', 'Passport']),
     idNumber: z.string(),
     dob: z.string()
-  })).optional()
+  })).default([])
 }).refine((data) => {
   // Check for duplicate ID numbers across all parties
   const allIdNumbers: string[] = [];
