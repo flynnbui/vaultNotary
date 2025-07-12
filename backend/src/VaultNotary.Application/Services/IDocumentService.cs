@@ -1,4 +1,5 @@
 using VaultNotary.Application.DTOs;
+using VaultNotary.Domain.Entities;
 
 namespace VaultNotary.Application.Services;
 
@@ -11,7 +12,7 @@ public interface IDocumentService
     Task<List<DocumentDto>> GetByDateRangeAsync(DateTime from, DateTime to);
     Task<List<DocumentDto>> GetByNotaryAsync(string notaryPublic);
     Task<List<DocumentDto>> GetBySecretaryAsync(string secretary);
-    Task<List<DocumentDto>> GetByDocumentTypeAsync(string documentType);
+    Task<List<DocumentDto>> GetByDocumentTypeAsync(DocumentType documentType);
     Task<List<DocumentListDto>> GetAllAsync();
     Task<PaginatedResult<DocumentListDto>> GetAllDocumentsAsync(int pageNumber = 1, int pageSize = 10);
     Task<string> CreateAsync(CreateDocumentDto createDocumentDto);

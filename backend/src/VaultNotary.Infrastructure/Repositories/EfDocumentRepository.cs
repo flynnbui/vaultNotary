@@ -59,7 +59,7 @@ public class EfDocumentRepository : IDocumentRepository
             .Where(d => EF.Functions.Like(d.TransactionCode.ToLower(), $"%{searchTerm}%") ||
                        EF.Functions.Like(d.Secretary.ToLower(), $"%{searchTerm}%") ||
                        EF.Functions.Like(d.NotaryPublic.ToLower(), $"%{searchTerm}%") ||
-                       EF.Functions.Like(d.DocumentType.ToLower(), $"%{searchTerm}%") ||
+                       EF.Functions.Like(d.DocumentType.ToString().ToLower(), $"%{searchTerm}%") ||
                        EF.Functions.Like(d.Description!.ToLower(), $"%{searchTerm}%") ||
                        d.PartyDocumentLinks.Any(pdl => 
                            EF.Functions.Like(pdl.Customer.FullName.ToLower(), $"%{searchTerm}%") ||

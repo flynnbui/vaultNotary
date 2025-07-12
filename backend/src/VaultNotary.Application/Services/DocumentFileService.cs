@@ -34,11 +34,6 @@ public class DocumentFileService : IDocumentFileService
         };
     }
 
-    public async Task<DocumentFileDto?> GetByHashAsync(string sha256Hash)
-    {
-        // Hash-based lookup not implemented in repository
-        throw new NotImplementedException("Hash-based lookup is not currently supported");
-    }
 
     public async Task<List<DocumentFileDto>> GetByDocumentIdAsync(string documentId)
     {
