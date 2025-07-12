@@ -6,6 +6,7 @@ import { Menu, FileText, User, LogOut, Settings } from 'lucide-react';
 import { useAppStore } from '@/src/lib/store';
 import { ModeToggle } from '@/src/components/ui/mode-toggle';
 import { useUser } from '@auth0/nextjs-auth0';
+import Image from 'next/image';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -45,9 +46,15 @@ export function Navbar() {
               <Menu className="h-5 w-5" />
             </Button>
             <div className="flex items-center ml-4 lg:ml-0">
-              <FileText className="h-8 w-8 text-orange-600" />
+              <Image
+                src="/logo.png"
+                alt="Văn phòng Công chứng Nhà Rồng"
+                width={72}
+                height={72}
+                className="object-contain"
+              />
               <span className="ml-2 text-xl font-bold text-foreground">
-                NotaryFile
+                VaultNotary
               </span>
             </div>
           </div>
