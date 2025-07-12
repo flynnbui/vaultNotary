@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Layout } from "@/src/components/layout/Layout";
 import {
   Card,
   CardContent,
@@ -253,7 +252,6 @@ export default function CustomersPage() {
   };
 
   return (
-    <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -569,6 +567,5 @@ export default function CustomersPage() {
           onEdit={handleEditCustomer}
         />
       </div>
-    </Layout>
   );
 }

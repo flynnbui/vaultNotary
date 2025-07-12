@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, Users } from "lucide-react";
 
-import { Layout } from "@/src/components/layout/Layout";
 import { Button } from "@/src/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/src/components/ui/dialog";
@@ -106,7 +105,6 @@ export default function DocumentManagePage() {
   };
 
   return (
-    <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -195,6 +193,5 @@ export default function DocumentManagePage() {
           onModeChange={handleModeChange}
         />
       </div>
-    </Layout>
   );
 }

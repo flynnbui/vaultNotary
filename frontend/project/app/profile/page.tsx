@@ -2,7 +2,6 @@
 
 import React from "react";
 import { useUser } from '@auth0/nextjs-auth0';
-import { Layout } from "@/src/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
 import { Label } from "@/src/components/ui/label";
 import {
@@ -18,20 +17,17 @@ export default function ProfilePage() {
 
   if (isLoading) {
     return (
-      <Layout>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse space-y-6">
             <div className="h-32 bg-gray-200 rounded-lg"></div>
             <div className="h-64 bg-gray-200 rounded-lg"></div>
           </div>
         </div>
-      </Layout>
     );
   }
 
   if (!user) {
     return (
-      <Layout>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Card>
             <CardContent className="text-center py-12">
@@ -39,12 +35,10 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
         </div>
-      </Layout>
     );
   }
 
   return (
-    <Layout>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -94,6 +88,5 @@ export default function ProfilePage() {
         </div>
 
       </div>
-    </Layout>
   );
 }
