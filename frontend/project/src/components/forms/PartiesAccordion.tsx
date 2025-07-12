@@ -195,6 +195,46 @@ export function PartiesAccordion({
 
   const handleCustomerSave = (customerData: CustomerSummary) => {
     if (readOnly) return;
+    console.log('👥 Adding customer to party:', currentParty, customerData);
+    
+    // Check for duplicates within the same party
+    const currentPartyCustomers = getParties(currentParty);
+    const isAlreadyInSameParty = currentPartyCustomers.some(existing => 
+      existing.id === customerData.id && (!editingCustomer || existing.id !== editingCustomer.id)
+    );
+    
+    if (isAlreadyInSameParty) {
+      toast.error(`Khách hàng "${customerData.fullName}" đã có trong ${getPartyLabel(currentParty)}. Không thể thêm cùng một khách hàng nhiều lần trong cùng một bên.`);
+      return;
+    }
+    
+    // Check for document ID duplicates within the same party
+    const customerDocId = customerData.documentId || customerData.passportId;
+    const isDocIdDuplicateInSameParty = currentPartyCustomers.some(existing => {
+      const existingDocId = existing.documentId || existing.passportId;
+      return existingDocId && customerDocId && existingDocId === customerDocId && 
+        (!editingCustomer || existing.id !== editingCustomer.id);
+    });
+    
+    if (isDocIdDuplicateInSameParty) {
+      toast.error(`Số giấy tờ "${customerDocId}" đã được sử dụng trong ${getPartyLabel(currentParty)}. Không thể có số giấy tờ trùng lặp.`);
+      return;
+    }
+    
+    // Ensure all required fields are properly formatted
+    const normalizedCustomerData: CustomerSummary = {
+      ...customerData,
+      phone: customerData.phone || '',
+      email: customerData.email || '',
+      documentId: customerData.documentId || '',
+      passportId: customerData.passportId || '',
+      businessRegistrationNumber: customerData.businessRegistrationNumber || '',
+      businessName: customerData.businessName || '',
+      createdAt: customerData.createdAt || new Date().toISOString(),
+      updatedAt: customerData.updatedAt || new Date().toISOString(),
+    };
+    
+    console.log('👥 Normalized customer data:', normalizedCustomerData);
     const fieldArray = getFieldArray(currentParty);
 
     if (editingCustomer) {
@@ -204,18 +244,33 @@ export function PartiesAccordion({
       
       if (existingIndex !== -1) {
         // Edit existing customer
-        fieldArray.update(existingIndex, customerData);
+        console.log('✏️ Updating existing customer at index:', existingIndex);
+        fieldArray.update(existingIndex, normalizedCustomerData);
         toast.success("Đã cập nhật thông tin khách hàng");
       } else {
         // Add new customer if not found
-        fieldArray.append(customerData);
+        console.log('➕ Adding customer (not found for edit)');
+        fieldArray.append(normalizedCustomerData);
         toast.success("Đã thêm khách hàng mới");
       }
     } else {
       // Add new customer
-      fieldArray.append(customerData);
+      console.log('➕ Adding new customer to party', currentParty);
+      fieldArray.append(normalizedCustomerData);
       toast.success("Đã thêm khách hàng mới");
     }
+
+    // Log current state after adding
+    setTimeout(() => {
+      const updatedA = watch("parties.A");
+      const updatedB = watch("parties.B");
+      console.log('🔍 Form state after customer add:', {
+        A: updatedA?.length || 0,
+        B: updatedB?.length || 0,
+        AData: updatedA,
+        BData: updatedB
+      });
+    }, 100);
 
     handleDialogOpenChange(false);
   };
@@ -481,6 +536,11 @@ export function PartiesAccordion({
               ? "Chỉnh sửa khách hàng"
               : `Thêm khách hàng - ${getPartyLabel(currentParty)}`
           }
+          existingCustomers={[
+            ...watchedPartiesA,
+            ...watchedPartiesB,
+            ...watchedPartiesC
+          ]}
         />
       )}
     </>

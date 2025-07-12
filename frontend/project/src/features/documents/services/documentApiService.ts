@@ -9,60 +9,13 @@ import {
   DocumentFileDto,
   CreateDocumentDto,
   UpdateDocumentDto,
-  PartyDocumentLinkDto,
-  CustomerDto,
   PagedResultDto
 } from '@/src/types/api.types';
 import { ErrorHandler } from '@/src/shared/utils/errorHandler';
 
-/**
- * Interface for parties validation data
- */
-interface PartiesValidationData {
-  A: CustomerDto[];
-  B: CustomerDto[];
-  C: CustomerDto[];
-}
 
-/**
- * Validate parties data before creating document
- */
-export const validatePartiesData = (partiesData: PartiesValidationData): PartyDocumentLinkDto[] => {
-  const validatedParties: PartyDocumentLinkDto[] = [];
-  
-  // Check if we have at least one customer in Party A and Party B
-  const partyACount = partiesData.A?.length || 0;
-  const partyBCount = partiesData.B?.length || 0;
-  
-  if (partyACount === 0) {
-    throw new Error("Bên A phải có ít nhất 1 khách hàng");
-  }
-  
-  if (partyBCount === 0) {
-    throw new Error("Bên B phải có ít nhất 1 khách hàng");
-  }
-  
-  // Process all parties
-  (['A', 'B', 'C'] as const).forEach((party, partyIndex) => {
-    const customers = partiesData[party] || [];
-    customers.forEach((customer: CustomerDto) => {
-      if (customer.id) {
-        validatedParties.push({
-          id: '', // Will be filled by backend
-          documentId: "", // Will be filled by backend
-          customerId: customer.id,
-          partyRole: partyIndex, // 0, 1, 2 for A, B, C respectively
-          signatureStatus: 0,
-          notaryDate: new Date().toISOString(),
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        });
-      }
-    });
-  });
-  
-  return validatedParties;
-};
+// Note: Party validation is now handled by the form schema validation
+// This function is kept for backward compatibility but should not be used for new code
 
 /**
  * Document API service with proper typing
@@ -109,9 +62,20 @@ const useDocumentApiService = () => {
       documentData: UpdateDocumentDto
     ): Promise<DocumentDto | undefined> => {
       try {
+        console.log('🚀 updateDocument API call starting...');
+        console.log('🚀 Document ID:', id);
+        console.log('🚀 Document data to send:', documentData);
+        console.log('🚀 Making PUT request to:', `/Documents/${id}`);
+        
         const response = await callApi("put", `/Documents/${id}`, documentData as unknown as Record<string, unknown>);
+        
+        console.log('✅ API response received:', response);
+        console.log('✅ Response data:', response?.data);
+        console.log('✅ Response status:', response?.status);
+        
         return response?.data;
       } catch (error) {
+        console.error('❌ Error in updateDocument API call:', error);
         ErrorHandler.handleDocumentError(error, "update document");
         throw error;
       }
