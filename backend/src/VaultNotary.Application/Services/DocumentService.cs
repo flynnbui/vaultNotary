@@ -75,11 +75,11 @@ public class DocumentService : IDocumentService
         return filtered.Select(MapToDto).ToList();
     }
 
-    public async Task<List<DocumentDto>> GetByDocumentTypeAsync(string documentType)
+    public async Task<List<DocumentDto>> GetByDocumentTypeAsync(DocumentType documentType)
     {
         var documents = await _documentRepository.GetAllAsync();
         // Using LINQ for filtering with better performance
-        var filtered = documents.Where(d => d.DocumentType.Contains(documentType, StringComparison.OrdinalIgnoreCase)).ToList();
+        var filtered = documents.Where(d => d.DocumentType == documentType).ToList();
         return filtered.Select(MapToDto).ToList();
     }
 

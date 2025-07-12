@@ -5,7 +5,6 @@ namespace VaultNotary.Application.Services;
 public interface IDocumentFileService
 {
     Task<DocumentFileDto?> GetByIdAsync(string id);
-    Task<DocumentFileDto?> GetByHashAsync(string sha256Hash);
     Task<List<DocumentFileDto>> GetByDocumentIdAsync(string documentId);
     Task<List<DocumentFileDto>> GetAllAsync();
     Task<string> CreateAsync(CreateDocumentFileDto createDocumentFileDto);

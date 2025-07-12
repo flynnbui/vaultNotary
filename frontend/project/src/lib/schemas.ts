@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { ValidationUtils } from '@/src/shared/utils/validationUtils';
+
 export type PartyKey = 'A' | 'B' | 'C';
 
 export interface CustomerSummary {
@@ -16,30 +18,17 @@ export interface CustomerSummary {
   updatedAt: string;
 }
 
-const passportOrId = z.object({
-  cmndNumber: z.string().trim().optional(),
-  passportNumber: z.string().trim().optional(),
-}).refine(data => {
-  if (data.cmndNumber && data.cmndNumber.length > 0) {
-    return /^[0-9]{9}$|^[0-9]{12}$/.test(data.cmndNumber);
-  }
-  if (data.passportNumber && data.passportNumber.length > 0) {
-    return /^[A-Z0-9]{8,9}$/.test(data.passportNumber);
-  }
-  return data.cmndNumber || data.passportNumber;
-}, {
-  message: 'Phải nhập CMND/CCCD hoặc Passport hợp lệ',
-});
+const passportOrId = ValidationUtils.createIdValidationSchema();
 
 export const customerSchema = z.object({
   id: z.string().optional(),
   type: z.enum(['individual', 'organization']),
-  fullName: z.string().min(1, 'Họ và tên là bắt buộc'),
-  organizationName: z.string().optional(),
-  businessRegistrationNumber: z.string().optional(),
-  phone: z.string().regex(/^[0-9]{10}$/, 'Số điện thoại phải có 10 chữ số').optional().or(z.literal('')),
-  email: z.string().email('Email không hợp lệ').optional().or(z.literal('')),
-  address: z.string().min(1, 'Địa chỉ là bắt buộc'),
+  fullName: ValidationUtils.createNameSchema('Họ và tên'),
+  organizationName: ValidationUtils.createOptionalStringSchema(),
+  businessRegistrationNumber: ValidationUtils.createOptionalStringSchema(),
+  phone: ValidationUtils.createPhoneSchema(),
+  email: ValidationUtils.createEmailSchema(),
+  address: ValidationUtils.createAddressSchema(),
 }).and(passportOrId).refine(data => {
   if (data.type === 'organization') {
     return data.organizationName && data.organizationName.length > 0;
@@ -50,11 +39,11 @@ export const customerSchema = z.object({
   path: ['organizationName']
 }).refine(data => {
   if (data.type === 'organization') {
-    return data.businessRegistrationNumber && data.businessRegistrationNumber.length > 0;
+    return data.businessRegistrationNumber && ValidationUtils.isValidBusinessRegistration(data.businessRegistrationNumber);
   }
   return true;
 }, {
-  message: 'Số đăng ký kinh doanh là bắt buộc',
+  message: 'Số đăng ký kinh doanh không hợp lệ',
   path: ['businessRegistrationNumber']
 });
 
@@ -93,70 +82,78 @@ export const extendedCustomerSchema = z.object({
   path: ['businessRegistrationNumber']
 });
 
-export const partiesSchema = z.object({
-  // A: z.array(z.object({
-  //   id: z.string(),
-  //   fullName: z.string(),
-  //   idType: z.enum(['CMND', 'Passport']),
-  //   idNumber: z.string(),
-  //   dob: z.string()
-  // })).optional(),
-  
-  // B: z.array(z.object({
-  //   id: z.string(),
-  //   fullName: z.string(),
-  //   idType: z.enum(['CMND', 'Passport']),
-  //   idNumber: z.string(),
-  //   dob: z.string()
-  // })).optional(),
-  
-  A: z.array(z.object({
-    id: z.string(),
-    fullName: z.string(),
-    idType: z.enum(['CMND', 'Passport']),
-    idNumber: z.string(),
-    dob: z.string()
-  })).min(1, 'Bên A phải có ít nhất 1 khách hàng'),
-  
-  B: z.array(z.object({
-    id: z.string(),
-    fullName: z.string(),
-    idType: z.enum(['CMND', 'Passport']),
-    idNumber: z.string(),
-    dob: z.string()
-  })).min(1, 'Bên B phải có ít nhất 1 khách hàng'),
-  
-  C: z.array(z.object({
-    id: z.string(),
-    fullName: z.string(),
-    idType: z.enum(['CMND', 'Passport']),
-    idNumber: z.string(),
-    dob: z.string()
-  })).default([])
+// Schema that matches the actual CustomerSummary structure used in forms
+const customerSummarySchema = z.object({
+  id: z.string(),
+  fullName: z.string().min(1, 'Tên khách hàng là bắt buộc'),
+  address: z.string().min(1, 'Địa chỉ là bắt buộc'),
+  phone: z.string().nullable().optional().transform(val => val || ''),
+  email: z.string().nullable().optional().transform(val => val || ''),
+  type: z.union([z.number(), z.string()]).transform((val) => typeof val === 'string' ? parseInt(val, 10) : val),
+  documentId: z.string().nullable().optional().transform(val => val || ''),
+  passportId: z.string().nullable().optional().transform(val => val || ''),
+  businessRegistrationNumber: z.string().nullable().optional().transform(val => val || ''),
+  businessName: z.string().nullable().optional().transform(val => val || ''),
+  createdAt: z.string().nullable().optional().transform(val => val || ''),
+  updatedAt: z.string().nullable().optional().transform(val => val || ''),
 }).refine((data) => {
-  // Check for duplicate ID numbers across all parties
-  const allIdNumbers: string[] = [];
+  // At least one form of identification is required
+  return data.documentId || data.passportId;
+}, {
+  message: 'Phải có ít nhất CMND/CCCD hoặc Passport',
+  path: ['documentId']
+});
+
+export const partiesSchema = z.object({
+  A: z.array(customerSummarySchema).min(1, 'Bên A phải có ít nhất 1 khách hàng'),
+  B: z.array(customerSummarySchema).min(1, 'Bên B phải có ít nhất 1 khách hàng'),
+  C: z.array(customerSummarySchema).default([])
+}).refine((data) => {
+  // Check for duplicate customers by customer ID across all parties
+  const allCustomerIds: string[] = [];
+  const duplicateCustomers: string[] = [];
   
   [...data.A, ...data.B, ...(data.C || [])].forEach(customer => {
-    if (allIdNumbers.includes(customer.idNumber)) {
-      return false;
+    if (allCustomerIds.includes(customer.id)) {
+      duplicateCustomers.push(customer.fullName || customer.id);
+    } else {
+      allCustomerIds.push(customer.id);
     }
-    allIdNumbers.push(customer.idNumber);
   });
   
-  return true;
+  return duplicateCustomers.length === 0;
 }, {
-  message: 'Không được có số giấy tờ trùng lặp',
+  message: 'Không được thêm cùng một khách hàng vào nhiều bên. Mỗi khách hàng chỉ có thể thuộc một bên duy nhất.',
   path: ['root']
+}).refine((data) => {
+  // Check for duplicate document IDs (CMND/Passport) across all parties
+  const allDocumentIds: string[] = [];
+  const duplicateDocIds: string[] = [];
+  
+  [...data.A, ...data.B, ...(data.C || [])].forEach(customer => {
+    const docId = customer.documentId || customer.passportId;
+    if (docId && docId.trim()) {
+      if (allDocumentIds.includes(docId)) {
+        duplicateDocIds.push(docId);
+      } else {
+        allDocumentIds.push(docId);
+      }
+    }
+  });
+  
+  return duplicateDocIds.length === 0;
+}, {
+  message: 'Không được có số giấy tờ tùy thân trùng lặp giữa các bên',
+  path: ['documentIds']
 });
 
 export const fileSchema = z.object({
-  ngayTao: z.date(),
-  thuKy: z.string().min(1, 'Thư ký là bắt buộc'),
-  congChungVien: z.string().min(1, 'Công chứng viên là bắt buộc'),
-  maGiaoDich: z.string().min(1, 'Mã giao dịch là bắt buộc'),
-  description: z.string().optional(),
-  loaiHoSo: z.string().min(1, 'Loại hồ sơ là bắt buộc'),
+  ngayTao: ValidationUtils.createDateSchema(true, 'Ngày tạo không hợp lệ'),
+  thuKy: ValidationUtils.createRequiredStringSchema('Thư ký là bắt buộc'),
+  congChungVien: ValidationUtils.createRequiredStringSchema('Công chứng viên là bắt buộc'),
+  maGiaoDich: ValidationUtils.createOptionalStringSchema(),
+  description: ValidationUtils.createOptionalStringSchema(),
+  loaiHoSo: ValidationUtils.createRequiredStringSchema('Loại hồ sơ là bắt buộc'),
   parties: partiesSchema
 });
 
