@@ -2,12 +2,18 @@ import { z } from 'zod';
 export type PartyKey = 'A' | 'B' | 'C';
 
 export interface CustomerSummary {
-  id: string;            // uuid
+  id: string;
   fullName: string;
-  idType: 'CMND' | 'Passport';
-  idNumber: string;
-  dob: string;           
-  index?: number;        
+  address: string;
+  phone: string;
+  email: string;
+  type: number;
+  documentId: string;
+  passportId: string;
+  businessRegistrationNumber: string;
+  businessName: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 const passportOrId = z.object({
@@ -54,7 +60,6 @@ export const customerSchema = z.object({
 
 export const extendedCustomerSchema = z.object({
   customerType: z.enum(['individual', 'organization']),
-  isVip: z.boolean().optional(),
   cmndNumber: z.string().optional(),
   cmndIssueDate: z.date().optional(),
   cmndIssuePlace: z.string().optional(),
@@ -89,6 +94,22 @@ export const extendedCustomerSchema = z.object({
 });
 
 export const partiesSchema = z.object({
+  // A: z.array(z.object({
+  //   id: z.string(),
+  //   fullName: z.string(),
+  //   idType: z.enum(['CMND', 'Passport']),
+  //   idNumber: z.string(),
+  //   dob: z.string()
+  // })).optional(),
+  
+  // B: z.array(z.object({
+  //   id: z.string(),
+  //   fullName: z.string(),
+  //   idType: z.enum(['CMND', 'Passport']),
+  //   idNumber: z.string(),
+  //   dob: z.string()
+  // })).optional(),
+  
   A: z.array(z.object({
     id: z.string(),
     fullName: z.string(),
@@ -111,7 +132,7 @@ export const partiesSchema = z.object({
     idType: z.enum(['CMND', 'Passport']),
     idNumber: z.string(),
     dob: z.string()
-  })).optional()
+  })).default([])
 }).refine((data) => {
   // Check for duplicate ID numbers across all parties
   const allIdNumbers: string[] = [];
@@ -134,7 +155,7 @@ export const fileSchema = z.object({
   thuKy: z.string().min(1, 'Thư ký là bắt buộc'),
   congChungVien: z.string().min(1, 'Công chứng viên là bắt buộc'),
   maGiaoDich: z.string().min(1, 'Mã giao dịch là bắt buộc'),
-  moTa: z.string().optional(),
+  description: z.string().optional(),
   loaiHoSo: z.string().min(1, 'Loại hồ sơ là bắt buộc'),
   parties: partiesSchema
 });
