@@ -44,8 +44,6 @@ public class CreateDocumentDto
     [MinLength(1, ErrorMessage = "Tên công chứng viên không được để trống.")]
     public string NotaryPublic { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Mã giao dịch là bắt buộc.")]
-    [MinLength(1, ErrorMessage = "Mã giao dịch không được để trống.")]
     public string TransactionCode { get; set; } = string.Empty;
 
     public string? Description { get; set; }
