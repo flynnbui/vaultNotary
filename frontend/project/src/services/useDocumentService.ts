@@ -46,10 +46,10 @@ interface CreateDocumentData {
   transactionCode: string;
   description: string;
   documentType: string;
-  parties: PartyData[]; // Add parties array
+  parties: PartyData[]; 
 }
 
-// Interface cho document với files - matches backend DocumentWithFilesDto
+// Interface cho document với files 
 export interface DocumentWithFiles extends DocumentType {
   files: DocumentFileFromApi[];
   partyDocumentLinks: PartyDocumentLinkDto[];
