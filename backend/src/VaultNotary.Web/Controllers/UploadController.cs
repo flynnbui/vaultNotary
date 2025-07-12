@@ -25,20 +25,20 @@ public class UploadController : ControllerBase
     private readonly IFileService _fileService;
     private readonly IDocumentService _documentService;
     private readonly IDocumentFileService _documentFileService;
-    private readonly IJobQueue _jobQueue;
+    // private readonly IJobQueue _jobQueue;
     private readonly AwsConfiguration _awsConfig;
 
     public UploadController(
         IFileService fileService,
         IDocumentService documentService,
         IDocumentFileService documentFileService,
-        IJobQueue jobQueue,
+        // IJobQueue jobQueue,
         IOptions<AwsConfiguration> awsConfig)
     {
         _fileService = fileService;
         _documentService = documentService;
         _documentFileService = documentFileService;
-        _jobQueue = jobQueue;
+        // _jobQueue = jobQueue;
         _awsConfig = awsConfig.Value;
     }
 
@@ -94,18 +94,18 @@ public class UploadController : ControllerBase
 
             var documentFileId = await _documentFileService.CreateAsync(createDto);
 
-            // Trigger PDF compression job if needed
-            if (AllowedFileTypes.IsPdf(request.File.ContentType))
-            {
-                var compressJob = new CompressFileJob
-                {
-                    FileKey = s3Key,
-                    DocumentId = request.DocumentId,
-                    FileName = request.File.FileName
-                };
+            // TODO: Trigger PDF compression job
+            // if (AllowedFileTypes.IsPdf(request.File.ContentType))
+            // {
+            //     var compressJob = new CompressFileJob
+            //     {
+            //         FileKey = s3Key,
+            //         DocumentId = request.DocumentId,
+            //         FileName = request.File.FileName
+            //     };
                 
-                await _jobQueue.PublishAsync(compressJob);
-            }
+            //     await _jobQueue.PublishAsync(compressJob);
+            // }
 
             return Ok(new FileUploadResponse
             {

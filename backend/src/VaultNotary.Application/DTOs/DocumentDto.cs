@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using VaultNotary.Domain.Entities;
 
 namespace VaultNotary.Application.DTOs;
@@ -32,23 +33,54 @@ public class DocumentListDto
 
 public class CreateDocumentDto
 {
+    [Required(ErrorMessage = "Ngày tạo hồ sơ là bắt buộc.")]
     public DateTime CreatedDate { get; set; }
+
+    [Required(ErrorMessage = "Tên thư ký là bắt buộc.")]
+    [MinLength(1, ErrorMessage = "Tên thư ký không được để trống.")]
     public string Secretary { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Tên công chứng viên là bắt buộc.")]
+    [MinLength(1, ErrorMessage = "Tên công chứng viên không được để trống.")]
     public string NotaryPublic { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Mã giao dịch là bắt buộc.")]
+    [MinLength(1, ErrorMessage = "Mã giao dịch không được để trống.")]
     public string TransactionCode { get; set; } = string.Empty;
+
     public string? Description { get; set; }
+
+    [Required(ErrorMessage = "Loại hồ sơ là bắt buộc.")]
+    [MinLength(1, ErrorMessage = "Loại hồ sơ không được để trống.")]
     public string DocumentType { get; set; } = string.Empty;
-    public List<PartyDocumentLinkDto> Parties { get; set; } = new();
+
+    [Required(ErrorMessage = "Phải có ít nhất một bên tham gia.")]
+    [MinLength(1, ErrorMessage = "Danh sách các bên tham gia không được để trống.")]
+    public List<CreatePartyDocumentLinkDto> Parties { get; set; } = new();
 }
 
 
 public class UpdateDocumentDto
 {
+    [Required(ErrorMessage = "Ngày tạo hồ sơ là bắt buộc.")]
     public DateTime CreatedDate { get; set; }
+
+    [Required(ErrorMessage = "Tên thư ký là bắt buộc.")]
+    [MinLength(1, ErrorMessage = "Tên thư ký không được để trống.")]
     public string Secretary { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Tên công chứng viên là bắt buộc.")]
+    [MinLength(1, ErrorMessage = "Tên công chứng viên không được để trống.")]
     public string NotaryPublic { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Mã giao dịch là bắt buộc.")]
+    [MinLength(1, ErrorMessage = "Mã giao dịch không được để trống.")]
     public string TransactionCode { get; set; } = string.Empty;
+
     public string? Description { get; set; }
+
+    [Required(ErrorMessage = "Loại hồ sơ là bắt buộc.")]
+    [MinLength(1, ErrorMessage = "Loại hồ sơ không được để trống.")]
     public string DocumentType { get; set; } = string.Empty;
 }
 
