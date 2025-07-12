@@ -1,3 +1,13 @@
+export interface Party {
+  documentId: string;
+  customerId: string;
+  partyRole: string;
+  signatureStatus: number;
+  notaryDate: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface DocumentType {
   id: string;
   createdDate: string;
@@ -9,7 +19,10 @@ export interface DocumentType {
   createdAt: string;
   updatedAt: string;
   partyDocumentLinks: PartyDocumentLinkType[];
-  files: DocumentFileType[];
+}
+
+export interface DocumentWithPopulatedParties extends Omit<DocumentType, 'partyDocumentLinks'> {
+  partyDocumentLinks: PopulatedPartyDocumentLinkType[];
 }
 
 export interface DocumentListType {
@@ -22,6 +35,7 @@ export interface DocumentListType {
   documentType: string;
   createdAt: string;
   updatedAt: string;
+  parties: Party[]; 
 }
 
 export interface DocumentFileType {
@@ -37,14 +51,18 @@ export interface DocumentFileType {
 }
 
 export interface PartyDocumentLinkType {
-  id: string;
-  customerId: string;
   documentId: string;
-  role: string;
+  customerId: string;
+  partyRole: number;
+  signatureStatus: number;
+  notaryDate: string;
   createdAt: string;
   updatedAt: string;
 }
 
+export interface PopulatedPartyDocumentLinkType extends PartyDocumentLinkType {
+  customer: import('./customer.type').CustomerType;
+}
 export interface CreateDocumentType {
   createdDate: string;
   secretary: string;

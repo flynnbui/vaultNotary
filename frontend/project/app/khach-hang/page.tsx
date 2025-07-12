@@ -79,7 +79,20 @@ export default function CustomersPage() {
       fullName: customer.fullName,
       idType: customer.documentId ? 'CMND' : 'Passport',
       idNumber: customer.documentId || customer.passportId || '',
-      dob: new Date(customer.createdAt).toISOString().split('T')[0] // fallback to creation date
+      dob: customer.createdAt ? new Date(customer.createdAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+      // Additional fields needed for form prefill
+      customerType: customer.type === 0 ? 'individual' : 'organization',
+      phone: customer.phone || '',
+      email: customer.email || '',
+      permanentAddress: customer.address || '',
+      currentAddress: customer.address || '',
+      businessName: customer.businessName || '',
+      businessRegistrationNumber: customer.businessRegistrationNumber || '',
+      cmndNumber: customer.documentId || '',
+      passportNumber: customer.passportId || '',
+      isVip: false,
+      gender: 'male' as const,
+      dateOfBirth: customer.createdAt ? new Date(customer.createdAt) : new Date()
     };
   };
 
@@ -106,9 +119,18 @@ export default function CustomersPage() {
       setCustomers(response?.items || []);
       setTotalItems(response?.totalCount || 0);
       setTotalPages(response?.totalPages || 1);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error loading customers:", error);
-      toast.error("Không thể tải danh sách khách hàng");
+      
+      // Handle Axios errors 
+      if (error.response) {
+        const errorMessage = error.response.data || error.response.statusText || error.message;
+        toast.error(`Lỗi ${error.response.status}: ${errorMessage}`);
+      } else if (error.request) {
+        toast.error("Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.");
+      } else {
+        toast.error(error.message || "Không thể tải danh sách khách hàng");
+      }
     } finally {
       setLoading(false);
     }
@@ -167,17 +189,17 @@ export default function CustomersPage() {
     try {
       console.log("Received customer data:", customerData);
       
-      // Transform form data to CreateCustomerType/UpdateCustomerType
+      // Transform form data to match backend API schema
       const transformedData = {
         fullName: customerData.fullName || "",
         address: customerData.permanentAddress || customerData.currentAddress || "",
-        phone: customerData.phone || null,
-        email: customerData.email || null,
-        type: customerData.customerType === 'individual' ? 0 : 1, // Transform to backend enum
-        documentId: customerData.idType === 'CMND' ? (customerData.cmndNumber || customerData.idNumber) : null,
-        passportId: customerData.idType === 'Passport' ? (customerData.passportNumber || customerData.idNumber) : null,
-        businessRegistrationNumber: customerData.businessRegistrationNumber || null,
-        businessName: customerData.businessName || null
+        phone: customerData.phone || "",
+        email: customerData.email || "",
+        type: customerData.customerType === 'individual' ? 0 : 1,
+        documentId: customerData.idType === 'CMND' ? (customerData.cmndNumber || customerData.idNumber || "") : "",
+        passportId: customerData.idType === 'Passport' ? (customerData.passportNumber || customerData.idNumber || "") : "",
+        businessRegistrationNumber: customerData.businessRegistrationNumber || "",
+        businessName: customerData.businessName || ""
       };
 
       console.log("Transformed data for API:", transformedData);
@@ -185,20 +207,28 @@ export default function CustomersPage() {
       if (editingCustomer) {
         await updateCustomer(editingCustomer.id, transformedData);
         toast.success("Thông tin khách hàng đã được cập nhật!");
-        
-        // Reload to get fresh data
         await loadCustomers();
       } else {
         await createCustomer(transformedData);
         toast.success("Khách hàng mới đã được thêm!");
-        
-        // Reload to get fresh data
         await loadCustomers();
       }
       setShowDialog(false);
     } catch (error: any) {
       console.error("Error saving customer:", error);
-      toast.error(error.response?.data?.message || "Có lỗi xảy ra khi lưu khách hàng");
+      
+      // Handle Axios errors properly
+      if (error.response) {
+        // Server responded with error status
+        const errorMessage = error.response.data || error.response.statusText || error.message;
+        toast.error(`Lỗi ${error.response.status}: ${errorMessage}`);
+      } else if (error.request) {
+        // Request was made but no response received
+        toast.error("Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.");
+      } else {
+        // Something else happened
+        toast.error(error.message || "Có lỗi xảy ra khi lưu khách hàng");
+      }
     }
   };
 
@@ -385,7 +415,7 @@ export default function CustomersPage() {
                       <TableHead className="font-semibold">Họ tên</TableHead>
                       <TableHead className="font-semibold">Tổ chức</TableHead>
                       <TableHead className="font-semibold">Điện thoại</TableHead>
-                      <TableHead className="font-semibold">Email</TableHead>
+                      <TableHead className="font-semibold">Địa chỉ</TableHead>
                       <TableHead className="font-semibold">CMND/CCCD</TableHead>
                       <TableHead className="font-semibold">Passport</TableHead>
                       <TableHead className="font-semibold">Thao tác</TableHead>
@@ -414,7 +444,7 @@ export default function CustomersPage() {
                         </TableCell>
                         <TableCell>{customer.businessName || "-"}</TableCell>
                         <TableCell>{customer.phone || "-"}</TableCell>
-                        <TableCell>{customer.email || "-"}</TableCell>
+                        <TableCell>{customer.address || "-"}</TableCell>
                         <TableCell className="font-mono">
                           {customer.documentId || "-"}
                         </TableCell>
