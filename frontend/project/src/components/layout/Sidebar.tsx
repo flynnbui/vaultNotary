@@ -16,17 +16,22 @@ import {
   UsersRound, 
   Settings,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  LogOut,
+  User
 } from 'lucide-react';
+import { useUser } from '@auth0/nextjs-auth0';
 
 const navigation = [
   { name: 'documents', href: '/documents/manage', icon: FileText, label: 'Hồ sơ' },
   { name: 'customers', href: '/customers', icon: UsersRound, label: 'Khách hàng' },
+  { name: 'profile', href: '/profile', icon: User, label: 'Tài khoản' },
   { name: 'settings', href: '/cai-dat', icon: Settings, label: 'Cài đặt' },
 ];
 
 function SidebarContent({ collapsed = false, onToggleCollapse }: { collapsed?: boolean; onToggleCollapse?: () => void }) {
   const pathname = usePathname();
+  const { user, isLoading } = useUser();
 
   return (
     <TooltipProvider>
@@ -98,6 +103,49 @@ function SidebarContent({ collapsed = false, onToggleCollapse }: { collapsed?: b
             return <div key={item.name}>{buttonContent}</div>;
           })}
         </nav>
+        
+        {/* User section and logout */}
+        <div className="p-4 border-t border-border mt-auto">
+          {!collapsed && user && (
+            <div className="mb-3 p-2 rounded-md bg-muted/50">
+              <div className="text-sm font-medium text-foreground truncate">
+                {user.name || user.email}
+              </div>
+              <div className="text-xs text-muted-foreground truncate">
+                {user.email}
+              </div>
+            </div>
+          )}
+          
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                className={cn(
+                  "w-full text-red-600 hover:text-red-700 hover:bg-red-50",
+                  collapsed ? "justify-center px-2" : "justify-start"
+                )}
+                asChild
+              >
+                <a href="/auth/logout">
+                  <LogOut className={cn("h-5 w-5", !collapsed && "mr-3")} />
+                  {!collapsed && (
+                    <motion.span
+                      initial={{ opacity: 0, width: 0 }}
+                      animate={{ opacity: 1, width: 'auto' }}
+                      exit={{ opacity: 0, width: 0 }}
+                    >
+                      Đăng xuất
+                    </motion.span>
+                  )}
+                </a>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              <p>Đăng xuất</p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
       </div>
     </TooltipProvider>
   );

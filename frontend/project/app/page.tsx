@@ -2,14 +2,16 @@
 
 import { Button } from '@/src/components/ui/button';
 import { Card, CardContent } from '@/src/components/ui/card';
-import { Shield, FileText, Clock, Phone, MapPin, Mail, Award, Scale, Building, Menu, X, CheckCircle } from 'lucide-react';
+import { Shield, FileText, Clock, Phone, MapPin, Mail, Award, Scale, Building, Menu, X, CheckCircle, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
+import { useUser } from '@auth0/nextjs-auth0';
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentSection, setCurrentSection] = useState(0);
+  const { user, isLoading } = useUser();
 
   useEffect(() => {
     let isScrolling = false;
@@ -108,13 +110,13 @@ export default function Home() {
       {/* Navigation */}
       <nav className="fixed top-0 w-full bg-gradient-to-r from-white/95 via-gray-50/95 to-white/95 backdrop-blur-sm shadow-sm z-50 border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center h-20">
             <div className="flex items-center">
               <Image
                 src="/logo.png"
                 alt="Văn phòng Công chứng Nhà Rồng"
-                width={60}
-                height={60}
+                width={84}
+                height={84}
                 className="object-contain"
               />
             </div>
@@ -123,11 +125,30 @@ export default function Home() {
               <a href="#services" className="text-gray-700 hover:text-[#800020] transition-colors">Dịch vụ</a>
               <a href="#about" className="text-gray-700 hover:text-[#800020] transition-colors">Giới thiệu</a>
               <a href="#contact" className="text-gray-700 hover:text-[#800020] transition-colors">Liên hệ</a>
-              <Link href="/documents/manage">
-                <Button className="bg-[#800020] hover:bg-[#722F37] text-white">
-                  Dành cho nhân viên
-                </Button>
-              </Link>
+              
+              {!isLoading && !user && (
+                <a href="/auth/login">
+                  <Button className="bg-[#800020] hover:bg-[#722F37] text-white">
+                    Dành cho nhân viên
+                  </Button>
+                </a>
+              )}
+              
+              {user && (
+                <div className="flex items-center space-x-4">
+                  <Link href="/documents/manage">
+                    <Button className="bg-[#800020] hover:bg-[#722F37] text-white">
+                      Quản lý tài liệu
+                    </Button>
+                  </Link>
+                  <a href="/auth/logout">
+                    <Button variant="outline" className="border-[#800020] text-[#800020] hover:bg-[#800020] hover:text-white">
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Đăng xuất
+                    </Button>
+                  </a>
+                </div>
+              )}
             </div>
 
             <button
@@ -146,11 +167,30 @@ export default function Home() {
               <a href="#services" className="block text-gray-700 hover:text-[#800020]">Dịch vụ</a>
               <a href="#about" className="block text-gray-700 hover:text-[#800020]">Giới thiệu</a>
               <a href="#contact" className="block text-gray-700 hover:text-[#800020]">Liên hệ</a>
-              <Link href="/documents/manage" className="block">
-                <Button className="w-full bg-[#800020] hover:bg-[#722F37] text-white">
-                  Dành cho nhân viên
-                </Button>
-              </Link>
+              
+              {!isLoading && !user && (
+                <a href="/auth/login" className="block">
+                  <Button className="w-full bg-[#800020] hover:bg-[#722F37] text-white">
+                    Dành cho nhân viên
+                  </Button>
+                </a>
+              )}
+              
+              {user && (
+                <div className="space-y-3">
+                  <Link href="/documents/manage" className="block">
+                    <Button className="w-full bg-[#800020] hover:bg-[#722F37] text-white">
+                      Quản lý tài liệu
+                    </Button>
+                  </Link>
+                  <a href="/auth/logout" className="block">
+                    <Button variant="outline" className="w-full border-[#800020] text-[#800020] hover:bg-[#800020] hover:text-white">
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Đăng xuất
+                    </Button>
+                  </a>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -167,7 +207,7 @@ export default function Home() {
           <div className="absolute bottom-40 left-1/4 w-16 h-16 border border-white/20 rounded-full animate-pulse delay-2000"></div>
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16 min-h-screen flex items-center">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-36 pb-16 min-h-screen flex items-center">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center w-full">
             <div className="space-y-8">
               <div className="flex items-center space-x-4 mb-8">
@@ -270,7 +310,7 @@ export default function Home() {
                       <MapPin className="w-5 h-5 text-white flex-shrink-0" />
                       <div className="text-sm text-white/90 font-medium">Địa chỉ</div>
                     </div>
-                    <div className="text-sm">79 Lê Thị Riêng, Thới An, Quận 12, TPHCM</div>
+                    <div className="text-sm">79 Lê Thị Riêng, phường Thới An, TP.Hồ Chí Minh</div>
                   </div>
 
                   <div className="p-3 bg-white/5 rounded-xl">

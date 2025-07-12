@@ -11,6 +11,7 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@auth0/nextjs-auth0": "^4.2.1",
     "@hookform/resolvers": "^3.9.0",
     "@next/swc-wasm-nodejs": "13.5.1",
     "@radix-ui/react-accordion": "^1.2.11",
@@ -44,6 +45,7 @@
     "@types/node": "20.6.2",
     "@types/react": "18.2.22",
     "@types/react-dom": "18.2.7",
+    "auth0": "^4.27.0",
     "autoprefixer": "10.4.15",
     "axios": "^1.10.0",
     "class-variance-authority": "^0.7.0",
