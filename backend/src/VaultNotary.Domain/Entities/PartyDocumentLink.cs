@@ -40,7 +40,7 @@ public enum PartyRole
 {
     PartyA,
     PartyB,
-    Witness,
+    PartyC,
     Notary
 }
 

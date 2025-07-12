@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/src/components/ui/dialog";
 import { Button } from "@/src/components/ui/button";
 import { Badge } from "@/src/components/ui/badge";
@@ -28,7 +28,7 @@ import {
 import { CustomerType } from "@/src/types/customer.type";
 import { DocumentListType } from "@/src/types/document.type";
 import useCustomerService from "@/src/services/useCustomerService";
-import useDocumentService from "@/src/services/useDocumentService";
+import useDocumentApiService from "@/src/features/documents/services/documentApiService";
 import { formatDate } from "@/src/lib/constants";
 import { cn } from "@/src/lib/utils";
 
@@ -49,15 +49,9 @@ export function CustomerDetailsDialog({
   const [documentsLoading, setDocumentsLoading] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<DocumentListType | null>(null);
   const { getCustomerDocuments } = useCustomerService();
-  const { getDocumentById } = useDocumentService();
+  const { getDocumentById } = useDocumentApiService();
 
-  useEffect(() => {
-    if (customer && open) {
-      loadCustomerDocuments();
-    }
-  }, [customer, open]);
-
-  const loadCustomerDocuments = async () => {
+  const loadCustomerDocuments = useCallback(async () => {
     if (!customer) return;
     
     try {
@@ -69,7 +63,13 @@ export function CustomerDetailsDialog({
     } finally {
       setDocumentsLoading(false);
     }
-  };
+  }, [customer, getCustomerDocuments]);
+
+  useEffect(() => {
+    if (customer && open) {
+      loadCustomerDocuments();
+    }
+  }, [customer, open, loadCustomerDocuments]);
 
   const handleDocumentClick = async (document: DocumentListType) => {
     setSelectedDocument(document);
@@ -128,7 +128,7 @@ export function CustomerDetailsDialog({
                     <TypeIcon className="h-5 w-5 text-orange-600" />
                     Thông tin cơ bản
                   </div>
-                  <Badge variant={typeInfo.variant}>
+                  <Badge variant={typeInfo.variant as "default" | "destructive" | "outline" | "secondary"}>
                     {typeInfo.label}
                   </Badge>
                 </CardTitle>

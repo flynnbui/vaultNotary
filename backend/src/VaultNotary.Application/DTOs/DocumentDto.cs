@@ -11,7 +11,7 @@ public class DocumentDto
     public string NotaryPublic { get; set; } = string.Empty;
     public string TransactionCode { get; set; } = string.Empty;
     public string? Description { get; set; }
-    public string DocumentType { get; set; } = string.Empty;
+    public DocumentType DocumentType { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public List<PartyDocumentLinkDto> PartyDocumentLinks { get; set; } = new();
@@ -26,7 +26,7 @@ public class DocumentListDto
     public string NotaryPublic { get; set; } = string.Empty;
     public string TransactionCode { get; set; } = string.Empty;
     public string? Description { get; set; }
-    public string DocumentType { get; set; } = string.Empty;
+    public DocumentType DocumentType { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }

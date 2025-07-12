@@ -1,6 +1,6 @@
 import { CustomerType } from "@/src/types/customer.type";
 
-export function exportCustomersToCSV(customers: CustomerType[], filename = "khach-hang") {
+export function exportCustomersToCSV(customers: CustomerType[], filename = "customers") {
   const headers = [
     "ID",
     "Họ và tên",
@@ -48,7 +48,7 @@ export function exportCustomersToCSV(customers: CustomerType[], filename = "khac
   }
 }
 
-export function exportCustomersToExcel(customers: CustomerType[], filename = "khach-hang") {
+export function exportCustomersToExcel(customers: CustomerType[], filename = "customers") {
   // For now, we'll use CSV format. To implement actual Excel export,
   // you would need to install a library like 'xlsx' or 'exceljs'
   exportCustomersToCSV(customers, filename);

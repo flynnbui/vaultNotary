@@ -25,11 +25,16 @@ export function CustomerSearchFilters({
   const [filters, setFilters] = useState<CustomerFilterOptions>({});
 
   // Debounce search to prevent excessive API calls
+  const searchFunction = useCallback((value: string) => {
+    onSearch(value);
+  }, [onSearch]);
+
   const debouncedSearch = useCallback(
-    debounce((value: string) => {
-      onSearch(value);
-    }, 500),
-    [onSearch]
+    (value: string) => {
+      const debouncedFunction = debounce(searchFunction, 500);
+      debouncedFunction(value);
+    },
+    [searchFunction]
   );
 
   const handleSearchChange = (value: string) => {
