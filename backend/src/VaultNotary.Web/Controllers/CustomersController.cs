@@ -56,8 +56,15 @@ public class CustomersController : ControllerBase
     {
         var duplicates = await _customerService.DetectDuplicatesAsync(createCustomerDto);
         if (duplicates.Any())
+            return BadRequest($"Đã tìm thấy khách hàng trùng lặp với thông tin định danh giống nhau.");
+
+        if (!ModelState.IsValid)
         {
-            return BadRequest($"Duplicate customer found with same identity information");
+            var errorMessages = ModelState.Values
+            .SelectMany(v => v.Errors)
+            .Select(e => e.ErrorMessage);
+            var fullErrorMessage = "Dữ liệu gửi lên không hợp lệ: " + string.Join("; ", errorMessages);
+            return BadRequest(fullErrorMessage);
         }
 
         var customerId = await _customerService.CreateAsync(createCustomerDto);
@@ -70,7 +77,14 @@ public class CustomersController : ControllerBase
     {
         if (!await _customerService.ExistsAsync(id))
             return NotFound();
-
+        if (!ModelState.IsValid)
+        {
+            var errorMessages = ModelState.Values
+            .SelectMany(v => v.Errors)
+            .Select(e => e.ErrorMessage);
+            var fullErrorMessage = "Dữ liệu gửi lên không hợp lệ: " + string.Join("; ", errorMessages);
+            return BadRequest(fullErrorMessage);
+        }
         await _customerService.UpdateAsync(id, updateCustomerDto);
         return NoContent();
     }

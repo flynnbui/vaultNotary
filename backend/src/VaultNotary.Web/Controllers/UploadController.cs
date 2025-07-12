@@ -94,7 +94,7 @@ public class UploadController : ControllerBase
 
             var documentFileId = await _documentFileService.CreateAsync(createDto);
 
-            // Trigger PDF compression job if needed
+            // TODO: Trigger PDF compression job
             // if (AllowedFileTypes.IsPdf(request.File.ContentType))
             // {
             //     var compressJob = new CompressFileJob
