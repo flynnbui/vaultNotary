@@ -20,7 +20,6 @@ public class PartyDocumentLink
     [Required]
     public PartyRole PartyRole { get; set; }
     
-    [Required]
     public SignatureStatus SignatureStatus { get; set; }
     
     [Required]
@@ -40,7 +39,7 @@ public enum PartyRole
 {
     PartyA,
     PartyB,
-    Witness,
+    PartyC,
     Notary
 }
 
