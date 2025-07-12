@@ -1,5 +1,5 @@
 import axios from "axios";
-// import { refreshAuthToken } from "../utils/authUtils";
+import { getAccessToken } from '@auth0/nextjs-auth0';
 
 // const SERVER = process.env.VITE_API_URL_SERVER;
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -10,10 +10,14 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(
-  function (config) {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+  async function (config) {
+    try {
+      const { accessToken } = await getAccessToken();
+      if (accessToken) {
+        config.headers.Authorization = `Bearer ${accessToken}`;
+      }
+    } catch (error) {
+      console.error('Failed to get access token:', error);
     }
     return config;
   },
@@ -21,27 +25,5 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-
-// api.interceptors.response.use(
-//   (response) => response,
-//   async (error) => {
-//     const originalRequest = error.config;
-
-//     if (error.response.status === 401 && !originalRequest._retry) {
-//       originalRequest._retry = true; // Prevent infinite retry loop
-
-//       try {
-//         const newToken = await refreshAuthToken();
-//         axios.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
-//         originalRequest.headers.Authorization = `Bearer ${newToken}`;
-//         return api(originalRequest);
-//       } catch (refreshError) {
-//         console.error("Refresh token failed:", refreshError);
-//       }
-//     }
-
-//     return Promise.reject(error);
-//   }
-// );
 
 export default api;
