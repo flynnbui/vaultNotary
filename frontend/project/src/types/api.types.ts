@@ -68,6 +68,11 @@ export interface CreateDocumentDto {
   transactionCode: string;
   description: string | null;
   documentType: string;
+  parties: CreateDocumentPartyDto[];
+}
+export interface CreateDocumentPartyDto {
+  customerId: string;
+  partyRole: PartyRole;
 }
 
 export interface UpdateDocumentDto extends CreateDocumentDto {
@@ -177,17 +182,17 @@ export interface PresignedUrlDto {
 // Enums
 export enum CustomerType {
   Individual = 0,
-  Business = 1
+  Business = 1,
 }
 
 export enum PartyRole {
   PartyA = 0,
   PartyB = 1,
-  PartyC = 2
+  PartyC = 2,
 }
 
 export enum SignatureStatus {
   Pending = 0,
   Signed = 1,
-  Rejected = 2
+  Rejected = 2,
 }

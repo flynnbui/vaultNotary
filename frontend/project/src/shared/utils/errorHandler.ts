@@ -126,6 +126,31 @@ export class ErrorHandler {
   }
 
   /**
+   * Handle customer-specific errors
+   */
+  static handleCustomerError(error: unknown, operation: string): void {
+    const context = `customer ${operation}`;
+    
+    if (error instanceof ApiError) {
+      switch (error.status) {
+        case 404:
+          toast.error("Không tìm thấy khách hàng.");
+          break;
+        case 409:
+          toast.error("Khách hàng đã tồn tại hoặc có xung đột dữ liệu.");
+          break;
+        case 422:
+          toast.error("Thông tin khách hàng không hợp lệ. Vui lòng kiểm tra lại.");
+          break;
+        default:
+          this.handleApiError(error, context);
+      }
+    } else {
+      this.handleApiError(error, context);
+    }
+  }
+
+  /**
    * Handle validation errors
    */
   static handleValidationError(errors: Record<string, string[]>): void {

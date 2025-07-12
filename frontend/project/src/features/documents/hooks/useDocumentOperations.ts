@@ -23,7 +23,6 @@ export const useDocumentOperations = ({
   const handleEditDocument = useCallback(async (document: DocumentType) => {
     try {
       setLoading(true);
-      console.log("🔄 Loading document with populated parties for edit:", document.id);
       
       const populatedDocument = await getDocumentWithPopulatedParties(document.id);
       if (!populatedDocument) {
@@ -31,7 +30,6 @@ export const useDocumentOperations = ({
       }
       onEdit?.(populatedDocument, 'edit');
     } catch (error) {
-      console.error("Error loading document for edit:", error);
       toast.error("Có lỗi khi tải thông tin hồ sơ");
     } finally {
       setLoading(false);
@@ -41,7 +39,6 @@ export const useDocumentOperations = ({
   const handleViewDocument = useCallback(async (document: DocumentType) => {
     try {
       setLoading(true);
-      console.log("🔄 Loading document with populated parties for view:", document.id);
       
       const populatedDocument = await getDocumentWithPopulatedParties(document.id);
       if (!populatedDocument) {
@@ -49,7 +46,6 @@ export const useDocumentOperations = ({
       }
       onView?.(populatedDocument, 'view');
     } catch (error) {
-      console.error("Error loading document for view:", error);
       toast.error("Có lỗi khi tải thông tin hồ sơ");
     } finally {
       setLoading(false);

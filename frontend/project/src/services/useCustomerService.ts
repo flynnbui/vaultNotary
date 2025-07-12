@@ -8,9 +8,15 @@ import {
 } from "../types/customer.type";
 import { PaginatedResponse } from "../types/pagination.type";
 import { CUSTOMER, SEARCH } from "../lib/constants";
+import { ErrorHandler } from "../shared/utils/errorHandler";
 
 const useCustomerService = () => {
   const { callApi, loading } = useApi();
+
+  // Customer-specific error handler - memoized to prevent infinite re-renders
+  const handleCustomerError = useCallback((error: unknown, operation: string) => {
+    ErrorHandler.handleCustomerError(error, operation);
+  }, []);
 
   const getPaginatedCustomers = useCallback(
     async (
@@ -34,11 +40,11 @@ const useCustomerService = () => {
         const response = await callApi("get", url);
         return response?.data;
       } catch (error) {
-        console.error("Lỗi khi lấy danh sách khách hàng:", error);
+        handleCustomerError(error, "fetch paginated list");
         throw error;
       }
     },
-    [callApi]
+    [callApi, handleCustomerError]
   );
 
   const getAllCustomers = useCallback(async (): Promise<CustomerType[]> => {
@@ -46,10 +52,10 @@ const useCustomerService = () => {
       const response = await callApi("get", CUSTOMER.DEFAULT);
       return response?.data || [];
     } catch (error) {
-      console.error("Lỗi khi lấy tất cả khách hàng:", error);
+      handleCustomerError(error, "fetch all customers");
       throw error;
     }
-  }, [callApi]);
+  }, [callApi, handleCustomerError]);
 
   const getCustomerById = useCallback(
     async (id: string): Promise<CustomerType | undefined> => {
@@ -57,25 +63,24 @@ const useCustomerService = () => {
         const response = await callApi("get", `${CUSTOMER.BY_ID}/${id}`);
         return response?.data;
       } catch (error) {
-        console.error("Lỗi khi lấy thông tin khách hàng:", error);
+        handleCustomerError(error, "fetch by ID");
         throw error;
       }
     },
-    [callApi]
+    [callApi, handleCustomerError]
   );
 
   const createCustomer = useCallback(
     async (customerData: CreateCustomerType): Promise<string> => {
-      console.log("Hello");
       try {
         const response = await callApi("post", CUSTOMER.DEFAULT, customerData as unknown as Record<string, unknown>);
         return response?.data;
       } catch (error) {
-        console.error("Lỗi khi tạo khách hàng:", error);
+        handleCustomerError(error, "create");
         throw error;
       }
     },
-    [callApi]
+    [callApi, handleCustomerError]
   );
 
   const updateCustomer = useCallback(
@@ -83,11 +88,11 @@ const useCustomerService = () => {
       try {
         await callApi("put", `${CUSTOMER.BY_ID}/${id}`, customerData as unknown as Record<string, unknown>);
       } catch (error) {
-        console.error("Lỗi khi cập nhật khách hàng:", error);
+        handleCustomerError(error, "update");
         throw error;
       }
     },
-    [callApi]
+    [callApi, handleCustomerError]
   );
 
   const deleteCustomer = useCallback(
@@ -95,11 +100,11 @@ const useCustomerService = () => {
       try {
         await callApi("delete", `${CUSTOMER.BY_ID}/${id}`);
       } catch (error) {
-        console.error("Lỗi khi xóa khách hàng:", error);
+        handleCustomerError(error, "delete");
         throw error;
       }
     },
-    [callApi]
+    [callApi, handleCustomerError]
   );
 
   const searchCustomers = useCallback(
@@ -117,11 +122,11 @@ const useCustomerService = () => {
         );
         return response?.data;
       } catch (error) {
-        console.error("Lỗi khi tìm kiếm khách hàng:", error);
+        handleCustomerError(error, "search");
         throw error;
       }
     },
-    [callApi]
+    [callApi, handleCustomerError]
   );
 
   const getCustomerDocuments = useCallback(
@@ -133,11 +138,11 @@ const useCustomerService = () => {
         );
         return response?.data;
       } catch (error) {
-        console.error("Lỗi khi lấy tài liệu của khách hàng:", error);
+        handleCustomerError(error, "fetch documents");
         throw error;
       }
     },
-    [callApi]
+    [callApi, handleCustomerError]
   );
 
   const bulkDeleteCustomers = useCallback(
@@ -145,11 +150,11 @@ const useCustomerService = () => {
       try {
         await Promise.all(customerIds.map((id) => deleteCustomer(id)));
       } catch (error) {
-        console.error("Lỗi khi xóa hàng loạt khách hàng:", error);
+        handleCustomerError(error, "bulk delete");
         throw error;
       }
     },
-    [deleteCustomer]
+    [deleteCustomer, handleCustomerError]
   );
 
   return {

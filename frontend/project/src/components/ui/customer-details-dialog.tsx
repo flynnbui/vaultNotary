@@ -28,7 +28,7 @@ import {
 import { CustomerType } from "@/src/types/customer.type";
 import { DocumentListType } from "@/src/types/document.type";
 import useCustomerService from "@/src/services/useCustomerService";
-import useDocumentService from "@/src/services/useDocumentService";
+import useDocumentApiService from "@/src/features/documents/services/documentApiService";
 import { formatDate } from "@/src/lib/constants";
 import { cn } from "@/src/lib/utils";
 
@@ -49,7 +49,7 @@ export function CustomerDetailsDialog({
   const [documentsLoading, setDocumentsLoading] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<DocumentListType | null>(null);
   const { getCustomerDocuments } = useCustomerService();
-  const { getDocumentById } = useDocumentService();
+  const { getDocumentById } = useDocumentApiService();
 
   const loadCustomerDocuments = useCallback(async () => {
     if (!customer) return;

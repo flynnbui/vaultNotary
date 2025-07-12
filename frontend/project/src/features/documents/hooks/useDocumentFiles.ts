@@ -25,18 +25,14 @@ export const useDocumentFiles = ({ editingDocument, dialogMode }: UseDocumentFil
     }
 
     try {
-      setLoading(true);
-      console.log("🔄 Loading files for document:", editingDocument.id);
-      
+      setLoading(true);      
       const files = await getDocumentFiles(editingDocument.id);
       const transformedFiles = files.map(apiFile => 
         FileUtils.transformApiFileToFileItemAuto(apiFile)
       );
       
       setAttachedFiles(transformedFiles);
-      console.log("✅ Loaded files:", transformedFiles);
     } catch (error) {
-      console.error("❌ Error loading files:", error);
       setAttachedFiles([]);
       toast.error("Có lỗi khi tải danh sách file");
     } finally {
@@ -99,7 +95,6 @@ export const useDocumentFiles = ({ editingDocument, dialogMode }: UseDocumentFil
   const handleFileDownload = useCallback(async (file: FileItem) => {
     try {
       setLoading(true);
-      console.log("🔄 Downloading file:", file.name);
 
       // Try presigned URL first
       try {
