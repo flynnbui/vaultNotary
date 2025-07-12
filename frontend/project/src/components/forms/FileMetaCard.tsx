@@ -337,15 +337,13 @@ function CustomDatePicker({
                       h-8 w-8 text-sm rounded-md font-normal
                       hover:bg-accent hover:text-accent-foreground
                       focus:bg-accent focus:text-accent-foreground
-                      ${
-                        isSelected
-                          ? "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
-                          : ""
+                      ${isSelected
+                        ? "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
+                        : ""
                       }
-                      ${
-                        isToday && !isSelected
-                          ? "bg-accent text-accent-foreground"
-                          : ""
+                      ${isToday && !isSelected
+                        ? "bg-accent text-accent-foreground"
+                        : ""
                       }
                     `}
                     onClick={() => handleDateSelect(day)}
@@ -499,7 +497,7 @@ export function FileMetaCard({ readOnly = false }: FileMetaCardProps) {
           {readOnly ? (
             <CustomDatePicker
               value={selectedDate || null}
-              onChange={() => {}} // No-op for readonly
+              onChange={() => { }} // No-op for readonly
               placeholder="dd/MM/yyyy"
               readOnly={true}
             />
@@ -556,7 +554,7 @@ export function FileMetaCard({ readOnly = false }: FileMetaCardProps) {
                 </Select> */}
                 <Input
                   id="thuKy"
-                  value={thuKy || ""} 
+                  value={thuKy || ""}
                   onChange={(e) => setValue("thuKy", e.target.value)}
                   placeholder="Nhập tên thư ký"
                   className={errors.thuKy ? "border-red-500" : ""}
@@ -607,10 +605,10 @@ export function FileMetaCard({ readOnly = false }: FileMetaCardProps) {
 
                 <Input
                   id="congChungVien"
-                    value={congChungVien || ""}
-                    onChange={(e) => setValue("congChungVien", e.target.value)}
-                    placeholder="Nhập tên công chứng viên"
-                    className={errors.congChungVien ? "border-red-500" : ""}
+                  value={congChungVien || ""}
+                  onChange={(e) => setValue("congChungVien", e.target.value)}
+                  placeholder="Nhập tên công chứng viên"
+                  className={errors.congChungVien ? "border-red-500" : ""}
                 />
                 {errors.congChungVien && (
                   <p className="text-sm text-red-500 mt-1">
@@ -629,13 +627,13 @@ export function FileMetaCard({ readOnly = false }: FileMetaCardProps) {
               htmlFor="maGiaoDich"
               className="text-sm font-medium text-muted-foreground"
             >
-              Mã giao dịch
+              Số Công Chứng
             </Label>
             {readOnly ? (
               <ReadOnlyInput
                 value={maGiaoDich}
                 icon={<Hash className="h-4 w-4 text-muted-foreground" />}
-                placeholder="Chưa có mã giao dịch"
+                placeholder="Chưa có số Công Chứng"
               />
             ) : (
               <>
@@ -643,12 +641,12 @@ export function FileMetaCard({ readOnly = false }: FileMetaCardProps) {
                   id="maGiaoDich"
                   value={maGiaoDich || ""}
                   onChange={(e) => setValue("maGiaoDich", e.target.value)}
-                  placeholder="Nhập mã giao dịch (tùy chọn)"
+                  placeholder="Nhập số Công Chứng (tùy chọn)"
                   className={errors.maGiaoDich ? "border-red-500" : ""}
                 />
                 {errors.maGiaoDich && (
                   <p className="text-sm text-red-500 mt-1">
-                    {(errors.maGiaoDich as any)?.message || "Lỗi mã giao dịch"}
+                    {(errors.maGiaoDich as any)?.message || "Lỗi số Công Chứng"}
                   </p>
                 )}
               </>

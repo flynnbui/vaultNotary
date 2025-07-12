@@ -48,7 +48,7 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
-              <TableHead className="font-semibold">Mã giao dịch</TableHead>
+              <TableHead className="font-semibold">Số Công Chứng</TableHead>
               <TableHead className="font-semibold">Loại hồ sơ</TableHead>
               <TableHead className="font-semibold">Mô tả</TableHead>
               <TableHead className="font-semibold">Thư ký / Công chứng viên</TableHead>
@@ -77,7 +77,7 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
-              <TableHead className="font-semibold">Mã giao dịch</TableHead>
+              <TableHead className="font-semibold">Số Công Chứng</TableHead>
               <TableHead className="font-semibold">Loại hồ sơ</TableHead>
               <TableHead className="font-semibold">Mô tả</TableHead>
               <TableHead className="font-semibold">Thư ký / Công chứng viên</TableHead>
@@ -110,7 +110,7 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/50">
-            <TableHead className="font-semibold">Mã giao dịch</TableHead>
+            <TableHead className="font-semibold">Số Công Chứng</TableHead>
             <TableHead className="font-semibold">Loại hồ sơ</TableHead>
             <TableHead className="font-semibold">Mô tả</TableHead>
             <TableHead className="font-semibold">Thư ký / Công chứng viên</TableHead>

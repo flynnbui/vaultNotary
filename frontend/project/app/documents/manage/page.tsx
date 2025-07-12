@@ -23,7 +23,7 @@ import "@/src/lib/i18n";
 
 export default function DocumentManagePage() {
   const { t } = useTranslation();
-  
+
   // Dialog state
   const [showDialog, setShowDialog] = useState(false);
   const [dialogMode, setDialogMode] = useState<DialogMode>("create");
@@ -144,7 +144,7 @@ export default function DocumentManagePage() {
             searchTerm={searchTerm}
             onSearchChange={handleSearchChange}
             searchPlaceholder="Nhập thông tin tìm kiếm..."
-            searchLabel="Tìm kiếm theo mã giao dịch, mô tả, thư ký, công chứng viên"
+            searchLabel="Tìm kiếm theo Số Công Chứng, mô tả, thư ký, công chứng viên"
             searchTitle="Tìm kiếm hồ sơ tài liệu"
             currentPage={currentPage}
             totalPages={totalPages}

@@ -1,21 +1,21 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export class ValidationUtils {
   /**
    * Vietnamese phone number validation
    */
   static readonly phoneRegex = /^[0-9]{10}$/;
-  
+
   /**
    * Vietnamese ID card validation (CMND/CCCD)
    */
   static readonly cmndRegex = /^[0-9]{9}$|^[0-9]{12}$/;
-  
+
   /**
    * Passport validation
    */
   static readonly passportRegex = /^[A-Z0-9]{8,9}$/;
-  
+
   /**
    * Business registration number validation
    */
@@ -25,55 +25,61 @@ export class ValidationUtils {
    * Create phone number schema
    */
   static createPhoneSchema(required: boolean = false) {
-    const baseSchema = z.string().regex(
-      this.phoneRegex, 
-      'Số điện thoại phải có 10 chữ số'
-    );
-    
-    return required 
-      ? baseSchema.min(1, 'Số điện thoại là bắt buộc')
-      : baseSchema.optional().or(z.literal(''));
+    const baseSchema = z
+      .string()
+      .regex(this.phoneRegex, "Số điện thoại phải có 10 chữ số");
+
+    return required
+      ? baseSchema.min(1, "Số điện thoại là bắt buộc")
+      : baseSchema.optional().or(z.literal(""));
   }
 
   /**
    * Create email schema
    */
   static createEmailSchema(required: boolean = false) {
-    const baseSchema = z.string().email('Email không hợp lệ');
-    
-    return required 
-      ? baseSchema.min(1, 'Email là bắt buộc')
-      : baseSchema.optional().or(z.literal(''));
+    const baseSchema = z.string().email("Email không hợp lệ");
+
+    return required
+      ? baseSchema.min(1, "Email là bắt buộc")
+      : baseSchema.optional().or(z.literal(""));
   }
 
   /**
    * Create ID/Passport validation schema
    */
   static createIdValidationSchema() {
-    return z.object({
-      cmndNumber: z.string().trim().optional(),
-      passportNumber: z.string().trim().optional(),
-    }).refine(data => {
-      if (data.cmndNumber && data.cmndNumber.length > 0) {
-        return this.cmndRegex.test(data.cmndNumber);
-      }
-      if (data.passportNumber && data.passportNumber.length > 0) {
-        return this.passportRegex.test(data.passportNumber);
-      }
-      return data.cmndNumber || data.passportNumber;
-    }, {
-      message: 'Phải nhập CMND/CCCD hoặc Passport hợp lệ',
-    });
+    return z
+      .object({
+        cmndNumber: z.string().trim().optional(),
+        passportNumber: z.string().trim().optional(),
+      })
+      .refine(
+        (data) => {
+          if (data.cmndNumber && data.cmndNumber.length > 0) {
+            return this.cmndRegex.test(data.cmndNumber);
+          }
+          if (data.passportNumber && data.passportNumber.length > 0) {
+            return this.passportRegex.test(data.passportNumber);
+          }
+          return data.cmndNumber || data.passportNumber;
+        },
+        {
+          message: "Phải nhập CMND/CCCD hoặc Passport hợp lệ",
+        }
+      );
   }
 
   /**
    * Create business registration schema
    */
   static createBusinessRegistrationSchema() {
-    return z.string().regex(
-      this.businessRegex,
-      'Số đăng ký kinh doanh phải có từ 10-13 chữ số'
-    );
+    return z
+      .string()
+      .regex(
+        this.businessRegex,
+        "Số đăng ký kinh doanh phải có từ 10-13 chữ số"
+      );
   }
 
   /**
@@ -81,14 +87,13 @@ export class ValidationUtils {
    */
   static createDateSchema(required: boolean = true, message?: string) {
     const baseSchema = z.date();
-    
+
     if (required) {
-      return baseSchema.refine(
-        (date) => date <= new Date(),
-        { message: message || 'Ngày không thể là tương lai' }
-      );
+      return baseSchema.refine((date) => date <= new Date(), {
+        message: message || "Ngày không thể là tương lai",
+      });
     }
-    
+
     return baseSchema.optional();
   }
 
@@ -110,24 +115,29 @@ export class ValidationUtils {
    * Create transaction code schema
    */
   static createTransactionCodeSchema() {
-    return z.string().min(3, 'Mã giao dịch phải có ít nhất 3 ký tự');
+    return z.string().min(3, "Số Công Chứng phải có ít nhất 3 ký tự");
   }
 
   /**
    * Create name validation schema
    */
-  static createNameSchema(fieldName: string = 'Tên') {
-    return z.string()
+  static createNameSchema(fieldName: string = "Tên") {
+    return z
+      .string()
       .min(2, `${fieldName} phải có ít nhất 2 ký tự`)
       .max(100, `${fieldName} không được vượt quá 100 ký tự`)
-      .regex(/^[a-zA-ZÀ-ỹ\s]+$/, `${fieldName} chỉ được chứa chữ cái và khoảng trắng`);
+      .regex(
+        /^[a-zA-ZÀ-ỹ\s]+$/,
+        `${fieldName} chỉ được chứa chữ cái và khoảng trắng`
+      );
   }
 
   /**
    * Create address validation schema
    */
-  static createAddressSchema(fieldName: string = 'Địa chỉ') {
-    return z.string()
+  static createAddressSchema(fieldName: string = "Địa chỉ") {
+    return z
+      .string()
       .min(5, `${fieldName} phải có ít nhất 5 ký tự`)
       .max(255, `${fieldName} không được vượt quá 255 ký tự`);
   }
@@ -152,16 +162,17 @@ export class ValidationUtils {
    */
   static createFileValidationSchema(
     maxSizeInMB: number = 10,
-    allowedTypes: string[] = ['application/pdf', 'image/jpeg', 'image/png']
+    allowedTypes: string[] = ["application/pdf", "image/jpeg", "image/png"]
   ) {
-    return z.instanceof(File)
+    return z
+      .instanceof(File)
       .refine(
         (file) => this.validateFileSize(file, maxSizeInMB),
         `File không được vượt quá ${maxSizeInMB}MB`
       )
       .refine(
         (file) => this.validateFileType(file, allowedTypes),
-        'Định dạng file không được hỗ trợ'
+        "Định dạng file không được hỗ trợ"
       );
   }
 
@@ -175,15 +186,18 @@ export class ValidationUtils {
     message?: string
   ) {
     let schema = z.array(itemSchema);
-    
+
     if (minItems > 0) {
-      schema = schema.min(minItems, message || `Phải có ít nhất ${minItems} phần tử`);
+      schema = schema.min(
+        minItems,
+        message || `Phải có ít nhất ${minItems} phần tử`
+      );
     }
-    
+
     if (maxItems) {
       schema = schema.max(maxItems, `Không được vượt quá ${maxItems} phần tử`);
     }
-    
+
     return schema;
   }
 
@@ -195,14 +209,12 @@ export class ValidationUtils {
     thenSchema: z.ZodSchema,
     elseSchema: z.ZodSchema
   ) {
-    return z.any().refine(
-      (data: T) => {
-        if (condition(data)) {
-          return thenSchema.safeParse(data).success;
-        }
-        return elseSchema.safeParse(data).success;
+    return z.any().refine((data: T) => {
+      if (condition(data)) {
+        return thenSchema.safeParse(data).success;
       }
-    );
+      return elseSchema.safeParse(data).success;
+    });
   }
 
   /**
@@ -237,7 +249,7 @@ export class ValidationUtils {
    * Get error message from Zod error
    */
   static getErrorMessage(error: z.ZodError): string {
-    return error.errors.map(e => e.message).join(', ');
+    return error.errors.map((e) => e.message).join(", ");
   }
 
   /**
@@ -245,15 +257,15 @@ export class ValidationUtils {
    */
   static getFieldErrors(error: z.ZodError): Record<string, string[]> {
     const fieldErrors: Record<string, string[]> = {};
-    
-    error.errors.forEach(err => {
-      const field = err.path.join('.');
+
+    error.errors.forEach((err) => {
+      const field = err.path.join(".");
       if (!fieldErrors[field]) {
         fieldErrors[field] = [];
       }
       fieldErrors[field].push(err.message);
     });
-    
+
     return fieldErrors;
   }
 }
