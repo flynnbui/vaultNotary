@@ -164,7 +164,7 @@ export const DocumentDialog: React.FC<DocumentDialogProps> = ({
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit} className="space-y-6 mt-6">
         <FileMetaCard readOnly={false} />
-        
+    
         <PartiesAccordion
           readOnly={false}
           onCustomerDialogChange={onCustomerDialogChange}

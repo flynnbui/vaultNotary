@@ -666,7 +666,7 @@ export function FileMetaCard({ readOnly = false }: FileMetaCardProps) {
               <ReadOnlyBadgeSelect value={loaiHoSo} options={FILE_TYPES} />
             ) : (
               <>
-                {/* <Select
+                <Select
                   value={loaiHoSo}
                   onValueChange={(value) => setValue("loaiHoSo", value)}
                 >
@@ -682,14 +682,14 @@ export function FileMetaCard({ readOnly = false }: FileMetaCardProps) {
                       </SelectItem>
                     ))}
                   </SelectContent>
-                </Select> */}
-                <Input
+                </Select>
+                {/* <Input
                   id="loaiHoSo"
                     value={loaiHoSo || ""}
                     onChange={(e) => setValue("loaiHoSo", e.target.value)}
                     placeholder="Nhập loại hồ sơ"
                     className={errors.loaiHoSo ? "border-red-500" : ""}
-                />
+                /> */}
                 {errors.loaiHoSo && (
                   <p className="text-sm text-red-500 mt-1">
                     {(errors.loaiHoSo as any)?.message || "Lỗi loại hồ sơ"}

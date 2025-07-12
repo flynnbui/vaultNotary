@@ -64,6 +64,7 @@ export const useDocumentForm = ({
   }, [editingDocument, dialogMode, methods, loadDocumentData]);
 
   const handleSubmit = useCallback(async (data: FileFormData) => {
+    console.log('Document form submitted with data:', data);
     try {
       // Validate form data
       const validation = DocumentFormService.validateFormData(data);
@@ -74,6 +75,7 @@ export const useDocumentForm = ({
 
       // Prepare document data
       const documentData = DocumentFormService.prepareDocumentData(data);
+      console.log('Prepared document data for API:', documentData);
 
       if (editingDocument) {
         // Update existing document
