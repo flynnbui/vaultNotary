@@ -35,7 +35,7 @@ public class Document
     
     [Required]
     [MaxLength(100)]
-    public string DocumentType { get; set; } = string.Empty;
+    public DocumentType DocumentType { get; set; }
     
     [Required]
     public DateTime CreatedAt { get; set; }
@@ -53,37 +53,46 @@ public class DocumentFile
     [Key]
     [MaxLength(50)]
     public string Id { get; set; } = string.Empty;
-    
+
     [Required]
     [MaxLength(50)]
     [ForeignKey(nameof(Document))]
     public string DocumentId { get; set; } = string.Empty;
-    
+
     [Required]
     [MaxLength(255)]
     public string FileName { get; set; } = string.Empty;
-    
+
     [Required]
     public long FileSize { get; set; }
-    
+
     [Required]
     [MaxLength(100)]
     public string ContentType { get; set; } = string.Empty;
-    
+
     [Required]
     [MaxLength(500)]
     public string S3Key { get; set; } = string.Empty;
-    
+
     [Required]
     [MaxLength(100)]
     public string S3Bucket { get; set; } = string.Empty;
-    
+
     [Required]
     public DateTime CreatedAt { get; set; }
-    
+
     [Required]
     public DateTime UpdatedAt { get; set; }
-    
+
     public virtual Document Document { get; set; } = null!;
+}
+public enum DocumentType
+{
+    HopDong,       // Hợp đồng giao dịch
+    ThuaKe,        // Thừa kế
+    MuaBanXe,      // Mua bán xe
+    ThueNha,       // Thuê nhà
+    TheChap,       // Thế chấp
+    GopVon         // Góp vốn
 }
 
