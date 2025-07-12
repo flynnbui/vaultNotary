@@ -1,4 +1,5 @@
 "use client";
+"use client";
 
 import * as React from "react";
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -65,7 +66,34 @@ export function PartiesAccordion({
   const [currentParty, setCurrentParty] = useState<PartyKey>("A");
   const [editingCustomer, setEditingCustomer] =
     useState<CustomerSummary | null>(null);
+export function PartiesAccordion({
+  readOnly = false,
+  onCustomerDialogChange,
+}: PartiesAccordionProps) {
+  const {
+    control,
+    formState: { errors },
+    watch,
+  } = useFormContext();
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [currentParty, setCurrentParty] = useState<PartyKey>("A");
+  const [editingCustomer, setEditingCustomer] =
+    useState<CustomerSummary | null>(null);
 
+  // 🆕 State để lưu thông tin chi tiết khách hàng
+  const [customerDetails, setCustomerDetails] = useState<
+    Record<string, CustomerDetails>
+  >({});
+  const [loadingCustomers, setLoadingCustomers] = useState<
+    Record<string, boolean>
+  >({});
+
+  // 🆕 Import customer service
+  const { getCustomerById } = useCustomerService();
+
+  const partiesA = useFieldArray({ control, name: "parties.A" });
+  const partiesB = useFieldArray({ control, name: "parties.B" });
+  const partiesC = useFieldArray({ control, name: "parties.C" });
   // 🆕 State để lưu thông tin chi tiết khách hàng
   const [customerDetails, setCustomerDetails] = useState<
     Record<string, CustomerDetails>
@@ -167,7 +195,25 @@ export function PartiesAccordion({
         return "Bên A";
     }
   };
+  const getPartyLabel = (party: PartyKey) => {
+    switch (party) {
+      case "A":
+        return "Bên A";
+      case "B":
+        return "Bên B";
+      case "C":
+        return "Bên C (Tùy chọn)";
+      default:
+        return "Bên A";
+    }
+  };
 
+  const handleAddCustomer = (party: PartyKey) => {
+    if (readOnly) return;
+    setCurrentParty(party);
+    setEditingCustomer(null);
+    handleDialogOpenChange(true);
+  };
   const handleAddCustomer = (party: PartyKey) => {
     if (readOnly) return;
     setCurrentParty(party);
@@ -186,6 +232,12 @@ export function PartiesAccordion({
     handleDialogOpenChange(true);
   };
 
+  const handleRemoveCustomer = (party: PartyKey, index: number) => {
+    if (readOnly) return;
+    const fieldArray = getFieldArray(party);
+    fieldArray.remove(index);
+    toast.success("Đã xóa khách hàng");
+  };
   const handleRemoveCustomer = (party: PartyKey, index: number) => {
     if (readOnly) return;
     const fieldArray = getFieldArray(party);
@@ -421,7 +473,129 @@ export function PartiesAccordion({
       </Table>
     </div>
   );
+  // 🆕 Enhanced table với thông tin đầy đủ từ API
+  const renderCustomerTable = (
+    customers: CustomerSummary[],
+    party: PartyKey
+  ) => (
+    <div className="rounded-md border">
+      <Table>
+        <TableHeader>
+          <TableRow className="bg-muted/50">
+            <TableHead className="font-semibold">Tên khách hàng</TableHead>
+            <TableHead className="font-semibold">Loại</TableHead>
+            <TableHead className="font-semibold">Điện thoại</TableHead>
+            <TableHead className="font-semibold">Email</TableHead>
+            <TableHead className="font-semibold">Địa chỉ</TableHead>
+            <TableHead className="font-semibold">CMND/CCCD</TableHead>
+            <TableHead className="font-semibold">Passport</TableHead>
+            <TableHead className="font-semibold">Tổ chức</TableHead>
+            {!readOnly && (
+              <TableHead className="font-semibold">Thao tác</TableHead>
+            )}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {customers.map((customer, index) => {
+            const customerId = customer.id;
+            const details = customerDetails[customerId];
+            const isLoading = loadingCustomers[customerId];
 
+            return (
+              <TableRow key={customer.id} className="hover:bg-muted/50">
+                <TableCell className="font-medium">
+                  <div className="flex items-center gap-2">
+                    {isLoading && (
+                      <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                    )}
+                    <div>
+                      <div className="font-semibold">
+                        {details?.fullName || customer.fullName}
+                      </div>
+                      {(details?.businessName || customer.businessName) && (
+                        <div className="text-sm text-muted-foreground">
+                          {details?.businessName || customer.businessName}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell>{getCustomerTypeBadge(customer)}</TableCell>
+                <TableCell>
+                  <div className="font-mono text-sm">
+                    {details?.phone || customer.phone || "-"}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="text-sm">{details?.email || customer.email || "-"}</div>
+                </TableCell>
+                <TableCell className="max-w-[200px]" title={details?.address || customer.address}>
+                  <div className="text-sm">{details?.address || customer.address || "-"}</div>
+                </TableCell>
+                <TableCell className="font-mono text-sm">
+                  {details?.documentId || customer.documentId || "-"}
+                </TableCell>
+                <TableCell className="font-mono text-sm">
+                  {details?.passportId || customer.passportId || "-"}
+                </TableCell>
+                <TableCell>
+                  <div className="text-sm">
+                    <div>{details?.businessName || customer.businessName || "-"}</div>
+                    {(details?.businessRegistrationNumber || customer.businessRegistrationNumber) && (
+                      <div className="text-xs text-muted-foreground font-mono">
+                        {details?.businessRegistrationNumber || customer.businessRegistrationNumber}
+                      </div>
+                    )}
+                  </div>
+                </TableCell>
+                {!readOnly && (
+                  <TableCell>
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          handleEditCustomer(party, customer, index)
+                        }
+                        title="Chỉnh sửa"
+                      >
+                        <PenLine className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleRemoveCustomer(party, index)}
+                        className="border-red-200 text-red-600 hover:bg-red-50"
+                        title="Xóa"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                )}
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
+  );
+
+  const renderEmptyState = (party: PartyKey) => (
+    <div className="text-center py-8 border-2 border-dashed border-muted rounded-lg">
+      <User className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+      <h3 className="text-lg font-medium text-foreground mb-2">
+        {readOnly ? "Không có khách hàng" : "Chưa có khách hàng"}
+      </h3>
+      {!readOnly && (
+        <p className="text-muted-foreground mb-4">
+          Nhấn nút bên dưới để thêm khách hàng cho {getPartyLabel(party)}
+        </p>
+      )}
+    </div>
+  );
   const renderEmptyState = (party: PartyKey) => (
     <div className="text-center py-8 border-2 border-dashed border-muted rounded-lg">
       <User className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
@@ -440,7 +614,41 @@ export function PartiesAccordion({
     const fieldArray = getFieldArray(party);
     const customers = fieldArray.fields as CustomerSummary[];
     const hasError = (errors?.parties as any)?.[party];
+  const renderPartySection = (party: PartyKey) => {
+    const fieldArray = getFieldArray(party);
+    const customers = fieldArray.fields as CustomerSummary[];
+    const hasError = (errors?.parties as any)?.[party];
 
+    return (
+      <Card key={party} className="w-full">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2">
+            <User className="h-5 w-5 text-orange-600" />
+            <span className="font-semibold">{getPartyLabel(party)}</span>
+            {customers.length > 0 && (
+              <span className="text-sm text-muted-foreground">
+                ({customers.length} khách hàng)
+              </span>
+            )}
+            {hasError && !readOnly && (
+              <span className="text-sm text-red-500">*</span>
+            )}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-4"
+          >
+            {customers.length > 0 ? (
+              <div className="space-y-4">
+                {renderCustomerTable(customers, party)}
+              </div>
+            ) : (
+              renderEmptyState(party)
+            )}
     return (
       <Card key={party} className="w-full">
         <CardHeader className="pb-3">
@@ -485,6 +693,19 @@ export function PartiesAccordion({
                   : "Thêm khách hàng"}
               </Button>
             )}
+            {!readOnly && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => handleAddCustomer(party)}
+                className="w-full"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                {customers.length > 0
+                  ? "Thêm khách hàng khác"
+                  : "Thêm khách hàng"}
+              </Button>
+            )}
 
             {hasError && !readOnly && (
               <p className="text-sm text-red-500">
@@ -498,7 +719,44 @@ export function PartiesAccordion({
       </Card>
     );
   };
+            {hasError && !readOnly && (
+              <p className="text-sm text-red-500">
+                {party === "A" || party === "B"
+                  ? `${getPartyLabel(party)} phải có ít nhất 1 khách hàng`
+                  : "Có lỗi trong thông tin khách hàng"}
+              </p>
+            )}
+          </motion.div>
+        </CardContent>
+      </Card>
+    );
+  };
 
+  return (
+    <>
+      <Accordion
+        type="single"
+        collapsible
+        defaultValue="parties-info"
+        className="w-full"
+      >
+        <AccordionItem value="parties-info">
+          <AccordionTrigger className="text-lg font-semibold">
+            <div className="flex items-center gap-2">
+              <Users className="h-5 w-5 text-orange-600" />
+              Thông tin các bên
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="space-y-6">
+            {/* All cards in a single column */}
+            <div className="space-y-6">
+              {renderPartySection("A")}
+              {renderPartySection("B")}
+              {renderPartySection("C")}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
   return (
     <>
       <Accordion

@@ -15,7 +15,8 @@ public class Customer
     [Required]
     [MaxLength(255)]
     public string FullName { get; set; } = string.Empty;
-    
+    [Required]
+    public Gender Gender { get; set; }
     [Required]
     [MaxLength(500)]
     public string Address { get; set; } = string.Empty;
@@ -23,6 +24,7 @@ public class Customer
     [MaxLength(20)]
     public string? Phone { get; set; }
     
+   
     [MaxLength(255)]
     public string? Email { get; set; }
     
@@ -54,4 +56,10 @@ public enum CustomerType
 {
     Individual,
     Business
+}
+public enum Gender
+{
+    Male,
+    Female,
+    Other
 }

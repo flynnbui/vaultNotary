@@ -12,19 +12,19 @@ services:
     ports:
       - "5000:80"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Test
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__DefaultConnection=Host=vaultnotary-db-prod.cx0ewaugo94q.ap-southeast-1.rds.amazonaws.com;Port=5432;Database=vaultnotary;Username=vaultnotary_user;Password=CatTu0ng080503
-      - Aws__Region=ap-southeast-1
-      - Aws__AccessKey=AKIARXO2YC5AHWZKHPIN
-      - Aws__SecretKey=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
-      - Aws__S3__BucketName=vaultnotary-files-prod-119107229504
-      - Aws__S3__FileKeyPrefix=files/
-      - Aws__S3__PresignedUrlExpirationHours=24
-      - Aws__Kms__SymmetricKeyId=f9998863-7bd3-4682-98cc-cdecc2df87b2
-      - ConnectionStrings__RabbitMQ=amqp://admin:password@rabbitmq:5672
-    depends_on:
-      - rabbitmq
+      - ConnectionStrings__DefaultConnection=${DATABASE_CONNECTION_STRING}
+      - Aws__Region=${AWS_REGION}
+      - Aws__AccessKey=${AWS_ACCESS_KEY}
+      - Aws__SecretKey=${AWS_SECRET_KEY}
+      - Aws__S3__BucketName=${AWS_S3_BUCKET_NAME}
+      - Aws__S3__FileKeyPrefix=${AWS_S3_FILE_PREFIX}
+      - Aws__S3__PresignedUrlExpirationHours=${AWS_S3_PRESIGNED_URL_HOURS}
+      - Aws__Kms__SymmetricKeyId=${AWS_KMS_SYMMETRIC_KEY_ID}
+      - ConnectionStrings__RabbitMQ=${RABBITMQ_CONNECTION_STRING}
+    # depends_on:
+    #   - rabbitmq
     networks:
       - backend-network
     restart: unless-stopped
@@ -98,20 +98,20 @@ services:
   # ======================
   # MESSAGE QUEUE
   # ======================
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    container_name: vaultnotary-rabbitmq
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    environment:
-      - RABBITMQ_DEFAULT_USER=admin
-      - RABBITMQ_DEFAULT_PASS=password
-    volumes:
-      - rabbitmq-data:/var/lib/rabbitmq
-    networks:
-      - backend-network
-    restart: unless-stopped
+  # rabbitmq:
+  #   image: rabbitmq:3-management-alpine
+  #   container_name: vaultnotary-rabbitmq
+  #   ports:
+  #     - "5672:5672"
+  #     - "15672:15672"
+  #   environment:
+  #     - RABBITMQ_DEFAULT_USER=admin
+  #     - RABBITMQ_DEFAULT_PASS=password
+  #   volumes:
+  #     - rabbitmq-data:/var/lib/rabbitmq
+  #   networks:
+  #     - backend-network
+  #   restart: unless-stopped
 
 # ======================
 # NETWORKS
