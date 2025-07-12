@@ -59,7 +59,7 @@ public static class DependencyInjection
         // Register services
         services.AddScoped<IHashService, HashService>();
         services.AddScoped<ISignatureService, KmsSignatureService>();
-        services.AddSingleton<IJobQueue, RabbitMqJobQueue>();
+        // services.AddSingleton<IJobQueue, RabbitMqJobQueue>();
 
         return services;
     }

@@ -77,8 +77,7 @@ else
 }
 
 // Configure Authorization
-if (builder.Environment.IsEnvironment("Testing") || builder.Environment.IsEnvironment("Test"))
-{
+if (builder.Environment.IsEnvironment("Testing") || builder.Environment.IsEnvironment("Test")) {
     // For testing, allow all requests
     builder.Services.AddAuthorization(options =>
     {
@@ -91,22 +90,16 @@ if (builder.Environment.IsEnvironment("Testing") || builder.Environment.IsEnviro
         options.AddPolicy(Permissions.CreateCustomers, p => p.RequireAssertion(_ => true));
         options.AddPolicy(Permissions.UpdateCustomers, p => p.RequireAssertion(_ => true));
         options.AddPolicy(Permissions.DeleteCustomers, p => p.RequireAssertion(_ => true));
-
         options.AddPolicy(Permissions.ReadDocuments, p => p.RequireAssertion(_ => true));
         options.AddPolicy(Permissions.CreateDocuments, p => p.RequireAssertion(_ => true));
         options.AddPolicy(Permissions.UpdateDocuments, p => p.RequireAssertion(_ => true));
         options.AddPolicy(Permissions.DeleteDocuments, p => p.RequireAssertion(_ => true));
-
         options.AddPolicy(Permissions.UploadFiles, p => p.RequireAssertion(_ => true));
         options.AddPolicy(Permissions.DownloadFiles, p => p.RequireAssertion(_ => true));
         options.AddPolicy(Permissions.DeleteFiles, p => p.RequireAssertion(_ => true));
-
         options.AddPolicy(Permissions.SearchDocuments, p => p.RequireAssertion(_ => true));
         options.AddPolicy(Permissions.SearchCustomers, p => p.RequireAssertion(_ => true));
-
-
         options.AddPolicy(Permissions.AdminAccess, p => p.RequireAssertion(_ => true));
-
         options.AddPolicy(Roles.Admin, p => p.RequireAssertion(_ => true));
         options.AddPolicy(Roles.NotaryPublic, p => p.RequireAssertion(_ => true));
         options.AddPolicy(Roles.User, p => p.RequireAssertion(_ => true));
@@ -164,7 +157,7 @@ else
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
-
+builder.Services.AddHealthChecks();
 builder.Services.AddScoped<IFileService, FileService>();
 
 builder.Services.AddCors(options =>
@@ -216,7 +209,10 @@ app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseMiddleware<Auth0PermissionsMiddleware>();
+app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseAuthorization();
+app.MapHealthChecks("/health");
+
 
 app.MapControllers();
 
