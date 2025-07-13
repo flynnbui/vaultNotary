@@ -5,8 +5,11 @@ namespace VaultNotary.Domain.Repositories;
 public interface IDocumentFileRepository
 {
     Task<DocumentFile?> GetByIdAsync(string id);
+    Task<DocumentFile?> GetByIdLightAsync(string id);
     Task<List<DocumentFile>> GetByDocumentIdAsync(string documentId);
+    Task<List<DocumentFile>> GetByDocumentIdLightAsync(string documentId);
     Task<DocumentFile?> GetByS3KeyAsync(string s3Key);
+    Task<DocumentFile?> GetByS3KeyLightAsync(string s3Key);
     Task<List<DocumentFile>> SearchByFileNameAsync(string fileName);
     Task<List<DocumentFile>> GetAllAsync();
     Task<string> CreateAsync(DocumentFile documentFile);

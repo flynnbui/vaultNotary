@@ -20,6 +20,7 @@ public class EfDocumentRepository : IDocumentRepository
         return await _context.Documents
             .Include(d => d.PartyDocumentLinks)
             .ThenInclude(pdl => pdl.Customer)
+            .AsNoTracking()
             .FirstOrDefaultAsync(d => d.Id == id);
     }
 
@@ -39,6 +40,7 @@ public class EfDocumentRepository : IDocumentRepository
         return await _context.Documents
             .Include(d => d.PartyDocumentLinks)
             .ThenInclude(pdl => pdl.Customer)
+            .AsNoTracking()
             .Where(d => d.PartyDocumentLinks.Any(pdl => pdl.CustomerId == customerId))
             .OrderByDescending(d => d.CreatedDate)
             .ToListAsync();
@@ -56,6 +58,7 @@ public class EfDocumentRepository : IDocumentRepository
         return await _context.Documents
             .Include(d => d.PartyDocumentLinks)
             .ThenInclude(pdl => pdl.Customer)
+            .AsNoTracking()
             .Where(d => EF.Functions.Like(d.TransactionCode.ToLower(), $"%{searchTerm}%") ||
                        EF.Functions.Like(d.Secretary.ToLower(), $"%{searchTerm}%") ||
                        EF.Functions.Like(d.NotaryPublic.ToLower(), $"%{searchTerm}%") ||
@@ -75,6 +78,7 @@ public class EfDocumentRepository : IDocumentRepository
         return await _context.Documents
             .Include(d => d.PartyDocumentLinks)
             .ThenInclude(pdl => pdl.Customer)
+            .AsNoTracking()
             .Where(d => d.PartyDocumentLinks.Any(pdl => 
                 pdl.NotaryDate.Date >= from.Date && 
                 pdl.NotaryDate.Date <= to.Date))
@@ -82,32 +86,88 @@ public class EfDocumentRepository : IDocumentRepository
             .ToListAsync();
     }
 
-    public async Task<List<Document>> GetAllAsync()
-    {
-        return await _context.Documents
-            .OrderByDescending(d => d.CreatedDate)
-            .ToListAsync();
-    }
-
-    public async Task<List<Document>> GetAllDocumentsAsync()
-    {
-        return await _context.Documents
-            .OrderByDescending(d => d.CreatedDate)
-            .ToListAsync();
-    }
-
-    public async Task<List<Document>> GetAllDocumentsAsync(int skip, int take)
-    {
-        return await _context.Documents
-            .OrderByDescending(d => d.CreatedDate)
-            .Skip(skip)
-            .Take(take)
-            .ToListAsync();
-    }
 
     public async Task<int> GetTotalCountAsync()
     {
         return await _context.Documents.CountAsync();
+    }
+
+    public async Task<Document?> GetByIdWithFilesAsync(string id)
+    {
+        return await _context.Documents
+            .Include(d => d.Files)
+            .Include(d => d.PartyDocumentLinks)
+            .ThenInclude(pdl => pdl.Customer)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(d => d.Id == id);
+    }
+
+    public async Task<(List<Document> Documents, int TotalCount)> GetPagedAsync(int skip, int take, string? searchTerm = null)
+    {
+        var query = _context.Documents.AsQueryable();
+        
+        if (!string.IsNullOrEmpty(searchTerm))
+        {
+            var lowerSearchTerm = searchTerm.ToLower();
+            query = query.Where(d => 
+                EF.Functions.Like(d.TransactionCode.ToLower(), $"%{lowerSearchTerm}%") ||
+                EF.Functions.Like(d.DocumentType.ToLower(), $"%{lowerSearchTerm}%") ||
+                EF.Functions.Like(d.Secretary.ToLower(), $"%{lowerSearchTerm}%") ||
+                EF.Functions.Like(d.NotaryPublic.ToLower(), $"%{lowerSearchTerm}%") ||
+                EF.Functions.Like(d.Description!.ToLower(), $"%{lowerSearchTerm}%"));
+        }
+        
+        var totalCount = await query.CountAsync();
+        var documents = await query
+            .AsNoTracking()
+            .OrderByDescending(d => d.CreatedDate)
+            .Skip(skip)
+            .Take(take)
+            .ToListAsync();
+            
+        return (documents, totalCount);
+    }
+
+    public async Task<Document?> GetByTransactionCodeAsync(string transactionCode)
+    {
+        return await _context.Documents
+            .Include(d => d.PartyDocumentLinks)
+            .ThenInclude(pdl => pdl.Customer)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(d => d.TransactionCode == transactionCode);
+    }
+
+    public async Task<List<Document>> GetByNotaryPublicAsync(string notaryPublic)
+    {
+        return await _context.Documents
+            .Include(d => d.PartyDocumentLinks)
+            .ThenInclude(pdl => pdl.Customer)
+            .AsNoTracking()
+            .Where(d => d.NotaryPublic == notaryPublic)
+            .OrderByDescending(d => d.CreatedDate)
+            .ToListAsync();
+    }
+
+    public async Task<List<Document>> GetBySecretaryAsync(string secretary)
+    {
+        return await _context.Documents
+            .Include(d => d.PartyDocumentLinks)
+            .ThenInclude(pdl => pdl.Customer)
+            .AsNoTracking()
+            .Where(d => d.Secretary == secretary)
+            .OrderByDescending(d => d.CreatedDate)
+            .ToListAsync();
+    }
+
+    public async Task<List<Document>> GetByDocumentTypeAsync(string documentType)
+    {
+        return await _context.Documents
+            .Include(d => d.PartyDocumentLinks)
+            .ThenInclude(pdl => pdl.Customer)
+            .AsNoTracking()
+            .Where(d => d.DocumentType == documentType)
+            .OrderByDescending(d => d.CreatedDate)
+            .ToListAsync();
     }
 
     public async Task<string> CreateAsync(Document document)

@@ -20,6 +20,7 @@ public class EfCustomerRepository : ICustomerRepository
         return await _context.Customers
             .Include(c => c.PartyDocumentLinks)
             .ThenInclude(pdl => pdl.Document)
+            .AsNoTracking()
             .FirstOrDefaultAsync(c => c.Id == id);
     }
 
@@ -28,6 +29,7 @@ public class EfCustomerRepository : ICustomerRepository
         return await _context.Customers
             .Include(c => c.PartyDocumentLinks)
             .ThenInclude(pdl => pdl.Document)
+            .AsNoTracking()
             .FirstOrDefaultAsync(c => c.DocumentId == documentId);
     }
 
@@ -36,6 +38,7 @@ public class EfCustomerRepository : ICustomerRepository
         return await _context.Customers
             .Include(c => c.PartyDocumentLinks)
             .ThenInclude(pdl => pdl.Document)
+            .AsNoTracking()
             .FirstOrDefaultAsync(c => c.PassportId == passportId);
     }
 
@@ -44,6 +47,7 @@ public class EfCustomerRepository : ICustomerRepository
         return await _context.Customers
             .Include(c => c.PartyDocumentLinks)
             .ThenInclude(pdl => pdl.Document)
+            .AsNoTracking()
             .FirstOrDefaultAsync(c => c.BusinessRegistrationNumber == businessRegistrationNumber);
     }
 
@@ -57,6 +61,7 @@ public class EfCustomerRepository : ICustomerRepository
         return await _context.Customers
             .Include(c => c.PartyDocumentLinks)
             .ThenInclude(pdl => pdl.Document)
+            .AsNoTracking()
             .Where(c => c.DocumentId == identity || 
                        c.PassportId == identity || 
                        c.BusinessRegistrationNumber == identity)
@@ -64,23 +69,12 @@ public class EfCustomerRepository : ICustomerRepository
             .ToListAsync();
     }
 
-    public async Task<List<Customer>> GetAllAsync()
-    {
-        return await _context.Customers
-            .OrderBy(c => c.FullName)
-            .ToListAsync();
-    }
 
-    public async Task<List<Customer>> GetAllCustomersAsync()
-    {
-        return await _context.Customers
-            .OrderBy(c => c.FullName)
-            .ToListAsync();
-    }
 
     public async Task<List<Customer>> GetAllCustomersAsync(int skip, int take)
     {
         return await _context.Customers
+            .AsNoTracking()
             .OrderBy(c => c.FullName)
             .Skip(skip)
             .Take(take)
@@ -128,5 +122,13 @@ public class EfCustomerRepository : ICustomerRepository
     public async Task<bool> ExistsAsync(string id)
     {
         return await _context.Customers.AnyAsync(c => c.Id == id);
+    }
+
+    public async Task<List<string>> GetExistingCustomerIdsAsync(List<string> customerIds)
+    {
+        return await _context.Customers
+            .Where(c => customerIds.Contains(c.Id))
+            .Select(c => c.Id)
+            .ToListAsync();
     }
 }

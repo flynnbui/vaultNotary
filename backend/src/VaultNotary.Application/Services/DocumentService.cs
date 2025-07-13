@@ -25,19 +25,17 @@ public class DocumentService : IDocumentService
 
     public async Task<DocumentDto?> GetByIdAsync(string id)
     {
-        var document = await _documentRepository.GetByIdAsync(id);
+        var document = await _documentRepository.GetByIdWithFilesAsync(id);
         if (document == null) return null;
         
         var dto = MapToDto(document);
-        dto.Files = await _documentFileService.GetByDocumentIdAsync(id);
+        dto.Files = document.Files?.Select(MapFileToDto).ToList() ?? new List<DocumentFileDto>();
         return dto;
     }
 
     public async Task<DocumentDto?> GetByTransactionCodeAsync(string transactionCode)
     {
-        // Using LINQ for better performance - leveraging EF's Where clause
-        var documents = await _documentRepository.GetAllAsync();
-        var document = documents.FirstOrDefault(d => d.TransactionCode == transactionCode);
+        var document = await _documentRepository.GetByTransactionCodeAsync(transactionCode);
         return document == null ? null : MapToDto(document);
     }
 
@@ -61,50 +59,27 @@ public class DocumentService : IDocumentService
 
     public async Task<List<DocumentDto>> GetByNotaryAsync(string notaryPublic)
     {
-        var documents = await _documentRepository.GetAllAsync();
-        // Using LINQ for filtering with better performance
-        var filtered = documents.Where(d => d.NotaryPublic.Contains(notaryPublic, StringComparison.OrdinalIgnoreCase)).ToList();
-        return filtered.Select(MapToDto).ToList();
+        var documents = await _documentRepository.GetByNotaryPublicAsync(notaryPublic);
+        return documents.Select(MapToDto).ToList();
     }
 
     public async Task<List<DocumentDto>> GetBySecretaryAsync(string secretary)
     {
-        var documents = await _documentRepository.GetAllAsync();
-        // Using LINQ for filtering with better performance
-        var filtered = documents.Where(d => d.Secretary.Contains(secretary, StringComparison.OrdinalIgnoreCase)).ToList();
-        return filtered.Select(MapToDto).ToList();
+        var documents = await _documentRepository.GetBySecretaryAsync(secretary);
+        return documents.Select(MapToDto).ToList();
     }
 
     public async Task<List<DocumentDto>> GetByDocumentTypeAsync(string documentType)
     {
-        var documents = await _documentRepository.GetAllAsync();
-        // Using LINQ for filtering with better performance
-        var filtered = documents.Where(d => d.DocumentType.Equals(documentType, StringComparison.OrdinalIgnoreCase)).ToList();
-        return filtered.Select(MapToDto).ToList();
+        var documents = await _documentRepository.GetByDocumentTypeAsync(documentType);
+        return documents.Select(MapToDto).ToList();
     }
 
-    public async Task<List<DocumentListDto>> GetAllAsync()
-    {
-        var documents = await _documentRepository.GetAllDocumentsAsync();
-        return documents.Select(d => new DocumentListDto
-        {
-            Id = d.Id,
-            CreatedDate = d.CreatedDate,
-            Secretary = d.Secretary,
-            NotaryPublic = d.NotaryPublic,
-            TransactionCode = d.TransactionCode,
-            Description = d.Description,
-            DocumentType = d.DocumentType,
-            CreatedAt = d.CreatedAt,
-            UpdatedAt = d.UpdatedAt
-        }).ToList();
-    }
 
-    public async Task<PaginatedResult<DocumentListDto>> GetAllDocumentsAsync(int pageNumber = 1, int pageSize = 10)
+    public async Task<PaginatedResult<DocumentListDto>> GetAllDocumentsAsync(int pageNumber = 1, int pageSize = 10, string? searchTerm = null)
     {
         var skip = (pageNumber - 1) * pageSize;
-        var documents = await _documentRepository.GetAllDocumentsAsync(skip, pageSize);
-        var totalCount = await _documentRepository.GetTotalCountAsync();
+        var (documents, totalCount) = await _documentRepository.GetPagedAsync(skip, pageSize, searchTerm);
 
         return new PaginatedResult<DocumentListDto>
         {
@@ -133,16 +108,19 @@ public class DocumentService : IDocumentService
         {
             throw new InvalidOperationException($"Document with transaction code '{createDocumentDto.TransactionCode}' already exists.");
         }
-        // Validate all customers exist before creating document
-        foreach (var partyDto in createDocumentDto.Parties)
+        // Validate all customers exist before creating document (batch operation)
+        var customerIds = createDocumentDto.Parties
+            .Where(p => !string.IsNullOrWhiteSpace(p.CustomerId))
+            .Select(p => p.CustomerId)
+            .ToList();
+        
+        if (customerIds.Any())
         {
-            if (!string.IsNullOrWhiteSpace(partyDto.CustomerId))
+            var existingIds = await _customerRepository.GetExistingCustomerIdsAsync(customerIds);
+            var missingIds = customerIds.Except(existingIds).ToList();
+            if (missingIds.Any())
             {
-                var customerExists = await _customerRepository.ExistsAsync(partyDto.CustomerId);
-                if (!customerExists)
-                {
-                    throw new InvalidOperationException($"Customer with ID '{partyDto.CustomerId}' does not exist.");
-                }
+                throw new InvalidOperationException($"Customers not found: {string.Join(", ", missingIds)}");
             }
         }
         var document = new Document
@@ -251,14 +229,13 @@ public class DocumentService : IDocumentService
         var currentPartyMap = currentParties.ToDictionary(p => p.CustomerId);
         var desiredPartyMap = desiredParties.ToDictionary(p => p.CustomerId);
 
-        // Validate all customers exist before making any changes
-        foreach (var partyDto in desiredParties)
+        // Validate all customers exist before making any changes (batch operation)
+        var customerIds = desiredParties.Select(p => p.CustomerId).ToList();
+        var existingIds = await _customerRepository.GetExistingCustomerIdsAsync(customerIds);
+        var missingIds = customerIds.Except(existingIds).ToList();
+        if (missingIds.Any())
         {
-            var customerExists = await _customerRepository.ExistsAsync(partyDto.CustomerId);
-            if (!customerExists)
-            {
-                throw new InvalidOperationException($"Customer with ID '{partyDto.CustomerId}' does not exist.");
-            }
+            throw new InvalidOperationException($"Customers not found: {string.Join(", ", missingIds)}");
         }
 
         // 1. Add new parties (in desired but not in current)

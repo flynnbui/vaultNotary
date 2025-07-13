@@ -18,8 +18,14 @@ public class EfDocumentFileRepository : IDocumentFileRepository
     {
         return await _context.Files
             .Include(f => f.Document)
-            .ThenInclude(d => d.PartyDocumentLinks)
-            .ThenInclude(pdl => pdl.Customer)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(f => f.Id == id);
+    }
+
+    public async Task<DocumentFile?> GetByIdLightAsync(string id)
+    {
+        return await _context.Files
+            .AsNoTracking()
             .FirstOrDefaultAsync(f => f.Id == id);
     }
 
@@ -27,6 +33,16 @@ public class EfDocumentFileRepository : IDocumentFileRepository
     {
         return await _context.Files
             .Include(f => f.Document)
+            .AsNoTracking()
+            .Where(f => f.DocumentId == documentId)
+            .OrderBy(f => f.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task<List<DocumentFile>> GetByDocumentIdLightAsync(string documentId)
+    {
+        return await _context.Files
+            .AsNoTracking()
             .Where(f => f.DocumentId == documentId)
             .OrderBy(f => f.CreatedAt)
             .ToListAsync();
@@ -36,8 +52,14 @@ public class EfDocumentFileRepository : IDocumentFileRepository
     {
         return await _context.Files
             .Include(f => f.Document)
-            .ThenInclude(d => d.PartyDocumentLinks)
-            .ThenInclude(pdl => pdl.Customer)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(f => f.S3Key == s3Key);
+    }
+
+    public async Task<DocumentFile?> GetByS3KeyLightAsync(string s3Key)
+    {
+        return await _context.Files
+            .AsNoTracking()
             .FirstOrDefaultAsync(f => f.S3Key == s3Key);
     }
 
@@ -45,7 +67,8 @@ public class EfDocumentFileRepository : IDocumentFileRepository
     {
         return await _context.Files
             .Include(f => f.Document)
-            .Where(f => EF.Functions.Like(f.ContentType.ToLower(), $"%{fileName.ToLower()}%"))
+            .AsNoTracking()
+            .Where(f => EF.Functions.Like(f.FileName.ToLower(), $"%{fileName.ToLower()}%"))
             .OrderBy(f => f.CreatedAt)
             .ToListAsync();
     }
@@ -54,6 +77,7 @@ public class EfDocumentFileRepository : IDocumentFileRepository
     {
         return await _context.Files
             .Include(f => f.Document)
+            .AsNoTracking()
             .OrderByDescending(f => f.CreatedAt)
             .ToListAsync();
     }

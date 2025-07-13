@@ -12,30 +12,39 @@ namespace VaultNotary.Web.Controllers;
 public class DocumentsController : ControllerBase
 {
     private readonly IDocumentService _documentService;
+    private readonly IDocumentFileService _documentFileService;
 
-    public DocumentsController(IDocumentService documentService)
+    public DocumentsController(
+        IDocumentService documentService,
+        IDocumentFileService documentFileService)
     {
         _documentService = documentService;
+        _documentFileService = documentFileService;
     }
 
     [HttpGet]
     [HasPermission(Permissions.ReadDocuments)]
-    public async Task<ActionResult<List<DocumentListDto>>> GetAll()
+    public async Task<ActionResult<PaginatedResult<DocumentListDto>>> GetAll([FromQuery] int limit = 50)
     {
-        var documents = await _documentService.GetAllAsync();
-        return Ok(documents);
+        // Safety limit to prevent loading too many documents
+        if (limit > 100) limit = 100;
+        if (limit < 1) limit = 50;
+        
+        var result = await _documentService.GetAllDocumentsAsync(1, limit);
+        return Ok(result);
     }
 
     [HttpGet("paginated")]
     [HasPermission(Permissions.ReadDocuments)]
     public async Task<ActionResult<PaginatedResult<DocumentListDto>>> GetAllPaginated(
         [FromQuery] int pageNumber = 1, 
-        [FromQuery] int pageSize = 10)
+        [FromQuery] int pageSize = 10,
+        [FromQuery] string? searchTerm = null)
     {
         if (pageNumber < 1) pageNumber = 1;
         if (pageSize < 1 || pageSize > 100) pageSize = 10;
 
-        var result = await _documentService.GetAllDocumentsAsync(pageNumber, pageSize);
+        var result = await _documentService.GetAllDocumentsAsync(pageNumber, pageSize, searchTerm);
         return Ok(result);
     }
 
@@ -47,6 +56,18 @@ public class DocumentsController : ControllerBase
         if (document == null)
             return NotFound("Document not found");
         return Ok(document);
+    }
+
+
+    [HttpGet("{id}/files")]
+    [HasPermission(Permissions.ReadDocuments)]
+    public async Task<ActionResult<List<DocumentFileDto>>> GetDocumentFiles(string id)
+    {
+        if (!await _documentService.ExistsAsync(id))
+            return NotFound("Document not found");
+
+        var files = await _documentFileService.GetByDocumentIdAsync(id);
+        return Ok(files);
     }
 
 
