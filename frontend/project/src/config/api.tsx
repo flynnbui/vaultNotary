@@ -5,7 +5,7 @@ import { ApiError } from '../shared/utils/errorHandler';
 // const SERVER = process.env.VITE_API_URL_SERVER;
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
- 
+
 const api = axios.create({
   baseURL: BASE_URL,
 });
@@ -13,7 +13,7 @@ const api = axios.create({
 api.interceptors.request.use(
   async function (config) {
     try {
-      const { accessToken } = await getAccessToken();
+      const accessToken = await getAccessToken();
       if (accessToken) {
         config.headers.Authorization = `Bearer ${accessToken}`;
       }
@@ -36,12 +36,12 @@ api.interceptors.response.use(
     if (error.response) {
       // Server responded with error status
       const status = error.response.status;
-      const message = error.response.data?.message || 
-                     error.response.data?.error || 
-                     error.response.statusText || 
-                     error.message;
+      const message = error.response.data?.message ||
+        error.response.data?.error ||
+        error.response.statusText ||
+        error.message;
       const details = error.response.data;
-      
+
       return Promise.reject(new ApiError(status, message, details));
     } else if (error.request) {
       // Network error
