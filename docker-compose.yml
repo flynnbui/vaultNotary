@@ -23,6 +23,8 @@ services:
       - Aws__S3__PresignedUrlExpirationHours=${AWS_S3_PRESIGNED_URL_HOURS}
       - Aws__Kms__SymmetricKeyId=${AWS_KMS_SYMMETRIC_KEY_ID}
       - ConnectionStrings__RabbitMQ=${RABBITMQ_CONNECTION_STRING}
+      - Auth0__Domain=auth.nharong.vn
+      - Auth0__Audience=https://vaultnotary-api
     # depends_on:
     #   - rabbitmq
     networks:
