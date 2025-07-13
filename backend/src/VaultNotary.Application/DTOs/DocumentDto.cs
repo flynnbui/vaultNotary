@@ -11,7 +11,7 @@ public class DocumentDto
     public string NotaryPublic { get; set; } = string.Empty;
     public string TransactionCode { get; set; } = string.Empty;
     public string? Description { get; set; }
-    public DocumentType DocumentType { get; set; }
+    public string DocumentType { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public List<PartyDocumentLinkDto> PartyDocumentLinks { get; set; } = new();
@@ -26,7 +26,7 @@ public class DocumentListDto
     public string NotaryPublic { get; set; } = string.Empty;
     public string TransactionCode { get; set; } = string.Empty;
     public string? Description { get; set; }
-    public DocumentType DocumentType { get; set; }
+    public string DocumentType { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }
@@ -80,6 +80,10 @@ public class UpdateDocumentDto
     [Required(ErrorMessage = "Loại hồ sơ là bắt buộc.")]
     [MinLength(1, ErrorMessage = "Loại hồ sơ không được để trống.")]
     public string DocumentType { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Phải có ít nhất một bên tham gia.")]
+    [MinLength(1, ErrorMessage = "Danh sách các bên tham gia không được để trống.")]
+    public List<CreatePartyDocumentLinkDto> Parties { get; set; } = new();
 }
 
 public class DocumentFileDto

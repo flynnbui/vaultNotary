@@ -41,7 +41,6 @@ public enum PartyRole
     PartyA,
     PartyB,
     PartyC,
-    Notary
 }
 
 public enum SignatureStatus

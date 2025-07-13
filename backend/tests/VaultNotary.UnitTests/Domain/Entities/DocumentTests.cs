@@ -15,7 +15,7 @@ public class DocumentTests
         document.NotaryPublic.Should().BeEmpty();
         document.TransactionCode.Should().BeEmpty();
         document.Description.Should().BeNull();
-        document.DocumentType.Should().Be(default(DocumentType));
+        document.DocumentType.Should().Be(string.Empty);
         document.PartyDocumentLinks.Should().BeEmpty();
         document.Files.Should().BeEmpty();
     }
@@ -30,7 +30,7 @@ public class DocumentTests
             NotaryPublic = "John Notary",
             TransactionCode = "TX123",
             Description = "Test document",
-            DocumentType = DocumentType.HopDong,
+            DocumentType = "Hợp đồng",
             CreatedDate = DateTime.UtcNow,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
@@ -41,16 +41,16 @@ public class DocumentTests
         document.NotaryPublic.Should().Be("John Notary");
         document.TransactionCode.Should().Be("TX123");
         document.Description.Should().Be("Test document");
-        document.DocumentType.Should().Be(DocumentType.HopDong);
+        document.DocumentType.Should().Be("Hợp đồng");
     }
 
     [Fact]
-    public void Document_ShouldSupport_EnumDocumentTypes()
+    public void Document_ShouldSupport_StringDocumentTypes()
     {
-        var document = new Document { DocumentType = DocumentType.HopDong };
-        document.DocumentType.Should().Be(DocumentType.HopDong);
+        var document = new Document { DocumentType = "Hợp đồng" };
+        document.DocumentType.Should().Be("Hợp đồng");
         
-        document.DocumentType = DocumentType.ThuaKe;
-        document.DocumentType.Should().Be(DocumentType.ThuaKe);
+        document.DocumentType = "Thừa kế";
+        document.DocumentType.Should().Be("Thừa kế");
     }
 }
