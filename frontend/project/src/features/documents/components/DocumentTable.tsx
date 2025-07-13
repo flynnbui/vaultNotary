@@ -15,6 +15,7 @@ import { Edit, Eye, Upload, Users } from 'lucide-react';
 
 import { DocumentType } from '../types/document.types';
 import { DateUtils } from '@/src/shared/utils/dateUtils';
+import { DocumentTypeUtils } from '@/src/shared/utils/documentTypeUtils';
 
 interface DocumentTableProps {
   documents: DocumentType[];
@@ -33,16 +34,6 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
   onView,
   onUpload,
 }) => {
-  const getDocumentTypeColor = (documentType: string) => {
-    const colors = {
-      "Hợp đồng": "bg-green-100 text-green-800",
-      "Thỏa thuận": "bg-blue-100 text-blue-800",
-      "Công chứng": "bg-purple-100 text-purple-800",
-      "Chứng thực": "bg-yellow-100 text-yellow-800",
-      Khác: "bg-gray-100 text-gray-800",
-    };
-    return colors[documentType as keyof typeof colors] || "bg-gray-100 text-gray-800";
-  };
 
   if (loading) {
     return (
@@ -157,8 +148,8 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
                   {document.transactionCode}
                 </TableCell>
                 <TableCell>
-                  <Badge className={getDocumentTypeColor(document.documentType)}>
-                    {document.documentType}
+                  <Badge className={DocumentTypeUtils.getColorClass(document.documentType)}>
+                    {DocumentTypeUtils.getDisplayLabel(document.documentType)}
                   </Badge>
                 </TableCell>
                 <TableCell>
@@ -222,13 +213,15 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
         {documents.map((document) => (
           <Card key={document.id} className="w-full min-w-0">
             <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
+              <div className="space-y-2">
                 <CardTitle className="text-lg font-semibold break-all">
                   {document.transactionCode}
                 </CardTitle>
-                <Badge className={getDocumentTypeColor(document.documentType)}>
-                  {document.documentType}
-                </Badge>
+                <div className="flex justify-start">
+                  <Badge className={DocumentTypeUtils.getColorClass(document.documentType)}>
+                    {DocumentTypeUtils.getDisplayLabel(document.documentType)}
+                  </Badge>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
