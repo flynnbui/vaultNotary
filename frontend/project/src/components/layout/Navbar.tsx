@@ -41,19 +41,19 @@ export function Navbar() {
               variant="ghost"
               size="sm"
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden"
+              className="lg:hidden min-h-[44px] min-w-[44px] mr-2"
             >
               <Menu className="h-5 w-5" />
             </Button>
-            <Link href="/" className="flex items-center ml-4 lg:ml-0 hover:opacity-80 transition-opacity">
+            <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
               <Image
                 src="/logo.png"
                 alt="Văn phòng Công chứng Nhà Rồng"
-                width={72}
-                height={72}
-                className="object-contain"
+                width={48}
+                height={48}
+                className="object-contain md:w-[72px] md:h-[72px]"
               />
-              <span className="ml-2 text-xl font-bold text-foreground">
+              <span className="ml-2 text-lg md:text-xl font-bold text-foreground">
                 VaultNotary
               </span>
             </Link>
@@ -63,7 +63,7 @@ export function Navbar() {
             {user && !isLoading ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                  <Button variant="ghost" className="relative min-h-[44px] min-w-[44px] rounded-full p-1">
                     <Avatar className="h-10 w-10">
                       <AvatarImage src={user.picture} alt={user.name || 'User avatar'} />
                       <AvatarFallback className="bg-[#800020] text-white">

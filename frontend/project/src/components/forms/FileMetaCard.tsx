@@ -229,7 +229,7 @@ function CustomDatePicker({
       </div>
 
       {isOpen && !readOnly && (
-        <div className="absolute top-full left-0 z-50 mt-1 rounded-md border bg-popover p-0 text-popover-foreground shadow-md outline-none">
+        <div className="absolute top-full left-0 right-0 md:right-auto z-50 mt-1 rounded-md border bg-popover p-0 text-popover-foreground shadow-md outline-none max-w-[320px] md:max-w-none">
           <div className="p-3">
             {/* Header with Month/Year Selectors */}
             <div className="flex items-center justify-between mb-4 gap-2">
@@ -251,7 +251,7 @@ function CustomDatePicker({
                     newMonth.setMonth(parseInt(e.target.value));
                     setCurrentMonth(newMonth);
                   }}
-                  className="text-sm font-medium px-2 py-1 rounded-md border border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer"
+                  className="text-xs md:text-sm font-medium px-1 md:px-2 py-1 rounded-md border border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer"
                 >
                   {monthNames.map((month, index) => (
                     <option
@@ -271,7 +271,7 @@ function CustomDatePicker({
                     newMonth.setFullYear(parseInt(e.target.value));
                     setCurrentMonth(newMonth);
                   }}
-                  className="text-sm font-medium px-2 py-1 rounded-md border border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer"
+                  className="text-xs md:text-sm font-medium px-1 md:px-2 py-1 rounded-md border border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer"
                 >
                   {Array.from({ length: 101 }, (_, i) => {
                     const year = new Date().getFullYear() - 100 + i;
@@ -334,7 +334,7 @@ function CustomDatePicker({
                     key={index}
                     type="button"
                     className={`
-                      h-8 w-8 text-sm rounded-md font-normal
+                      h-7 w-7 md:h-8 md:w-8 text-xs md:text-sm rounded-md font-normal min-h-[44px] md:min-h-0
                       hover:bg-accent hover:text-accent-foreground
                       focus:bg-accent focus:text-accent-foreground
                       ${isSelected
@@ -519,7 +519,7 @@ export function FileMetaCard({ readOnly = false }: FileMetaCardProps) {
           )}
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <Label
               htmlFor="thuKy"
@@ -621,7 +621,7 @@ export function FileMetaCard({ readOnly = false }: FileMetaCardProps) {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <Label
               htmlFor="maGiaoDich"

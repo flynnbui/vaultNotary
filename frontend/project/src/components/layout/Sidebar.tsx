@@ -165,7 +165,8 @@ export function Sidebar() {
     <>
       {/* Desktop sidebar */}
       <motion.div 
-        className="hidden lg:block bg-background border-r border-border h-screen sticky top-16"
+        className="hidden lg:block bg-background border-r border-border sticky top-16 flex-shrink-0"
+        style={{ height: 'calc(100vh - 4rem)' }}
         animate={{ width: sidebarCollapsed ? 80 : 256 }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
       >
@@ -174,7 +175,7 @@ export function Sidebar() {
 
       {/* Mobile sidebar */}
       <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-        <SheetContent side="left" className="w-64 p-0">
+        <SheetContent side="left" className="w-64 p-0 max-w-[80vw]">
           <SidebarContent />
         </SheetContent>
       </Sheet>

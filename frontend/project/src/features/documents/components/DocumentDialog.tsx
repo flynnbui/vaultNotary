@@ -104,18 +104,19 @@ export const DocumentDialog: React.FC<DocumentDialogProps> = ({
           title="File đính kèm"
         />
         
-        <div className="flex justify-end gap-4 pt-6 border-t">
+        <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 pt-6 border-t">
           <Button
             type="button"
             variant="outline"
             onClick={() => onOpenChange(false)}
+            className="w-full sm:w-auto min-h-[44px]"
           >
             Đóng
           </Button>
           <Button
             type="button"
             onClick={() => onModeChange?.("edit")}
-            className="bg-[#800020] hover:bg-[#722F37] text-white"
+            className="bg-[#800020] hover:bg-[#722F37] text-white w-full sm:w-auto min-h-[44px]"
           >
             <Edit className="h-4 w-4 mr-2" />
             Chỉnh sửa
@@ -139,19 +140,19 @@ export const DocumentDialog: React.FC<DocumentDialogProps> = ({
           readOnly={false}
         />
         
-        <div className="flex justify-end gap-4 pt-6 border-t">
+        <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 pt-6 border-t">
           <Button
             type="button"
             variant="outline"
             onClick={handleCancel}
-            className="border-red-500 text-red-500 hover:bg-red-50"
+            className="border-red-500 text-red-500 hover:bg-red-50 w-full sm:w-auto min-h-[44px]"
           >
             Hủy
           </Button>
           <Button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="bg-[#800020] hover:bg-[#722F37] text-white"
+            className="bg-[#800020] hover:bg-[#722F37] text-white w-full sm:w-auto min-h-[44px]"
           >
             Hoàn thành
           </Button>
@@ -182,18 +183,18 @@ export const DocumentDialog: React.FC<DocumentDialogProps> = ({
           />
         )}
         
-        <div className="flex justify-end gap-4 pt-6 border-t">
+        <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 pt-6 border-t">
           <Button
             type="button"
             variant="outline"
             onClick={handleCancel}
-            className="border-red-500 text-red-500 hover:bg-red-50"
+            className="border-red-500 text-red-500 hover:bg-red-50 w-full sm:w-auto min-h-[44px]"
           >
             Hủy
           </Button>
           <Button
             type="submit"
-            className="bg-[#800020] hover:bg-[#722F37] text-white px-8"
+            className="bg-[#800020] hover:bg-[#722F37] text-white px-8 w-full sm:w-auto min-h-[44px]"
             disabled={isSubmitting}
           >
             {isSubmitting
@@ -220,7 +221,7 @@ export const DocumentDialog: React.FC<DocumentDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto">
+      <DialogContent className="max-w-6xl md:max-w-6xl max-w-[95vw] max-h-[95vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{getDialogTitle()}</DialogTitle>
         </DialogHeader>

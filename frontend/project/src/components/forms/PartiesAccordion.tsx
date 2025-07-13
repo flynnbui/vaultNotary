@@ -305,109 +305,206 @@ export function PartiesAccordion({
     customers: CustomerSummary[],
     party: PartyKey
   ) => (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          <TableRow className="bg-muted/50">
-            <TableHead className="font-semibold">Tên khách hàng</TableHead>
-            <TableHead className="font-semibold">Loại</TableHead>
-            <TableHead className="font-semibold">Điện thoại</TableHead>
-            <TableHead className="font-semibold">Email</TableHead>
-            <TableHead className="font-semibold">Địa chỉ</TableHead>
-            <TableHead className="font-semibold">CMND/CCCD</TableHead>
-            <TableHead className="font-semibold">Passport</TableHead>
-            <TableHead className="font-semibold">Tổ chức</TableHead>
-            {!readOnly && (
-              <TableHead className="font-semibold">Thao tác</TableHead>
-            )}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {customers.map((customer, index) => {
-            const customerId = customer.id;
-            const details = customerDetails[customerId];
-            const isLoading = loadingCustomers[customerId];
+    <>
+      {/* Desktop table */}
+      <div className="hidden lg:block rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-muted/50">
+              <TableHead className="font-semibold">Tên khách hàng</TableHead>
+              <TableHead className="font-semibold">Loại</TableHead>
+              <TableHead className="font-semibold">Điện thoại</TableHead>
+              <TableHead className="font-semibold">Email</TableHead>
+              <TableHead className="font-semibold">Địa chỉ</TableHead>
+              <TableHead className="font-semibold">CMND/CCCD</TableHead>
+              <TableHead className="font-semibold">Passport</TableHead>
+              <TableHead className="font-semibold">Tổ chức</TableHead>
+              {!readOnly && (
+                <TableHead className="font-semibold">Thao tác</TableHead>
+              )}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {customers.map((customer, index) => {
+              const customerId = customer.id;
+              const details = customerDetails[customerId];
+              const isLoading = loadingCustomers[customerId];
 
-            return (
-              <TableRow key={customer.id} className="hover:bg-muted/50">
-                <TableCell className="font-medium">
-                  <div className="flex items-center gap-2">
-                    {isLoading && (
-                      <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                    )}
-                    <div>
-                      <div className="font-semibold">
-                        {details?.fullName || customer.fullName}
+              return (
+                <TableRow key={customer.id} className="hover:bg-muted/50">
+                  <TableCell className="font-medium">
+                    <div className="flex items-center gap-2">
+                      {isLoading && (
+                        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                      )}
+                      <div>
+                        <div className="font-semibold">
+                          {details?.fullName || customer.fullName}
+                        </div>
+                        {(details?.businessName || customer.businessName) && (
+                          <div className="text-sm text-muted-foreground">
+                            {details?.businessName || customer.businessName}
+                          </div>
+                        )}
                       </div>
-                      {(details?.businessName || customer.businessName) && (
-                        <div className="text-sm text-muted-foreground">
-                          {details?.businessName || customer.businessName}
+                    </div>
+                  </TableCell>
+                  <TableCell>{getCustomerTypeBadge(customer)}</TableCell>
+                  <TableCell>
+                    <div className="font-mono text-sm">
+                      {details?.phone || customer.phone || "-"}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="text-sm">{details?.email || customer.email || "-"}</div>
+                  </TableCell>
+                  <TableCell className="max-w-[200px]" title={details?.address || customer.address}>
+                    <div className="text-sm">{details?.address || customer.address || "-"}</div>
+                  </TableCell>
+                  <TableCell className="font-mono text-sm">
+                    {details?.documentId || customer.documentId || "-"}
+                  </TableCell>
+                  <TableCell className="font-mono text-sm">
+                    {details?.passportId || customer.passportId || "-"}
+                  </TableCell>
+                  <TableCell>
+                    <div className="text-sm">
+                      <div>{details?.businessName || customer.businessName || "-"}</div>
+                      {(details?.businessRegistrationNumber || customer.businessRegistrationNumber) && (
+                        <div className="text-xs text-muted-foreground font-mono">
+                          {details?.businessRegistrationNumber || customer.businessRegistrationNumber}
                         </div>
                       )}
                     </div>
-                  </div>
-                </TableCell>
-                <TableCell>{getCustomerTypeBadge(customer)}</TableCell>
-                <TableCell>
-                  <div className="font-mono text-sm">
-                    {details?.phone || customer.phone || "-"}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="text-sm">{details?.email || customer.email || "-"}</div>
-                </TableCell>
-                <TableCell className="max-w-[200px]" title={details?.address || customer.address}>
-                  <div className="text-sm">{details?.address || customer.address || "-"}</div>
-                </TableCell>
-                <TableCell className="font-mono text-sm">
-                  {details?.documentId || customer.documentId || "-"}
-                </TableCell>
-                <TableCell className="font-mono text-sm">
-                  {details?.passportId || customer.passportId || "-"}
-                </TableCell>
-                <TableCell>
-                  <div className="text-sm">
-                    <div>{details?.businessName || customer.businessName || "-"}</div>
-                    {(details?.businessRegistrationNumber || customer.businessRegistrationNumber) && (
-                      <div className="text-xs text-muted-foreground font-mono">
-                        {details?.businessRegistrationNumber || customer.businessRegistrationNumber}
-                      </div>
-                    )}
-                  </div>
-                </TableCell>
-                {!readOnly && (
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          handleEditCustomer(party, customer, index)
-                        }
-                        title="Chỉnh sửa"
-                      >
-                        <PenLine className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleRemoveCustomer(party, index)}
-                        className="border-red-200 text-red-600 hover:bg-red-50"
-                        title="Xóa"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
                   </TableCell>
+                  {!readOnly && (
+                    <TableCell>
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            handleEditCustomer(party, customer, index)
+                          }
+                          title="Chỉnh sửa"
+                        >
+                          <PenLine className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleRemoveCustomer(party, index)}
+                          className="border-red-200 text-red-600 hover:bg-red-50"
+                          title="Xóa"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  )}
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Mobile cards */}
+      <div className="block lg:hidden space-y-4">
+        {customers.map((customer, index) => {
+          const customerId = customer.id;
+          const details = customerDetails[customerId];
+          const isLoading = loadingCustomers[customerId];
+
+          return (
+            <Card key={customer.id} className="p-4">
+              <div className="space-y-3">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    {isLoading && (
+                      <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-base truncate">
+                        {details?.fullName || customer.fullName}
+                      </h4>
+                      {(details?.businessName || customer.businessName) && (
+                        <p className="text-sm text-muted-foreground truncate">
+                          {details?.businessName || customer.businessName}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex gap-1 flex-shrink-0">
+                    {getCustomerTypeBadge(customer)}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Điện thoại:</span>
+                    <span className="font-mono">{details?.phone || customer.phone || "-"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Email:</span>
+                    <span className="truncate ml-2">{details?.email || customer.email || "-"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">CMND/CCCD:</span>
+                    <span className="font-mono">{details?.documentId || customer.documentId || "-"}</span>
+                  </div>
+                  {(details?.passportId || customer.passportId) && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Passport:</span>
+                      <span className="font-mono">{details?.passportId || customer.passportId}</span>
+                    </div>
+                  )}
+                  {(details?.businessRegistrationNumber || customer.businessRegistrationNumber) && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Mã DN:</span>
+                      <span className="font-mono">{details?.businessRegistrationNumber || customer.businessRegistrationNumber}</span>
+                    </div>
+                  )}
+                  {(details?.address || customer.address) && (
+                    <div className="pt-1">
+                      <span className="text-muted-foreground">Địa chỉ:</span>
+                      <p className="text-sm mt-1">{details?.address || customer.address}</p>
+                    </div>
+                  )}
+                </div>
+
+                {!readOnly && (
+                  <div className="flex gap-2 pt-2 border-t">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleEditCustomer(party, customer, index)}
+                      className="flex-1 min-h-[44px]"
+                    >
+                      <PenLine className="h-4 w-4 mr-2" />
+                      Sửa
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleRemoveCustomer(party, index)}
+                      className="flex-1 border-red-200 text-red-600 hover:bg-red-50 min-h-[44px]"
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Xóa
+                    </Button>
+                  </div>
                 )}
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </div>
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+    </>
   );
 
   const renderEmptyState = (party: PartyKey) => (
@@ -465,7 +562,7 @@ export function PartiesAccordion({
                 type="button"
                 variant="outline"
                 onClick={() => handleAddCustomer(party)}
-                className="w-full"
+                className="w-full min-h-[44px] md:min-h-0"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 {customers.length > 0
