@@ -1,17 +1,17 @@
 import { useCallback } from "react";
-import useApi from "./useApi";
+import useApiWithLoading from "@/src/hooks/useApiWithLoading";
 import {
   CustomerType,
   CreateCustomerType,
   UpdateCustomerType,
   CustomerFilterOptions,
-} from "../types/customer.type";
-import { PaginatedResponse } from "../types/pagination.type";
-import { CUSTOMER, SEARCH } from "../lib/constants";
-import { ErrorHandler } from "../shared/utils/errorHandler";
+} from "@/src/types/customer.type";
+import { PaginatedResponse } from "@/src/types/pagination.type";
+import { CUSTOMER, SEARCH } from "@/src/lib/constants";
+import { ErrorHandler } from "@/src/shared/utils/errorHandler";
 
-const useCustomerService = () => {
-  const { callApi, loading } = useApi();
+const useCustomerApiService = () => {
+  const { loading, callApi } = useApiWithLoading();
 
   // Customer-specific error handler - memoized to prevent infinite re-renders
   const handleCustomerError = useCallback((error: unknown, operation: string) => {
@@ -37,7 +37,7 @@ const useCustomerService = () => {
           url += `&dateTo=${filters.dateTo}`;
         }
 
-        const response = await callApi("get", url);
+        const response = await callApi<PaginatedResponse<CustomerType>>("get", url);
         return response?.data;
       } catch (error) {
         handleCustomerError(error, "fetch paginated list");
@@ -49,7 +49,7 @@ const useCustomerService = () => {
 
   const getAllCustomers = useCallback(async (): Promise<CustomerType[]> => {
     try {
-      const response = await callApi("get", CUSTOMER.DEFAULT);
+      const response = await callApi<CustomerType[]>("get", CUSTOMER.DEFAULT);
       return response?.data || [];
     } catch (error) {
       handleCustomerError(error, "fetch all customers");
@@ -60,7 +60,7 @@ const useCustomerService = () => {
   const getCustomerById = useCallback(
     async (id: string): Promise<CustomerType | undefined> => {
       try {
-        const response = await callApi("get", `${CUSTOMER.BY_ID}/${id}`);
+        const response = await callApi<CustomerType>("get", `${CUSTOMER.BY_ID}/${id}`);
         return response?.data;
       } catch (error) {
         handleCustomerError(error, "fetch by ID");
@@ -73,8 +73,8 @@ const useCustomerService = () => {
   const createCustomer = useCallback(
     async (customerData: CreateCustomerType): Promise<string> => {
       try {
-        const response = await callApi("post", CUSTOMER.DEFAULT, customerData as unknown as Record<string, unknown>);
-        return response?.data;
+        const response = await callApi<string>("post", CUSTOMER.DEFAULT, customerData);
+        return response?.data!;
       } catch (error) {
         handleCustomerError(error, "create");
         throw error;
@@ -86,7 +86,7 @@ const useCustomerService = () => {
   const updateCustomer = useCallback(
     async (id: string, customerData: UpdateCustomerType): Promise<void> => {
       try {
-        await callApi("put", `${CUSTOMER.BY_ID}/${id}`, customerData as unknown as Record<string, unknown>);
+        await callApi("put", `${CUSTOMER.BY_ID}/${id}`, customerData);
       } catch (error) {
         handleCustomerError(error, "update");
         throw error;
@@ -101,7 +101,8 @@ const useCustomerService = () => {
         await callApi("delete", `${CUSTOMER.BY_ID}/${id}`);
       } catch (error) {
         handleCustomerError(error, "delete");
-        throw error;
+        // Don't re-throw after handling the error to prevent unhandled rejections
+        return;
       }
     },
     [callApi, handleCustomerError]
@@ -114,7 +115,7 @@ const useCustomerService = () => {
       pageSize = 10
     ): Promise<PaginatedResponse<CustomerType> | undefined> => {
       try {
-        const response = await callApi(
+        const response = await callApi<PaginatedResponse<CustomerType>>(
           "get",
           `${SEARCH.CUSTOMERS}?identity=${encodeURIComponent(
             identity
@@ -146,15 +147,24 @@ const useCustomerService = () => {
   );
 
   const bulkDeleteCustomers = useCallback(
-    async (customerIds: string[]): Promise<void> => {
-      try {
-        await Promise.all(customerIds.map((id) => deleteCustomer(id)));
-      } catch (error) {
-        handleCustomerError(error, "bulk delete");
-        throw error;
+    async (customerIds: string[]): Promise<{ success: number; failed: number }> => {
+      let successCount = 0;
+      let failedCount = 0;
+      
+      // Process deletions sequentially to avoid overwhelming the server
+      for (const id of customerIds) {
+        try {
+          await callApi("delete", `${CUSTOMER.BY_ID}/${id}`);
+          successCount++;
+        } catch (error) {
+          failedCount++;
+          handleCustomerError(error, "bulk delete");
+        }
       }
+      
+      return { success: successCount, failed: failedCount };
     },
-    [deleteCustomer, handleCustomerError]
+    [callApi, handleCustomerError]
   );
 
   return {
@@ -171,4 +181,4 @@ const useCustomerService = () => {
   };
 };
 
-export default useCustomerService;
+export default useCustomerApiService;

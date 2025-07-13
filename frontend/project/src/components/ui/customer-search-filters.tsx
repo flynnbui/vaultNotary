@@ -75,7 +75,7 @@ export function CustomerSearchFilters({
       <CardHeader className="bg-muted/50 border-b">
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <SearchIcon className="h-5 w-5 text-orange-600" />
+            <SearchIcon className="h-5 w-5 text-[#800020] dark:text-[#e6b3b3]" />
             Tìm kiếm khách hàng
             {activeFiltersCount > 0 && (
               <Badge variant="secondary" className="ml-2">
@@ -119,7 +119,7 @@ export function CustomerSearchFilters({
               onClick={() => handleFilterChange('type', 0)}
               className={cn(
                 "transition-colors",
-                filters.type === 0 && "bg-orange-50 dark:bg-orange-950/50 border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-300"
+                filters.type === 0 && "bg-[#800020]/10 dark:bg-[#800020]/20 border-[#800020]/30 dark:border-[#800020]/50 text-[#800020] dark:text-[#e6b3b3]"
               )}
             >
               Cá nhân
@@ -129,7 +129,7 @@ export function CustomerSearchFilters({
               onClick={() => handleFilterChange('type', 1)}
               className={cn(
                 "transition-colors",
-                filters.type === 1 && "bg-orange-50 dark:bg-orange-950/50 border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-300"
+                filters.type === 1 && "bg-[#800020]/10 dark:bg-[#800020]/20 border-[#800020]/30 dark:border-[#800020]/50 text-[#800020] dark:text-[#e6b3b3]"
               )}
             >
               Doanh nghiệp

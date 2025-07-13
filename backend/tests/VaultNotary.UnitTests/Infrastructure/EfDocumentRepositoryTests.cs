@@ -40,7 +40,7 @@ public class EfDocumentRepositoryTests : IDisposable
             NotaryPublic = "Jane Notary",
             TransactionCode = "TX12345",
             Description = "Test document",
-            DocumentType = DocumentType.HopDong
+            DocumentType = "Hợp đồng"
         };
 
         // Act
@@ -61,13 +61,13 @@ public class EfDocumentRepositoryTests : IDisposable
         {
             Id = "doc-1",
             TransactionCode = "TX12345",
-            DocumentType = DocumentType.HopDong
+            DocumentType = "Hợp đồng"
         };
         var document2 = new Document
         {
             Id = "doc-1", // Same ID
             TransactionCode = "TX54321",
-            DocumentType = DocumentType.HopDong
+            DocumentType = "Hợp đồng"
         };
 
         await _repository.CreateAsync(document1);
@@ -89,7 +89,7 @@ public class EfDocumentRepositoryTests : IDisposable
             NotaryPublic = "María José González",
             TransactionCode = "TX-@#$%",
             Description = "Document with special chars: àáâãäåæçèéêë",
-            DocumentType = DocumentType.HopDong
+            DocumentType = "Hợp đồng"
         };
 
         // Act
@@ -115,7 +115,7 @@ public class EfDocumentRepositoryTests : IDisposable
         {
             Id = "doc-1",
             TransactionCode = "TX12345",
-            DocumentType = DocumentType.HopDong
+            DocumentType = "Hợp đồng"
         };
         await _repository.CreateAsync(document);
 
@@ -146,7 +146,7 @@ public class EfDocumentRepositoryTests : IDisposable
         {
             Id = "doc-1",
             TransactionCode = "TX12345",
-            DocumentType = DocumentType.HopDong
+            DocumentType = "Hợp đồng"
         };
         await _repository.CreateAsync(document);
 
@@ -173,9 +173,9 @@ public class EfDocumentRepositoryTests : IDisposable
         // Arrange
         var documents = new[]
         {
-            new Document { Id = "doc-1", TransactionCode = "TX1", DocumentType = DocumentType.HopDong },
-            new Document { Id = "doc-2", TransactionCode = "TX2", DocumentType = DocumentType.HopDong },
-            new Document { Id = "doc-3", TransactionCode = "TX3", DocumentType = DocumentType.ThueNha }
+            new Document { Id = "doc-1", TransactionCode = "TX1", DocumentType = "Hợp đồng" },
+            new Document { Id = "doc-2", TransactionCode = "TX2", DocumentType = "Hợp đồng" },
+            new Document { Id = "doc-3", TransactionCode = "TX3", DocumentType = "Thuê nhà" }
         };
 
         foreach (var doc in documents)
@@ -198,9 +198,9 @@ public class EfDocumentRepositoryTests : IDisposable
         var baseDate = new DateTime(2024, 1, 1);
         var documents = new[]
         {
-            new Document { Id = "doc-1", TransactionCode = "TX1", DocumentType = DocumentType.HopDong, CreatedDate = baseDate.AddDays(1) },
-            new Document { Id = "doc-2", TransactionCode = "TX2", DocumentType = DocumentType.HopDong, CreatedDate = baseDate.AddDays(5) },
-            new Document { Id = "doc-3", TransactionCode = "TX3", DocumentType = DocumentType.ThueNha, CreatedDate = baseDate.AddDays(10) }
+            new Document { Id = "doc-1", TransactionCode = "TX1", DocumentType = "Hợp đồng", CreatedDate = baseDate.AddDays(1) },
+            new Document { Id = "doc-2", TransactionCode = "TX2", DocumentType = "Hợp đồng", CreatedDate = baseDate.AddDays(5) },
+            new Document { Id = "doc-3", TransactionCode = "TX3", DocumentType = "Thuê nhà", CreatedDate = baseDate.AddDays(10) }
         };
 
         foreach (var doc in documents)
@@ -222,9 +222,9 @@ public class EfDocumentRepositoryTests : IDisposable
         // Arrange
         var documents = new[]
         {
-            new Document { Id = "doc-1", TransactionCode = "CONTRACT-123", DocumentType = DocumentType.HopDong, Description = "Purchase agreement" },
-            new Document { Id = "doc-2", TransactionCode = "LEASE-456", DocumentType = DocumentType.ThueNha, Description = "Rental contract" },
-            new Document { Id = "doc-3", TransactionCode = "SALE-789", DocumentType = DocumentType.MuaBanXe, Description = "Property sale" }
+            new Document { Id = "doc-1", TransactionCode = "CONTRACT-123", DocumentType = "Hợp đồng", Description = "Purchase agreement" },
+            new Document { Id = "doc-2", TransactionCode = "LEASE-456", DocumentType = "Thuê nhà", Description = "Rental contract" },
+            new Document { Id = "doc-3", TransactionCode = "SALE-789", DocumentType = "Mua bán xe", Description = "Property sale" }
         };
 
         foreach (var doc in documents)
@@ -252,13 +252,13 @@ public class EfDocumentRepositoryTests : IDisposable
         {
             Id = "doc-1",
             TransactionCode = "TX12345",
-            DocumentType = DocumentType.HopDong,
+            DocumentType = "Hợp đồng",
             Description = "Original description"
         };
         await _repository.CreateAsync(document);
 
         document.Description = "Updated description";
-        document.DocumentType = DocumentType.HopDong;
+        document.DocumentType = "Hợp đồng";
 
         // Act
         await _repository.UpdateAsync(document);
@@ -267,7 +267,7 @@ public class EfDocumentRepositoryTests : IDisposable
         var updatedDocument = await _context.Documents.FindAsync("doc-1");
         updatedDocument.Should().NotBeNull();
         updatedDocument!.Description.Should().Be("Updated description");
-        updatedDocument.DocumentType.Should().Be(DocumentType.HopDong);
+        updatedDocument.DocumentType.Should().Be("Hợp đồng");
         updatedDocument.UpdatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
     }
 
@@ -279,7 +279,7 @@ public class EfDocumentRepositoryTests : IDisposable
         {
             Id = "non-existent",
             TransactionCode = "TX12345",
-            DocumentType = DocumentType.HopDong
+            DocumentType = "Hợp đồng"
         };
 
         // Act & Assert
@@ -299,7 +299,7 @@ public class EfDocumentRepositoryTests : IDisposable
         {
             Id = "doc-1",
             TransactionCode = "TX12345",
-            DocumentType = DocumentType.HopDong
+            DocumentType = "Hợp đồng"
         };
         await _repository.CreateAsync(document);
 
@@ -331,7 +331,7 @@ public class EfDocumentRepositoryTests : IDisposable
         {
             Id = "doc-1",
             TransactionCode = "TX12345",
-            DocumentType = DocumentType.HopDong
+            DocumentType = "Hợp đồng"
         };
         await _repository.CreateAsync(document);
 
@@ -365,7 +365,7 @@ public class EfDocumentRepositoryTests : IDisposable
             {
                 Id = $"doc-{i}",
                 TransactionCode = $"TX{i:D4}",
-                DocumentType = DocumentType.HopDong,
+                DocumentType = "Hợp đồng",
                 Description = $"Document number {i}"
             }).ToArray();
 
@@ -391,7 +391,7 @@ public class EfDocumentRepositoryTests : IDisposable
                 {
                     Id = $"doc-{i}",
                     TransactionCode = $"TX{i}",
-                    DocumentType = DocumentType.HopDong
+                    DocumentType = "Hợp đồng"
                 };
                 return await _repository.CreateAsync(document);
             });
@@ -415,7 +415,7 @@ public class EfDocumentRepositoryTests : IDisposable
         {
             Id = "doc-1",
             TransactionCode = "TX1",
-            DocumentType = DocumentType.HopDong,
+            DocumentType = "Hợp đồng",
             CreatedDate = DateTime.UtcNow
         };
         await _repository.CreateAsync(document);
@@ -439,7 +439,7 @@ public class EfDocumentRepositoryTests : IDisposable
         {
             Id = "doc-1",
             TransactionCode = "CONTRACT-123",
-            DocumentType = DocumentType.HopDong,
+            DocumentType = "Hợp đồng",
             Description = "Purchase Agreement"
         };
         await _repository.CreateAsync(document);
@@ -465,7 +465,7 @@ public class EfDocumentRepositoryTests : IDisposable
         {
             Id = "doc-1",
             TransactionCode = "TX123",
-            DocumentType = DocumentType.HopDong
+            DocumentType = "Hợp đồng"
         };
         await _repository.CreateAsync(document);
 

@@ -111,7 +111,7 @@ export default function DocumentManagePage() {
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <Users className="h-8 w-8 text-orange-600" />
+                <Users className="h-8 w-8 text-[#800020]" />
                 <h1 className="text-3xl font-bold text-foreground">
                   Quản lý hồ sơ tài liệu
                 </h1>
@@ -125,7 +125,7 @@ export default function DocumentManagePage() {
               <DialogTrigger asChild>
                 <Button
                   size="lg"
-                  className="bg-orange-700 hover:bg-orange-900"
+                  className="bg-[#800020] hover:bg-[#722F37] text-white"
                   onClick={handleCreateDocument}
                 >
                   <Plus className="h-5 w-5 mr-2" />
@@ -159,7 +159,7 @@ export default function DocumentManagePage() {
         <Card>
           <CardHeader className="bg-muted/50 border-b">
             <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-orange-600" />
+              <Users className="h-5 w-5 text-[#800020]" />
               Danh sách hồ sơ tài liệu
             </CardTitle>
           </CardHeader>

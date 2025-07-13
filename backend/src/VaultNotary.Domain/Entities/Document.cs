@@ -35,7 +35,7 @@ public class Document
     
     [Required]
     [MaxLength(100)]
-    public DocumentType DocumentType { get; set; }
+    public string DocumentType { get; set; } = string.Empty;
     
     [Required]
     public DateTime CreatedAt { get; set; }
@@ -86,13 +86,3 @@ public class DocumentFile
 
     public virtual Document Document { get; set; } = null!;
 }
-public enum DocumentType
-{
-    HopDong,       // Hợp đồng giao dịch
-    ThuaKe,        // Thừa kế
-    MuaBanXe,      // Mua bán xe
-    ThueNha,       // Thuê nhà
-    TheChap,       // Thế chấp
-    GopVon         // Góp vốn
-}
-

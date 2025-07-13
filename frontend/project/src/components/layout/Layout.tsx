@@ -2,6 +2,7 @@
 
 import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
+import { usePathname } from 'next/navigation';
 import { Navbar } from './Navbar';
 import { Sidebar } from './Sidebar';
 
@@ -10,6 +11,13 @@ interface LayoutProps {
 }
 
 export function Layout({ children }: LayoutProps) {
+  const pathname = usePathname();
+  
+  // Don't show navbar/sidebar on landing page
+  if (pathname === '/') {
+    return <>{children}</>;
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />

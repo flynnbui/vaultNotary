@@ -14,7 +14,6 @@ import {
   FileText, 
   Search, 
   UsersRound, 
-  Settings,
   ChevronLeft,
   ChevronRight,
   LogOut,
@@ -26,7 +25,6 @@ const navigation = [
   { name: 'documents', href: '/documents/manage', icon: FileText, label: 'Hồ sơ' },
   { name: 'customers', href: '/customers', icon: UsersRound, label: 'Khách hàng' },
   { name: 'profile', href: '/profile', icon: User, label: 'Tài khoản' },
-  { name: 'settings', href: '/cai-dat', icon: Settings, label: 'Cài đặt' },
 ];
 
 function SidebarContent({ collapsed = false, onToggleCollapse }: { collapsed?: boolean; onToggleCollapse?: () => void }) {
@@ -68,7 +66,7 @@ function SidebarContent({ collapsed = false, onToggleCollapse }: { collapsed?: b
                 className={cn(
                   "w-full",
                   collapsed ? "justify-center px-2" : "justify-start",
-                  isActive && "bg-orange-600 hover:bg-orange-700 text-white"
+                  isActive && "bg-[#800020] hover:bg-[#722F37] text-white"
                 )}
                 asChild
               >

@@ -1,5 +1,4 @@
 import {
-  PartyRole,
   FileFormData,
   PartyDocumentLink,
   CustomerSummary,
@@ -8,6 +7,7 @@ import {
 import {
   CreateDocumentDto,
   CreateDocumentPartyDto,
+  PartyRole,
 } from "@/src/types/api.types";
 import { DateUtils } from "@/src/shared/utils/dateUtils";
 
@@ -42,7 +42,7 @@ export class DocumentFormService {
       if (customer.id) {
         result.push({
           customerId: customer.id,
-          partyRole: PartyRole.PARTY_A,
+          partyRole: PartyRole.PartyA,
         });
       }
     });
@@ -52,7 +52,7 @@ export class DocumentFormService {
       if (customer.id) {
         result.push({
           customerId: customer.id,
-          partyRole: PartyRole.PARTY_B,
+          partyRole: PartyRole.PartyB,
         });
       }
     });
@@ -62,7 +62,7 @@ export class DocumentFormService {
       if (customer.id) {
         result.push({
           customerId: customer.id,
-          partyRole: PartyRole.PARTY_C,
+          partyRole: PartyRole.PartyC,
         });
       }
     });
@@ -172,13 +172,13 @@ export class DocumentFormService {
           };
 
           switch (partyLink.partyRole) {
-            case PartyRole.PARTY_A:
+            case PartyRole.PartyA:
               partiesData.A.push(customerSummary);
               break;
-            case PartyRole.PARTY_B:
+            case PartyRole.PartyB:
               partiesData.B.push(customerSummary);
               break;
-            case PartyRole.PARTY_C:
+            case PartyRole.PartyC:
               partiesData.C.push(customerSummary);
               break;
             default:

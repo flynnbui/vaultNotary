@@ -75,11 +75,11 @@ public class DocumentService : IDocumentService
         return filtered.Select(MapToDto).ToList();
     }
 
-    public async Task<List<DocumentDto>> GetByDocumentTypeAsync(DocumentType documentType)
+    public async Task<List<DocumentDto>> GetByDocumentTypeAsync(string documentType)
     {
         var documents = await _documentRepository.GetAllAsync();
         // Using LINQ for filtering with better performance
-        var filtered = documents.Where(d => d.DocumentType == documentType).ToList();
+        var filtered = documents.Where(d => d.DocumentType.Equals(documentType, StringComparison.OrdinalIgnoreCase)).ToList();
         return filtered.Select(MapToDto).ToList();
     }
 
@@ -184,6 +184,7 @@ public class DocumentService : IDocumentService
         var document = await _documentRepository.GetByIdAsync(id);
         if (document == null) throw new ArgumentException("Document not found");
 
+        // Update document fields
         document.CreatedDate = updateDocumentDto.CreatedDate;
         document.Secretary = updateDocumentDto.Secretary;
         document.NotaryPublic = updateDocumentDto.NotaryPublic;
@@ -193,6 +194,9 @@ public class DocumentService : IDocumentService
         document.UpdatedAt = DateTime.UtcNow;
 
         await _documentRepository.UpdateAsync(document);
+
+        // Smart party management
+        await UpdatePartiesSmartAsync(id, updateDocumentDto.Parties);
     }
 
     public async Task DeleteAsync(string id)
@@ -238,6 +242,61 @@ public class DocumentService : IDocumentService
     {
         var documents = await _documentRepository.GetByCustomerIdAsync(partyId);
         return documents.Select(MapToDto).ToList();
+    }
+
+    private async Task UpdatePartiesSmartAsync(string documentId, List<CreatePartyDocumentLinkDto> desiredParties)
+    {
+        // Get current state
+        var currentParties = await _partyDocumentRepository.GetByDocumentIdAsync(documentId);
+        var currentPartyMap = currentParties.ToDictionary(p => p.CustomerId);
+        var desiredPartyMap = desiredParties.ToDictionary(p => p.CustomerId);
+
+        // Validate all customers exist before making any changes
+        foreach (var partyDto in desiredParties)
+        {
+            var customerExists = await _customerRepository.ExistsAsync(partyDto.CustomerId);
+            if (!customerExists)
+            {
+                throw new InvalidOperationException($"Customer with ID '{partyDto.CustomerId}' does not exist.");
+            }
+        }
+
+        // 1. Add new parties (in desired but not in current)
+        var partiesToAdd = desiredParties.Where(desired => !currentPartyMap.ContainsKey(desired.CustomerId));
+        foreach (var partyDto in partiesToAdd)
+        {
+            var partyLink = new PartyDocumentLink
+            {
+                DocumentId = documentId,
+                CustomerId = partyDto.CustomerId,
+                PartyRole = partyDto.PartyRole,
+                SignatureStatus = SignatureStatus.Pending,
+                NotaryDate = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+            await _partyDocumentRepository.CreateAsync(partyLink);
+        }
+
+        // 2. Update existing parties where PartyRole changed
+        var partiesToUpdate = desiredParties.Where(desired => 
+            currentPartyMap.ContainsKey(desired.CustomerId) && 
+            currentPartyMap[desired.CustomerId].PartyRole != desired.PartyRole);
+        
+        foreach (var partyDto in partiesToUpdate)
+        {
+            var existingParty = currentPartyMap[partyDto.CustomerId];
+            existingParty.PartyRole = partyDto.PartyRole;
+            existingParty.UpdatedAt = DateTime.UtcNow;
+            await _partyDocumentRepository.UpdateAsync(existingParty);
+        }
+
+        // 3. Remove parties that are no longer desired (in current but not in desired)
+        var partiesToRemove = currentParties.Where(current => !desiredPartyMap.ContainsKey(current.CustomerId));
+        foreach (var partyToRemove in partiesToRemove)
+        {
+            await _partyDocumentRepository.DeleteAsync(documentId, partyToRemove.CustomerId);
+        }
     }
 
     private static DocumentDto MapToDto(Document document)

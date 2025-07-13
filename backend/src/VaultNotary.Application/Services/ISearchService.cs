@@ -10,7 +10,7 @@ public interface ISearchService
     Task<List<DocumentDto>> SearchDocumentsByTransactionCodeAsync(string transactionCode);
     Task<List<DocumentDto>> SearchDocumentsByNotaryAsync(string notaryPublic);
     Task<List<DocumentDto>> SearchDocumentsBySecretaryAsync(string secretary);
-    Task<List<DocumentDto>> SearchDocumentsByTypeAsync(DocumentType documentType);
+    Task<List<DocumentDto>> SearchDocumentsByTypeAsync(string documentType);
     Task<List<DocumentDto>> SearchDocumentsByDateRangeAsync(DateTime from, DateTime to);
     
     // Customer search
