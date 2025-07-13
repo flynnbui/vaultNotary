@@ -40,7 +40,7 @@ interface CustomerBulkActionsProps {
   selectedCustomers: string[];
   onSelectAll: (selectAll: boolean) => void;
   onClearSelection: () => void;
-  onBulkDelete: (customerIds: string[]) => Promise<void>;
+  onBulkDelete: (customerIds: string[]) => Promise<{ success: number; failed: number }>;
   onBulkExport: (customerIds: string[]) => void;
   loading?: boolean;
 }
@@ -67,10 +67,17 @@ export function CustomerBulkActions({
   const handleBulkDelete = async () => {
     try {
       setIsDeleting(true);
-      await onBulkDelete(selectedCustomers);
+      const result = await onBulkDelete(selectedCustomers);
       setShowDeleteDialog(false);
       onClearSelection();
-      toast.success(`Đã xóa ${selectedCustomers.length} khách hàng`);
+      
+      if (result.failed === 0) {
+        toast.success(`Đã xóa thành công ${result.success} khách hàng`);
+      } else if (result.success === 0) {
+        toast.error(`Không thể xóa bất kỳ khách hàng nào (${result.failed} thất bại)`);
+      } else {
+        toast.warning(`Đã xóa ${result.success} khách hàng, ${result.failed} thất bại`);
+      }
     } catch (error) {
       toast.error("Có lỗi xảy ra khi xóa khách hàng");
     } finally {
@@ -89,7 +96,7 @@ export function CustomerBulkActions({
 
   return (
     <>
-      <div className="flex items-center justify-between p-4 bg-orange-50 dark:bg-orange-950/50 border border-orange-200 dark:border-orange-800 rounded-lg mb-4">
+      <div className="flex items-center justify-between p-4 bg-[#800020]/10 dark:bg-[#800020]/20 border border-[#800020]/30 dark:border-[#800020]/40 rounded-lg mb-4">
         <div className="flex items-center gap-4">
           <Checkbox
             checked={allSelected}
@@ -103,11 +110,11 @@ export function CustomerBulkActions({
             disabled={loading}
           />
           <div className="flex items-center gap-2">
-            <Users className="h-4 w-4 text-orange-600" />
-            <span className="font-medium text-orange-900 dark:text-orange-100">
+            <Users className="h-4 w-4 text-[#800020]" />
+            <span className="font-medium text-[#800020] dark:text-[#e6b3b3]">
               Đã chọn {selectedCustomers.length} khách hàng
             </span>
-            <Badge variant="secondary" className="bg-orange-100 dark:bg-orange-900/50 text-orange-800 dark:text-orange-200">
+            <Badge variant="secondary" className="bg-[#800020]/20 dark:bg-[#800020]/40 text-[#800020] dark:text-[#e6b3b3]">
               {selectedCustomers.length}
             </Badge>
           </div>
@@ -118,7 +125,7 @@ export function CustomerBulkActions({
             variant="outline"
             size="sm"
             onClick={onClearSelection}
-            className="text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800 hover:bg-orange-100 dark:hover:bg-orange-900/50"
+            className="text-[#800020] dark:text-[#e6b3b3] border-[#800020]/30 dark:border-[#800020]/40 hover:bg-[#800020]/10 dark:hover:bg-[#800020]/20"
           >
             <X className="h-4 w-4 mr-1" />
             Bỏ chọn
@@ -129,7 +136,7 @@ export function CustomerBulkActions({
             size="sm"
             onClick={handleBulkExport}
             disabled={loading}
-            className="text-green-700 border-green-200 hover:bg-green-50"
+            className="text-green-700 dark:text-green-300 border-green-200 dark:border-green-800 hover:bg-green-50 dark:hover:bg-green-900/50"
           >
             <Download className="h-4 w-4 mr-1" />
             Xuất Excel
@@ -141,33 +148,33 @@ export function CustomerBulkActions({
                 variant="outline" 
                 size="sm"
                 disabled={loading}
-                className="text-gray-700 border-gray-200 hover:bg-gray-50"
+                className="text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900/50"
               >
                 <MoreHorizontal className="h-4 w-4 mr-1" />
                 Thêm
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem onClick={handleBulkExport} className="text-green-700">
+              <DropdownMenuItem onClick={handleBulkExport} className="text-green-700 dark:text-green-300">
                 <FileSpreadsheet className="h-4 w-4 mr-2" />
                 Xuất CSV
               </DropdownMenuItem>
-              <DropdownMenuItem disabled className="text-blue-700">
+              <DropdownMenuItem disabled className="text-blue-700 dark:text-blue-300">
                 <Mail className="h-4 w-4 mr-2" />
                 Gửi email hàng loạt
               </DropdownMenuItem>
-              <DropdownMenuItem disabled className="text-purple-700">
+              <DropdownMenuItem disabled className="text-purple-700 dark:text-purple-300">
                 <Tag className="h-4 w-4 mr-2" />
                 Gắn nhãn
               </DropdownMenuItem>
-              <DropdownMenuItem disabled className="text-gray-700">
+              <DropdownMenuItem disabled className="text-gray-700 dark:text-gray-300">
                 <Archive className="h-4 w-4 mr-2" />
                 Lưu trữ
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem 
                 onClick={() => setShowDeleteDialog(true)}
-                className="text-red-700 focus:text-red-700"
+                className="text-red-700 dark:text-red-300 focus:text-red-700 dark:focus:text-red-300"
               >
                 <Trash2 className="h-4 w-4 mr-2" />
                 Xóa hàng loạt

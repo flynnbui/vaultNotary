@@ -393,7 +393,6 @@ export function CustomerDialog({
         try {
             setIsSearching(true);
             const normalizedId = validation.normalizedId || searchId.trim();
-            console.log('🔍 Searching for customer with ID:', normalizedId);
 
             const response = await searchCustomers(normalizedId, 1, 10);
             const customers = response?.items || [];
@@ -401,7 +400,6 @@ export function CustomerDialog({
             if (customers.length > 0) {
                 // Found existing customer
                 const foundCustomer = customers[0];
-                console.log('✅ Found existing customer:', foundCustomer);
 
                 setSearchResult({
                     found: true,
@@ -411,7 +409,6 @@ export function CustomerDialog({
                 setShowCreateForm(false);
             } else {
                 // No customer found
-                console.log('❌ No customer found with ID:', normalizedId);
                 setSearchResult({
                     found: false,
                     searchedId: normalizedId
@@ -430,7 +427,6 @@ export function CustomerDialog({
                 }
             }
         } catch (error) {
-            console.error('❌ Error searching for customer:', error);
             toast.error('Có lỗi khi tìm kiếm khách hàng');
         } finally {
             setIsSearching(false);
@@ -484,7 +480,6 @@ export function CustomerDialog({
             updatedAt: customer.updatedAt,
         };
 
-        console.log('✅ Using existing customer:', customerSummary);
         onSave(customerSummary);
     }, [searchResult, onSave, isCustomerAlreadyAdded, isDocumentIdAlreadyUsed]);
 
@@ -543,8 +538,6 @@ export function CustomerDialog({
     };
 
     const onSubmit = async (data: any) => {
-        console.log("🚀 CustomerDialog onSubmit called with data:", data);
-        console.log("🚀 Form errors:", errors);
 
         try {
             let customerId = initialData?.id;
@@ -573,9 +566,7 @@ export function CustomerDialog({
                     businessName: data.businessName || null,
                 };
 
-                console.log("🚀 Creating customer via API:", customerApiData);
                 customerId = await createCustomer(customerApiData);
-                console.log("✅ Customer created with ID:", customerId);
             }
 
             // Transform form data to CustomerSummary format for the parties array
@@ -594,16 +585,13 @@ export function CustomerDialog({
                 updatedAt: new Date().toISOString(),
             };
 
-            console.log("🚀 CustomerDialog submitting CustomerSummary to form:", customerSummaryData);
             onSave(customerSummaryData);
         } catch (error) {
-            console.error("❌ Error creating customer:", error);
             toast.error("Không thể tạo khách hàng. Vui lòng thử lại!");
         }
     };
 
     const onError = (errors: any) => {
-        console.log("❌ Form validation errors:", errors);
 
         // Display validation errors using toast
         const errorMessages = Object.entries(errors).map(([field, error]: [string, any]) => {
@@ -834,32 +822,32 @@ export function CustomerDialog({
                                                 );
                                             })()
                                         ) : (
-                                            <Card className="border-orange-200 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-950/20 dark:to-amber-950/20">
+                                            <Card className="border-[#800020]/30 bg-gradient-to-r from-[#800020]/10 to-[#800020]/20 dark:from-[#800020]/20 dark:to-[#800020]/30">
                                                 <CardContent className="p-6">
                                                     <div className="flex items-start gap-4">
                                                         <div className="flex-shrink-0">
-                                                            <div className="w-12 h-12 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
-                                                                <XCircle className="h-6 w-6 text-orange-600 dark:text-orange-400" />
+                                                            <div className="w-12 h-12 rounded-full bg-[#800020]/20 dark:bg-[#800020]/30 flex items-center justify-center">
+                                                                <XCircle className="h-6 w-6 text-[#800020] dark:text-[#e6b3b3]" />
                                                             </div>
                                                         </div>
 
                                                         <div className="flex-1 min-w-0">
-                                                            <h4 className="text-lg font-semibold text-orange-900 dark:text-orange-100 mb-2">
+                                                            <h4 className="text-lg font-semibold text-[#800020] dark:text-[#e6b3b3] mb-2">
                                                                 Khách hàng chưa tồn tại
                                                             </h4>
 
                                                             <div className="space-y-2">
                                                                 <div className="flex items-center gap-2">
-                                                                    <CreditCard className="h-4 w-4 text-orange-600 dark:text-orange-400" />
-                                                                    <span className="text-orange-800 dark:text-orange-200">
+                                                                    <CreditCard className="h-4 w-4 text-[#800020] dark:text-[#e6b3b3]" />
+                                                                    <span className="text-[#800020] dark:text-[#e6b3b3]">
                                                                         Không tìm thấy khách hàng với ID:
                                                                         <span className="font-mono font-medium ml-1">{searchResult.searchedId}</span>
                                                                     </span>
                                                                 </div>
 
-                                                                <div className="flex items-start gap-2 mt-3 p-3 bg-orange-100/50 dark:bg-orange-900/20 rounded-md">
-                                                                    <Lightbulb className="h-4 w-4 text-orange-600 dark:text-orange-400 mt-0.5" />
-                                                                    <div className="text-sm text-orange-700 dark:text-orange-300">
+                                                                <div className="flex items-start gap-2 mt-3 p-3 bg-[#800020]/10 dark:bg-[#800020]/20 rounded-md">
+                                                                    <Lightbulb className="h-4 w-4 text-[#800020] dark:text-[#e6b3b3] mt-0.5" />
+                                                                    <div className="text-sm text-[#800020] dark:text-[#e6b3b3]">
                                                                         <strong>Gợi ý:</strong> Bạn có thể tạo khách hàng mới với số ID này.
                                                                         Thông tin ID sẽ được tự động điền vào form bên dưới.
                                                                     </div>
@@ -872,7 +860,7 @@ export function CustomerDialog({
                                                                 type="button"
                                                                 onClick={() => setShowCreateForm(true)}
                                                                 variant="outline"
-                                                                className="border-orange-300 text-orange-700 hover:bg-orange-100 dark:border-orange-600 dark:text-orange-300 dark:hover:bg-orange-900/30 shadow-sm hover:shadow-md transition-all duration-200 px-6 py-2.5"
+                                                                className="border-[#800020]/30 text-[#800020] hover:bg-[#800020]/10 dark:border-[#800020]/50 dark:text-[#e6b3b3] dark:hover:bg-[#800020]/20 shadow-sm hover:shadow-md transition-all duration-200 px-6 py-2.5"
                                                                 size="lg"
                                                             >
                                                                 <User className="h-4 w-4 mr-2" />
@@ -943,7 +931,7 @@ export function CustomerDialog({
                                 <AccordionItem value="customer-info">
                                     <AccordionTrigger className="text-lg font-semibold">
                                         <div className="flex items-center gap-2">
-                                            <User className="h-5 w-5 text-orange-600" />
+                                            <User className="h-5 w-5 text-[#800020] dark:text-[#e6b3b3]" />
                                             Thông tin nhân sự
                                         </div>
                                     </AccordionTrigger>

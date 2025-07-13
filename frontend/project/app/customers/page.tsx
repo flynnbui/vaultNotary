@@ -46,6 +46,7 @@ import { CustomerType, CustomerFilterOptions } from "@/src/types/customer.type";
 import { exportCustomersToCSV, exportCustomersToExcel } from "@/src/lib/export-utils";
 import { cn } from "@/src/lib/utils";
 import { CustomerSummary } from "@/src/lib/schemas";
+import { ErrorHandler } from "@/src/shared/utils/errorHandler";
 
 
 export default function CustomersPage() {
@@ -113,17 +114,8 @@ export default function CustomersPage() {
       setTotalItems(response?.totalCount || 0);
       setTotalPages(response?.totalPages || 1);
     } catch (error: any) {
-      console.error("Error loading customers:", error);
-      
-      // Handle Axios errors 
-      if (error.response) {
-        const errorMessage = error.response.data || error.response.statusText || error.message;
-        toast.error(`Lỗi ${error.response.status}: ${errorMessage}`);
-      } else if (error.request) {
-        toast.error("Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.");
-      } else {
-        toast.error(error.message || "Không thể tải danh sách khách hàng");
-      }
+      // With the new axios interceptor, errors are now ApiError instances
+      ErrorHandler.handleApiError(error, "load customers");
     } finally {
       setLoading(false);
     }
@@ -180,7 +172,6 @@ export default function CustomersPage() {
 
   const handleSaveCustomer = async (customerData: any) => {
     try {
-      console.log("Received customer data:", customerData);
       
       // Transform form data to match backend API schema
       const transformedData = {
@@ -195,7 +186,6 @@ export default function CustomersPage() {
         businessName: customerData.businessName || ""
       };
 
-      console.log("Transformed data for API:", transformedData);
 
       if (editingCustomer) {
         await updateCustomer(editingCustomer.id, transformedData);
@@ -208,7 +198,6 @@ export default function CustomersPage() {
       }
       setShowDialog(false);
     } catch (error: any) {
-      console.error("Error saving customer:", error);
       
       // Handle Axios errors properly
       if (error.response) {
@@ -226,8 +215,10 @@ export default function CustomersPage() {
   };
 
   const handleBulkDelete = async (customerIds: string[]) => {
-    await bulkDeleteCustomers(customerIds);
+    const result = await bulkDeleteCustomers(customerIds);
+    // Reload customers to reflect changes regardless of partial failures
     await loadCustomers();
+    return result;
   };
 
   const handleBulkExport = (customerIds: string[]) => {
@@ -257,7 +248,7 @@ export default function CustomersPage() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-3">
-              <Users className="h-8 w-8 text-orange-600" />
+              <Users className="h-8 w-8 text-[#800020]" />
               <div>
                 <h1 className="text-3xl font-bold text-foreground">
                   Quản lý khách hàng
@@ -279,7 +270,7 @@ export default function CustomersPage() {
               </Button>
               <Button
                 onClick={handleAddCustomer}
-                className="bg-orange-600 hover:bg-orange-700"
+                className="bg-[#800020] hover:bg-[#722F37] text-white"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Thêm khách hàng
@@ -311,7 +302,7 @@ export default function CustomersPage() {
           <CardHeader className="bg-muted/50 border-b">
             <CardTitle className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-orange-600" />
+                <Users className="h-5 w-5 text-[#800020]" />
                 Danh sách khách hàng
                 {totalItems > 0 && (
                   <Badge variant="secondary" className="ml-2">
@@ -419,7 +410,7 @@ export default function CustomersPage() {
                         key={customer.id} 
                         className={cn(
                           "hover:bg-muted/50",
-                          selectedCustomers.includes(customer.id) && "bg-orange-50 dark:bg-orange-950/50"
+                          selectedCustomers.includes(customer.id) && "bg-[#800020]/10 dark:bg-[#800020]/20"
                         )}
                       >
                         <TableCell>
@@ -527,7 +518,7 @@ export default function CustomersPage() {
                             disabled={loading}
                             className={cn(
                               "h-8 w-8 p-0",
-                              pageNumber === page && "bg-orange-600 hover:bg-orange-700"
+                              pageNumber === page && "bg-[#800020] hover:bg-[#722F37] text-white"
                             )}
                           >
                             {page}

@@ -16,7 +16,6 @@ export class ErrorHandler {
    * Handle API errors with appropriate user messages
    */
   static handleApiError(error: unknown, context?: string): void {
-    console.error(`API Error${context ? ` in ${context}` : ''}:`, error);
 
     if (error instanceof ApiError) {
       this.handleTypedApiError(error, context);
@@ -141,6 +140,14 @@ export class ErrorHandler {
           break;
         case 422:
           toast.error("Thông tin khách hàng không hợp lệ. Vui lòng kiểm tra lại.");
+          break;
+        case 500:
+          // Handle specific case for customer deletion when linked to documents
+          if (operation === "delete" || operation === "bulk delete") {
+            toast.error("Không thể xóa khách hàng vì họ đang liên kết với hồ sơ tài liệu.");
+          } else {
+            this.handleApiError(error, context);
+          }
           break;
         default:
           this.handleApiError(error, context);

@@ -62,20 +62,17 @@ const useDocumentApiService = () => {
       documentData: UpdateDocumentDto
     ): Promise<DocumentDto | undefined> => {
       try {
-        console.log('🚀 updateDocument API call starting...');
-        console.log('🚀 Document ID:', id);
-        console.log('🚀 Document data to send:', documentData);
-        console.log('🚀 Making PUT request to:', `/Documents/${id}`);
         
         const response = await callApi("put", `/Documents/${id}`, documentData as unknown as Record<string, unknown>);
         
-        console.log('✅ API response received:', response);
-        console.log('✅ Response data:', response?.data);
-        console.log('✅ Response status:', response?.status);
+        // For update operations, the API returns 204 No Content on success
+        // Return the updated document data or a success indicator
+        if (response?.status === 204) {
+          return { ...documentData, id } as DocumentDto;
+        }
         
         return response?.data;
       } catch (error) {
-        console.error('❌ Error in updateDocument API call:', error);
         ErrorHandler.handleDocumentError(error, "update document");
         throw error;
       }
@@ -99,9 +96,7 @@ const useDocumentApiService = () => {
   const getDocumentById = useCallback(
     async (id: string): Promise<DocumentWithFilesDto | undefined> => {
       try {
-        console.log("🔍 Getting document by ID:", id);
         const response = await callApi("get", `/Documents/${id}`);
-        console.log("✅ Document response:", response?.data);
         return response?.data;
       } catch (error) {
         ErrorHandler.handleDocumentError(error, "fetch document by ID");
@@ -114,11 +109,9 @@ const useDocumentApiService = () => {
   const getDocumentFiles = useCallback(
     async (documentId: string): Promise<DocumentFileDto[]> => {
       try {
-        console.log("🔍 Getting files for document:", documentId);
         const documentWithFiles = await getDocumentById(documentId);
         
         const files = documentWithFiles?.files || [];
-        console.log("✅ Found files:", files);
         
         return files;
       } catch (error) {
@@ -152,15 +145,11 @@ const useDocumentApiService = () => {
   const getFilePresignedUrl = useCallback(
     async (fileId: string, expirationHours: number = 24): Promise<string> => {
       try {
-        console.log(`🔄 Getting presigned URL for file: ${fileId}`);
         const response = await callApi("get", `/Download/${fileId}/presigned?expirationHours=${expirationHours}`);
         
         const presignedData = response?.data;
-        console.log("✅ Presigned response:", presignedData);
         
         if (presignedData?.url) {
-          console.log("✅ Got presigned URL:", presignedData.url);
-          console.log("⏰ Expires at:", presignedData.expiresAt);
           return presignedData.url;
         } else {
           console.warn("⚠️ No URL in presigned response");
@@ -197,16 +186,13 @@ const useDocumentApiService = () => {
   const getDocumentWithPopulatedParties = useCallback(
     async (id: string): Promise<DocumentWithPopulatedParties | undefined> => {
       try {
-        console.log("🔍 Getting document with populated parties:", id);
         const documentWithFiles = await getDocumentById(id);
         
         if (!documentWithFiles) {
-          console.log("❌ Document not found");
           return undefined;
         }
 
         if (!documentWithFiles.partyDocumentLinks || documentWithFiles.partyDocumentLinks.length === 0) {
-          console.log("✅ Document has no parties to populate");
           const documentWithPopulatedParties: DocumentWithPopulatedParties = {
             id: documentWithFiles.id,
             createdDate: documentWithFiles.createdDate,
@@ -222,7 +208,6 @@ const useDocumentApiService = () => {
           return documentWithPopulatedParties;
         }
 
-        console.log("🔄 Fetching customer details for", documentWithFiles.partyDocumentLinks.length, "parties");
         
         const populatedParties = await Promise.all(
           documentWithFiles.partyDocumentLinks.map(async (partyLink): Promise<PopulatedPartyDocumentLinkType> => {
@@ -237,13 +222,11 @@ const useDocumentApiService = () => {
                 customer
               };
             } catch (error) {
-              console.error("❌ Error fetching customer:", partyLink.customerId, error);
               throw error;
             }
           })
         );
 
-        console.log("✅ Successfully populated", populatedParties.length, "parties");
         
         const finalDocument: DocumentWithPopulatedParties = {
           id: documentWithFiles.id,

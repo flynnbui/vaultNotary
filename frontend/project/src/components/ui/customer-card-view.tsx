@@ -102,7 +102,7 @@ export function CustomerCardView({
             key={customer.id} 
             className={cn(
               "transition-all duration-200 hover:shadow-md",
-              isSelected && "ring-2 ring-orange-500 ring-offset-2 ring-offset-background"
+              isSelected && "ring-2 ring-[#800020] ring-offset-2 ring-offset-background"
             )}
           >
             <CardHeader className="pb-4">

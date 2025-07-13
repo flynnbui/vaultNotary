@@ -97,7 +97,7 @@ export const SearchAndPagination: React.FC<SearchAndPaginationProps> = ({
           disabled={loading}
           className={`h-8 w-8 p-0 ${
             currentPage === i
-              ? "bg-orange-600 hover:bg-orange-700"
+              ? "bg-[#800020] hover:bg-[#722F37] text-white"
               : "hover:bg-gray-100"
           }`}
         >
@@ -135,7 +135,7 @@ export const SearchAndPagination: React.FC<SearchAndPaginationProps> = ({
       <Card>
         <CardHeader className="bg-muted/50 border-b">
           <CardTitle className="flex items-center gap-2">
-            <Search className="h-5 w-5 text-orange-600" />
+            <Search className="h-5 w-5 text-[#800020] dark:text-[#e6b3b3]" />
             {searchTitle}
           </CardTitle>
         </CardHeader>

@@ -45,7 +45,7 @@ export default function ProfilePage() {
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <User className="h-8 w-8 text-orange-600" />
+                <User className="h-8 w-8 text-[#800020] dark:text-[#e6b3b3]" />
                 <h1 className="text-3xl font-bold text-foreground">
                   Thông tin tài khoản
                 </h1>

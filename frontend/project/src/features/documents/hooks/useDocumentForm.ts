@@ -47,18 +47,12 @@ export const useDocumentForm = ({
       methods.reset(formData);
 
     } catch (error) {
-      console.error("Error loading document data:", error);
       toast.error("Có lỗi khi tải thông tin hồ sơ");
     }
   }, [getDocumentWithPopulatedParties]);
 
   // Load document data when in edit/view mode
   useEffect(() => {
-    console.log('🔄 Document Form: Load data effect triggered', { 
-      editingDocument: !!editingDocument, 
-      dialogMode,
-      loadDocumentDataRef: loadDocumentData.toString().substring(0, 50) + '...'
-    });
     
     if (editingDocument && (dialogMode === "edit" || dialogMode === "view")) {
       loadDocumentData(editingDocument);
@@ -67,76 +61,34 @@ export const useDocumentForm = ({
 
   // Reset form to defaults when in create mode or no editing document
   useEffect(() => {
-    console.log('🔄 Document Form: Reset form effect triggered', { 
-      editingDocument: !!editingDocument, 
-      dialogMode,
-      defaultValuesRef: Object.keys(defaultValues).join(',')
-    });
     
     if (!editingDocument || (dialogMode !== "edit" && dialogMode !== "view")) {
-      console.log('🔄 Document Form: Resetting form to defaults');
       methods.reset(defaultValues);
     }
   }, [editingDocument, dialogMode, defaultValues]);
 
   const handleSubmit = useCallback(async (data: FileFormData) => {
-    console.log('🚀 Document form submitted with data:', data);
-    console.log('🔍 Parties data:', {
-      A: data.parties.A.length,
-      B: data.parties.B.length,
-      C: data.parties.C.length,
-      AData: data.parties.A,
-      BData: data.parties.B
-    });
     
     // Debug each customer in the parties
-    console.log('🧪 Debugging individual customers:');
     data.parties.A.forEach((customer, idx) => {
-      console.log(`🧪 Party A Customer ${idx}:`, {
-        id: customer.id,
-        fullName: customer.fullName,
-        type: customer.type,
-        documentId: customer.documentId,
-        passportId: customer.passportId,
-        hasDocumentId: !!customer.documentId,
-        hasPassportId: !!customer.passportId
-      });
     });
     data.parties.B.forEach((customer, idx) => {
-      console.log(`🧪 Party B Customer ${idx}:`, {
-        id: customer.id,
-        fullName: customer.fullName,
-        type: customer.type,
-        documentId: customer.documentId,
-        passportId: customer.passportId,
-        hasDocumentId: !!customer.documentId,
-        hasPassportId: !!customer.passportId
-      });
     });
     
     try {
       // Validate parties data manually to see detailed errors
-      console.log('🔍 Manual parties validation...');
       const partiesValidation = fileSchema.shape.parties.safeParse(data.parties);
       if (!partiesValidation.success) {
-        console.error('❌ Parties validation failed:', partiesValidation.error.errors);
-        console.error('❌ Detailed validation errors:', partiesValidation.error.format());
         throw new Error(`Validation failed: ${partiesValidation.error.errors.map(e => e.message).join(', ')}`);
       }
-      console.log('✅ Parties validation passed');
       
-      console.log('✅ Form validation passed, preparing document data...');
       
       // Prepare document data
       const documentData = DocumentFormService.prepareDocumentData(data);
-      console.log('📄 Prepared document data:', documentData);
 
       if (editingDocument) {
         // Update existing document
-        console.log('🔄 Updating existing document:', editingDocument.id);
-        console.log('🔄 Update data being sent:', documentData);
         const updateData = { ...documentData, id: editingDocument.id };
-        console.log('🔄 Final update data with ID:', updateData);
         
         try {
           const updatedDocument = await updateDocument(editingDocument.id, updateData);
@@ -147,14 +99,11 @@ export const useDocumentForm = ({
             toast.warning("Cập nhật có thể không thành công - vui lòng kiểm tra lại");
           }
         } catch (updateError) {
-          console.error('❌ Error in updateDocument call:', updateError);
           throw updateError;
         }
       } else {
         // Create new document
-        console.log('➕ Creating new document...');
         const newDocument = await createDocument(documentData);
-        console.log('✅ Document created:', newDocument);
         if (newDocument) {
           toast.success("Hồ sơ đã được tạo thành công!");
           onSuccess?.();
@@ -162,7 +111,6 @@ export const useDocumentForm = ({
       }
 
     } catch (error) {
-      console.error('❌ Error in handleSubmit:', error);
       toast.error((error instanceof Error && error.message) ? `Có lỗi xảy ra khi lưu hồ sơ: ${error.message}` : "Có lỗi xảy ra khi lưu hồ sơ");
     }
   }, [editingDocument, createDocument, updateDocument, onSuccess]);

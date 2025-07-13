@@ -106,7 +106,6 @@ export function PartiesAccordion({
         }));
       }
     } catch (error) {
-      console.error(`Error loading customer ${customerId}:`, error);
     } finally {
       setLoadingCustomers((prev) => ({ ...prev, [customerId]: false }));
     }
@@ -195,7 +194,6 @@ export function PartiesAccordion({
 
   const handleCustomerSave = (customerData: CustomerSummary) => {
     if (readOnly) return;
-    console.log('👥 Adding customer to party:', currentParty, customerData);
     
     // Check for duplicates within the same party
     const currentPartyCustomers = getParties(currentParty);
@@ -234,7 +232,6 @@ export function PartiesAccordion({
       updatedAt: customerData.updatedAt || new Date().toISOString(),
     };
     
-    console.log('👥 Normalized customer data:', normalizedCustomerData);
     const fieldArray = getFieldArray(currentParty);
 
     if (editingCustomer) {
@@ -244,18 +241,15 @@ export function PartiesAccordion({
       
       if (existingIndex !== -1) {
         // Edit existing customer
-        console.log('✏️ Updating existing customer at index:', existingIndex);
         fieldArray.update(existingIndex, normalizedCustomerData);
         toast.success("Đã cập nhật thông tin khách hàng");
       } else {
         // Add new customer if not found
-        console.log('➕ Adding customer (not found for edit)');
         fieldArray.append(normalizedCustomerData);
         toast.success("Đã thêm khách hàng mới");
       }
     } else {
       // Add new customer
-      console.log('➕ Adding new customer to party', currentParty);
       fieldArray.append(normalizedCustomerData);
       toast.success("Đã thêm khách hàng mới");
     }
@@ -264,12 +258,6 @@ export function PartiesAccordion({
     setTimeout(() => {
       const updatedA = watch("parties.A");
       const updatedB = watch("parties.B");
-      console.log('🔍 Form state after customer add:', {
-        A: updatedA?.length || 0,
-        B: updatedB?.length || 0,
-        AData: updatedA,
-        BData: updatedB
-      });
     }, 100);
 
     handleDialogOpenChange(false);
@@ -445,7 +433,7 @@ export function PartiesAccordion({
       <Card key={party} className="w-full">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2">
-            <User className="h-5 w-5 text-orange-600" />
+            <User className="h-5 w-5 text-[#800020] dark:text-[#e6b3b3]" />
             <span className="font-semibold">{getPartyLabel(party)}</span>
             {customers.length > 0 && (
               <span className="text-sm text-muted-foreground">
@@ -510,7 +498,7 @@ export function PartiesAccordion({
         <AccordionItem value="parties-info">
           <AccordionTrigger className="text-lg font-semibold">
             <div className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-orange-600" />
+              <Users className="h-5 w-5 text-[#800020] dark:text-[#e6b3b3]" />
               Thông tin các bên
             </div>
           </AccordionTrigger>

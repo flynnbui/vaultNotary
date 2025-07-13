@@ -115,7 +115,7 @@ export const DocumentDialog: React.FC<DocumentDialogProps> = ({
           <Button
             type="button"
             onClick={() => onModeChange?.("edit")}
-            className="bg-orange-700 hover:bg-orange-900"
+            className="bg-[#800020] hover:bg-[#722F37] text-white"
           >
             <Edit className="h-4 w-4 mr-2" />
             Chỉnh sửa
@@ -151,7 +151,7 @@ export const DocumentDialog: React.FC<DocumentDialogProps> = ({
           <Button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="bg-orange-700 hover:bg-orange-900"
+            className="bg-[#800020] hover:bg-[#722F37] text-white"
           >
             Hoàn thành
           </Button>
@@ -193,7 +193,7 @@ export const DocumentDialog: React.FC<DocumentDialogProps> = ({
           </Button>
           <Button
             type="submit"
-            className="bg-orange-700 hover:bg-orange-900 px-8"
+            className="bg-[#800020] hover:bg-[#722F37] text-white px-8"
             disabled={isSubmitting}
           >
             {isSubmitting
