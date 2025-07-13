@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { v4 as uuidv4 } from 'uuid';
+import { useIsMobile } from '@/src/hooks/useIsMobile';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/src/components/ui/dialog';
 import { Card, CardContent } from '@/src/components/ui/card';
 import { Button } from '@/src/components/ui/button';
@@ -33,6 +34,7 @@ interface CustomDatePickerProps {
 }
 
 function CustomDatePicker({ value, onChange, placeholder = "Chọn ngày", error = false, label, className }: CustomDatePickerProps) {
+    const isMobile = useIsMobile();
     const [isOpen, setIsOpen] = React.useState(false);
     const [currentMonth, setCurrentMonth] = React.useState(value || new Date());
     const [inputValue, setInputValue] = React.useState(
@@ -55,14 +57,22 @@ function CustomDatePicker({ value, onChange, placeholder = "Chọn ngày", error
         if (parts.length !== 3) return null;
 
         const day = parseInt(parts[0]);
-        const month = parseInt(parts[1]) - 1;
+        const month = parseInt(parts[1]) - 1; // Month is 0-indexed in Date constructor
         const year = parseInt(parts[2]);
 
         if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
         if (day < 1 || day > 31 || month < 0 || month > 11 || year < 1900 || year > 2100) return null;
 
+        // Create the date and validate it properly
         const date = new Date(year, month, day);
-        return date.getDate() === day && date.getMonth() === month && date.getFullYear() === year ? date : null;
+        
+        // Check if the created date matches the input values exactly
+        // This catches invalid dates like 31/02/2023 or 30/02/2023
+        if (date.getDate() !== day || date.getMonth() !== month || date.getFullYear() !== year) {
+            return null;
+        }
+        
+        return date;
     }
 
     // Get days in month
@@ -135,6 +145,43 @@ function CustomDatePicker({ value, onChange, placeholder = "Chọn ngày", error
     ];
     const dayNames = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
 
+    // Handle native date input change
+    const handleNativeDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const dateValue = e.target.value;
+        if (dateValue) {
+            const date = new Date(dateValue);
+            onChange(date);
+        } else {
+            onChange(null);
+        }
+    };
+
+    // Format date for native input (YYYY-MM-DD)
+    const formatDateForNative = (date: Date | null): string => {
+        if (!date) return '';
+        const year = date.getFullYear();
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const day = date.getDate().toString().padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
+    // Mobile native date picker
+    if (isMobile) {
+        return (
+            <div className={className}>
+                {label && <Label className="mb-2 block">{label}</Label>}
+                <Input
+                    type="date"
+                    value={formatDateForNative(value)}
+                    onChange={handleNativeDateChange}
+                    className={`${error ? 'border-red-500' : ''} min-h-[44px]`}
+                    placeholder={placeholder}
+                />
+            </div>
+        );
+    }
+
+    // Desktop custom date picker
     return (
         <div className={className}>
             {label && <Label className="mb-2 block">{label}</Label>}
@@ -299,6 +346,7 @@ export function CustomerDialog({
     title = 'Thêm khách hàng mới',
     existingCustomers = []
 }: CustomerDialogProps) {
+    const isMobile = useIsMobile();
     // Search state
     const [idSearchTerm, setIdSearchTerm] = useState<string>('');
     const [searchResult, setSearchResult] = useState<CustomerSearchResult | null>(null);
@@ -571,7 +619,7 @@ export function CustomerDialog({
 
             // Transform form data to CustomerSummary format for the parties array
             const customerSummaryData: CustomerSummary = {
-                id: customerId || uuidv4(),
+                id: customerId || initialData?.id || uuidv4(),
                 fullName: data.fullName,
                 address: data.permanentAddress,
                 phone: data.phone || '',
@@ -605,12 +653,16 @@ export function CustomerDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto">
+            <DialogContent className={`w-full overflow-y-auto p-4 sm:p-6 ${
+                isMobile 
+                    ? 'max-w-[95vw] h-[95vh] mx-2' 
+                    : 'max-w-sm sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-6xl h-[90vh]'
+            }`}>
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
                 </DialogHeader>
 
-                <div className="space-y-6 mt-6">
+                <div className={`space-y-6 mt-6 ${isMobile ? 'pb-safe' : ''}`}>
                     {/* Search Section - Only show for new customers */}
                     {!initialData && (
                         <div className="border-b pb-6">
@@ -644,7 +696,7 @@ export function CustomerDialog({
                                                     }
                                                 }}
                                                 disabled={isSearching}
-                                                className={`${searchInputError ? 'border-red-500 focus:border-red-500' : ''}`}
+                                                className={`min-h-[44px] ${searchInputError ? 'border-red-500 focus:border-red-500' : ''}`}
                                             />
                                             {searchInputError && (
                                                 <p className="text-sm text-red-500 mt-1 flex items-center gap-1">
@@ -657,7 +709,7 @@ export function CustomerDialog({
                                             type="button"
                                             onClick={() => handleIdSearch(idSearchTerm)}
                                             disabled={isSearching || !idSearchTerm.trim() || !!searchInputError}
-                                            className="px-6"
+                                            className="px-6 min-h-[44px] sm:min-h-auto"
                                         >
                                             {isSearching ? (
                                                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -806,12 +858,14 @@ export function CustomerDialog({
                                                                         {hasAnyDuplicate ? (
                                                                             <>
                                                                                 <XCircle className="h-4 w-4 mr-2" />
-                                                                                Không thể sử dụng
+                                                                                <span className="hidden sm:inline">Không thể sử dụng</span>
+                                                                                <span className="sm:hidden">Không dùng được</span>
                                                                             </>
                                                                         ) : (
                                                                             <>
                                                                                 <CheckCircle className="h-4 w-4 mr-2" />
-                                                                                Sử dụng khách hàng này
+                                                                                <span className="hidden sm:inline">Sử dụng khách hàng này</span>
+                                                                                <span className="sm:hidden">Sử dụng</span>
                                                                             </>
                                                                         )}
                                                                     </Button>
@@ -864,7 +918,8 @@ export function CustomerDialog({
                                                                 size="lg"
                                                             >
                                                                 <User className="h-4 w-4 mr-2" />
-                                                                Tạo khách hàng mới
+                                                                <span className="hidden sm:inline">Tạo khách hàng mới</span>
+                                                                <span className="sm:hidden">Tạo mới</span>
                                                             </Button>
                                                         </div>
                                                     </div>
@@ -884,7 +939,7 @@ export function CustomerDialog({
                             {/* Customer Type Section */}
                             <div className="border-b pb-6">
                                 <h3 className="text-lg font-semibold text-foreground mb-4">Thông tin cơ bản</h3>
-                                <div className="grid md:grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
                                         <Label htmlFor="customerType">Loại Khách hàng *</Label>
                                         <Select
@@ -903,7 +958,7 @@ export function CustomerDialog({
                                 </div>
 
                                 {watch('customerType') === 'organization' && (
-                                    <div className="grid md:grid-cols-2 gap-6 mt-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                                         <div>
                                             <Label htmlFor="businessName">Tên doanh nghiệp *</Label>
                                             <Input
@@ -945,7 +1000,7 @@ export function CustomerDialog({
                                                         type="button"
                                                         variant={idType === 'CMND' ? 'default' : 'outline'}
                                                         onClick={() => handleIdTypeChange('CMND')}
-                                                        className="flex-1"
+                                                        className="flex-1 min-h-[44px] sm:min-h-auto"
                                                     >
                                                         CMND/CCCD
                                                     </Button>
@@ -953,14 +1008,14 @@ export function CustomerDialog({
                                                         type="button"
                                                         variant={idType === 'Passport' ? 'default' : 'outline'}
                                                         onClick={() => handleIdTypeChange('Passport')}
-                                                        className="flex-1"
+                                                        className="flex-1 min-h-[44px] sm:min-h-auto"
                                                     >
                                                         Passport
                                                     </Button>
                                                 </div>
 
                                                 {idType === 'CMND' ? (
-                                                    <div className="grid md:grid-cols-3 gap-4">
+                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                                         <div>
                                                             <Label htmlFor="cmndNumber">Số CMND *</Label>
                                                             <Input
@@ -986,7 +1041,7 @@ export function CustomerDialog({
                                                         </div>
                                                     </div>
                                                 ) : (
-                                                    <div className="grid md:grid-cols-3 gap-4">
+                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                                         <div>
                                                             <Label htmlFor="passportNumber">Số Passport *</Label>
                                                             <Input
@@ -1018,7 +1073,7 @@ export function CustomerDialog({
                                         {/* Personal Information */}
                                         <div className="border-b pb-6">
                                             <h3 className="text-lg font-semibold text-foreground mb-4">Thông tin cá nhân</h3>
-                                            <div className="grid md:grid-cols-2 gap-6">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                 <div>
                                                     <Label htmlFor="fullName">Họ tên Khách hàng *</Label>
                                                     <Input
@@ -1040,7 +1095,7 @@ export function CustomerDialog({
                                                 </div>
                                             </div>
 
-                                            <div className="grid md:grid-cols-2 gap-6 mt-4">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                                                 <CustomDatePicker
                                                     label="Ngày sinh *"
                                                     value={watch('dateOfBirth') || null}
@@ -1067,7 +1122,7 @@ export function CustomerDialog({
                                                 </div>
                                             </div>
 
-                                            <div className="grid md:grid-cols-2 gap-6 mt-4">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                                                 <div>
                                                     <Label htmlFor="email">Email</Label>
                                                     <Input
@@ -1083,7 +1138,7 @@ export function CustomerDialog({
                                         {/* Address Information */}
                                         <div>
                                             <h3 className="text-lg font-semibold text-foreground mb-4">Thông tin địa chỉ</h3>
-                                            <div className="grid md:grid-cols-2 gap-6">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                 <div>
                                                     <Label htmlFor="permanentAddress">Địa chỉ thường trú *</Label>
                                                     <Textarea
@@ -1108,14 +1163,14 @@ export function CustomerDialog({
                                 </AccordionItem>
                             </Accordion>
 
-                            <DialogFooter className="flex justify-end gap-4 pt-6 border-t bg-muted/50 rounded-b-lg -mx-6 -mb-6 px-6 py-4">
-                                <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                            <DialogFooter className={`flex justify-end gap-4 pt-6 border-t bg-muted/50 rounded-b-lg -mx-6 -mb-6 px-6 py-4 ${isMobile ? 'pb-safe sticky bottom-0' : ''}`}>
+                                <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="min-h-[44px] sm:min-h-auto">
                                     Hủy
                                 </Button>
                                 <Button
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className="px-8"
+                                    className="px-8 min-h-[44px] sm:min-h-auto"
                                 >
                                     {isSubmitting ? 'Đang lưu...' : (initialData ? 'Cập nhật' : 'Thêm')}
                                 </Button>
@@ -1125,8 +1180,8 @@ export function CustomerDialog({
 
                     {/* Show Cancel button when not in create form mode */}
                     {!showCreateForm && !initialData && (
-                        <DialogFooter className="flex justify-end gap-4 pt-6 rounded-b-lg -mx-6 -mb-6 px-6 py-4">
-                            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                        <DialogFooter className={`flex justify-end gap-4 pt-6 rounded-b-lg -mx-6 -mb-6 px-6 py-4 ${isMobile ? 'pb-safe sticky bottom-0 bg-background border-t' : ''}`}>
+                            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="min-h-[44px] sm:min-h-auto">
                                 Đóng
                             </Button>
                         </DialogFooter>
