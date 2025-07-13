@@ -11,7 +11,7 @@ import { useUser } from '@auth0/nextjs-auth0';
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentSection, setCurrentSection] = useState(0);
-  const { user, isLoading } = useUser();
+  const { user } = useUser();
 
   useEffect(() => {
     let isScrolling = false;
@@ -128,10 +128,10 @@ export default function Home() {
               <a href="#about" className="text-gray-700 hover:text-[#800020] transition-colors">Giới thiệu</a>
               <a href="#contact" className="text-gray-700 hover:text-[#800020] transition-colors">Liên hệ</a>
               
-              {!isLoading && !user && (
+              {!user && (
                 <a href="/auth/login?returnTo=/documents/manage">
                   <Button className="bg-[#800020] hover:bg-[#722F37] text-white px-6 py-2.5 font-medium">
-                    Dành cho nhân viên
+                    Đăng nhập
                   </Button>
                 </a>
               )}
@@ -155,10 +155,10 @@ export default function Home() {
 
             {/* Mobile Actions */}
             <div className="flex items-center space-x-2 md:hidden">
-              {!isLoading && !user && (
+              {!user && (
                 <a href="/auth/login?returnTo=/documents/manage">
                   <Button className="bg-[#800020] hover:bg-[#722F37] text-white px-3 py-2 text-sm font-medium min-w-[44px] min-h-[44px]">
-                    Nhân viên
+                    Đăng nhập
                   </Button>
                 </a>
               )}
@@ -179,7 +179,7 @@ export default function Home() {
               )}
               
               <button
-                className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-700 hover:text-[#800020] transition-colors"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
               >
                 {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
