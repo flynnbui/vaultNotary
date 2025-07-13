@@ -137,18 +137,19 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
   return (
     <>
       {/* Desktop table view */}
-      <div className="hidden md:block overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-muted/50">
-              <TableHead className="font-semibold">Số Công Chứng</TableHead>
-              <TableHead className="font-semibold">Loại hồ sơ</TableHead>
-              <TableHead className="font-semibold">Mô tả</TableHead>
-              <TableHead className="font-semibold">Thư ký / Công chứng viên</TableHead>
-              <TableHead className="font-semibold">Ngày tạo</TableHead>
-              <TableHead className="font-semibold">Thao tác</TableHead>
-            </TableRow>
-          </TableHeader>
+      <div className="hidden md:block">
+        <div className="overflow-x-auto border rounded-lg">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/50">
+                <TableHead className="font-semibold whitespace-nowrap">Số Công Chứng</TableHead>
+                <TableHead className="font-semibold whitespace-nowrap">Loại hồ sơ</TableHead>
+                <TableHead className="font-semibold whitespace-nowrap">Mô tả</TableHead>
+                <TableHead className="font-semibold whitespace-nowrap">Thư ký / Công chứng viên</TableHead>
+                <TableHead className="font-semibold whitespace-nowrap">Ngày tạo</TableHead>
+                <TableHead className="font-semibold whitespace-nowrap">Thao tác</TableHead>
+              </TableRow>
+            </TableHeader>
           <TableBody>
             {documents.map((document) => (
               <TableRow key={document.id} className="hover:bg-muted/50">
@@ -179,12 +180,13 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
                   {DateUtils.formatDateTime(document.createdDate)}
                 </TableCell>
                 <TableCell>
-                  <div className="flex gap-2">
+                  <div className="flex gap-1">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => onEdit(document)}
                       title="Chỉnh sửa"
+                      className="min-h-[40px] min-w-[40px] p-2"
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
@@ -193,6 +195,7 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
                       size="sm"
                       onClick={() => onView(document)}
                       title="Xem chi tiết"
+                      className="min-h-[40px] min-w-[40px] p-2"
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
@@ -201,6 +204,7 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
                       size="sm"
                       onClick={() => onUpload(document)}
                       title="Thêm file"
+                      className="min-h-[40px] min-w-[40px] p-2"
                     >
                       <Upload className="h-4 w-4" />
                     </Button>
@@ -210,6 +214,7 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
             ))}
           </TableBody>
         </Table>
+        </div>
       </div>
 
       {/* Mobile card view */}

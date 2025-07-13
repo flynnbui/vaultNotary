@@ -465,7 +465,7 @@ export function FileListCard({
       </CardHeader>
       <CardContent className="p-6">
         {/* File Upload Section - Only show in edit mode */}
-        {allowUpload  && (
+        {allowUpload && (
           <FileUpload
             onFilesUpload={handleFilesUpload}
             accept={accept}
@@ -570,22 +570,21 @@ export function FileListCard({
                 </Card>
               ))}
             </div>
-          <>
+          </>
         ) : (
           <div className="text-center py-12">
             <FileText className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
-         <h3 className="text-lg font-medium text-foreground mb-2">
-  {files.length === 0 && readOnly && !allowUpload
-    ? "Chưa có file đính kèm"
-    : "Chưa có file nào"}
-</h3>
-          <p className="text-muted-foreground">
-  {readOnly 
-    ? "Hồ sơ này chưa có file đính kèm nào."
-    : "Kéo thả file vào đây hoặc nhấp vào khu vực phía trên để thêm file."
-  }
-</p>
-
+            <h3 className="text-lg font-medium text-foreground mb-2">
+              {files.length === 0 && readOnly && !allowUpload
+                ? "Chưa có file đính kèm"
+                : "Chưa có file nào"}
+            </h3>
+            <p className="text-muted-foreground">
+              {readOnly 
+                ? "Hồ sơ này chưa có file đính kèm nào."
+                : "Kéo thả file vào đây hoặc nhấp vào khu vực phía trên để thêm file."
+              }
+            </p>
           </div>
         )}
       </CardContent>

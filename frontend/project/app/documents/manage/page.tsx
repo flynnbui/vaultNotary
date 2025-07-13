@@ -107,16 +107,16 @@ export default function DocumentManagePage() {
   return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
+        <div className="mb-6 md:mb-8">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <Users className="h-8 w-8 text-[#800020]" />
-                <h1 className="text-3xl font-bold text-foreground">
+                <Users className="h-5 w-5 md:h-8 md:w-8 text-[#800020]" />
+                <h1 className="text-lg md:text-3xl font-bold text-foreground">
                   Quản lý hồ sơ tài liệu
                 </h1>
               </div>
-              <p className="text-muted-foreground">
+              <p className="text-xs md:text-base text-muted-foreground">
                 Quản lý thông tin hồ sơ và tài liệu công chứng
               </p>
             </div>
@@ -125,11 +125,12 @@ export default function DocumentManagePage() {
               <DialogTrigger asChild>
                 <Button
                   size="lg"
-                  className="bg-[#800020] hover:bg-[#722F37] text-white"
+                  className="bg-[#800020] hover:bg-[#722F37] text-white min-h-[44px] w-full md:w-auto"
                   onClick={handleCreateDocument}
                 >
                   <Plus className="h-5 w-5 mr-2" />
-                  Tạo hồ sơ mới
+                  <span className="md:hidden">Tạo hồ sơ</span>
+                  <span className="hidden md:inline">Tạo hồ sơ mới</span>
                 </Button>
               </DialogTrigger>
             </Dialog>
