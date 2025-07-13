@@ -13,8 +13,7 @@ import { DocumentDialog } from "@/src/features/documents/components/DocumentDial
 import { SearchAndPagination } from "@/src/shared/components/SearchAndPagination";
 
 import { useDocumentSearch } from "@/src/features/documents/hooks/useDocumentSearch";
-import { useDocumentOperations } from "@/src/features/documents/hooks/useDocumentOperations";
-import { useDocumentFiles } from "@/src/features/documents/hooks/useDocumentFiles";
+import { useDocumentDialog } from "@/src/features/documents/hooks/useDocumentDialog";
 
 import { DocumentType, DialogMode } from "@/src/features/documents/types/document.types";
 
@@ -22,11 +21,6 @@ import "@/src/lib/i18n";
 
 export default function DocumentManagePage() {
   const { t } = useTranslation();
-
-  // Dialog state
-  const [showDialog, setShowDialog] = useState(false);
-  const [dialogMode, setDialogMode] = useState<DialogMode>("create");
-  const [editingDocument, setEditingDocument] = useState<DocumentType | undefined>();
   const [customerDialogOpen, setCustomerDialogOpen] = useState(false);
 
   // Search and pagination
@@ -45,64 +39,10 @@ export default function DocumentManagePage() {
     refreshDocuments,
   } = useDocumentSearch();
 
-  // Document operations
-  const {
-    handleEditDocument,
-    handleViewDocument,
-    handleUploadDocument,
-    handleDeleteDocument,
-    loading: operationsLoading,
-  } = useDocumentOperations({
-    onEdit: (document, mode) => {
-      setEditingDocument(document);
-      setDialogMode(mode);
-      setShowDialog(true);
-    },
-    onView: (document, mode) => {
-      setEditingDocument(document);
-      setDialogMode(mode);
-      setShowDialog(true);
-    },
-    onUpload: (document, mode) => {
-      setEditingDocument(document);
-      setDialogMode(mode);
-      setShowDialog(true);
-    },
+  // Document dialog hook
+  const documentDialog = useDocumentDialog({
     onRefresh: refreshDocuments,
   });
-
-  // File operations
-  const {
-    attachedFiles,
-    handleFileUpload,
-    handleFileDownload,
-    handleFilePreview,
-    handleFileDelete,
-    setAttachedFiles,
-  } = useDocumentFiles({
-    editingDocument,
-    dialogMode,
-  });
-
-  const handleCreateDocument = () => {
-    setDialogMode("create");
-    setEditingDocument(undefined);
-    setShowDialog(true);
-  };
-
-  const handleDialogSuccess = () => {
-    setEditingDocument(undefined);
-    refreshDocuments();
-  };
-
-  const handleDialogCancel = () => {
-    setEditingDocument(undefined);
-    setAttachedFiles([]);
-  };
-
-  const handleModeChange = (mode: DialogMode) => {
-    setDialogMode(mode);
-  };
 
   return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -121,19 +61,15 @@ export default function DocumentManagePage() {
               </p>
             </div>
 
-            <Dialog open={showDialog} onOpenChange={setShowDialog}>
-              <DialogTrigger asChild>
-                <Button
-                  size="lg"
-                  className="bg-[#800020] hover:bg-[#722F37] text-white min-h-[44px] w-full md:w-auto"
-                  onClick={handleCreateDocument}
-                >
-                  <Plus className="h-5 w-5 mr-2" />
-                  <span className="md:hidden">Tạo hồ sơ</span>
-                  <span className="hidden md:inline">Tạo hồ sơ mới</span>
-                </Button>
-              </DialogTrigger>
-            </Dialog>
+            <Button
+              size="lg"
+              className="bg-[#800020] hover:bg-[#722F37] text-white min-h-[44px] w-full md:w-auto"
+              onClick={documentDialog.handleCreate}
+            >
+              <Plus className="h-5 w-5 mr-2" />
+              <span className="md:hidden">Tạo hồ sơ</span>
+              <span className="hidden md:inline">Tạo hồ sơ mới</span>
+            </Button>
           </div>
         </div>
 
@@ -167,31 +103,31 @@ export default function DocumentManagePage() {
           <CardContent className="p-0">
             <DocumentTable
               documents={documents}
-              loading={loading || operationsLoading}
+              loading={loading || documentDialog.loading}
               searchTerm={searchTerm}
-              onEdit={handleEditDocument}
-              onView={handleViewDocument}
-              onUpload={handleUploadDocument}
+              onEdit={documentDialog.handleEdit}
+              onView={documentDialog.handleView}
+              onUpload={documentDialog.handleUpload}
             />
           </CardContent>
         </Card>
 
         {/* Document Dialog */}
         <DocumentDialog
-          open={showDialog}
-          onOpenChange={setShowDialog}
-          mode={dialogMode}
-          editingDocument={editingDocument}
-          attachedFiles={attachedFiles}
-          onFilesChange={setAttachedFiles}
-          onFileUpload={handleFileUpload}
-          onFileDownload={handleFileDownload}
-          onFilePreview={handleFilePreview}
-          onFileDelete={handleFileDelete}
+          open={documentDialog.isOpen}
+          onOpenChange={documentDialog.handleDialogChange}
+          mode={documentDialog.dialogMode}
+          editingDocument={documentDialog.editingDocument}
+          attachedFiles={documentDialog.attachedFiles}
+          onFilesChange={documentDialog.handleFilesChange}
+          onFileUpload={documentDialog.handleFileUpload}
+          onFileDownload={documentDialog.handleFileDownload}
+          onFilePreview={documentDialog.handleFilePreview}
+          onFileDelete={documentDialog.handleFileDelete}
           onCustomerDialogChange={setCustomerDialogOpen}
-          onSuccess={handleDialogSuccess}
-          onCancel={handleDialogCancel}
-          onModeChange={handleModeChange}
+          onSuccess={documentDialog.handleSuccess}
+          onCancel={documentDialog.handleCancel}
+          onModeChange={documentDialog.handleModeChange}
         />
       </div>
   );
