@@ -30,7 +30,7 @@ import { CustomerDialog } from "@/src/components/forms/CustomerDialog";
 import { Users, PenLine, Trash2, Plus, User, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import type { CustomerSummary, PartyKey } from "@/src/lib/schemas";
-import useCustomerService from "@/src/services/useCustomerService";
+import useCustomerApiService from "@/src/features/customers/services/customerApiService";
 
 interface PartiesAccordionProps {
   readOnly?: boolean;
@@ -75,7 +75,7 @@ export function PartiesAccordion({
   >({});
 
   // 🆕 Import customer service
-  const { getCustomerById } = useCustomerService();
+  const { getCustomerById } = useCustomerApiService();
 
   const partiesA = useFieldArray({ control, name: "parties.A" });
   const partiesB = useFieldArray({ control, name: "parties.B" });

@@ -19,7 +19,7 @@ import { Search, Info, User, CalendarIcon, ChevronLeft, ChevronRight, Loader2, C
 import { toast } from 'sonner';
 import { extendedCustomerSchema, type CustomerSummary } from '@/src/lib/schemas';
 import { z } from 'zod';
-import useCustomerService from '@/src/services/useCustomerService';
+import useCustomerApiService from '@/src/features/customers/services/customerApiService';
 import { CreateCustomerType, CustomerType } from '@/src/types/customer.type';
 
 // Custom DatePicker Component
@@ -309,7 +309,7 @@ export function CustomerDialog({
     // Legacy states for backwards compatibility
     const [idType, setIdType] = useState<'CMND' | 'Passport'>('CMND');
 
-    const { createCustomer, searchCustomers } = useCustomerService();
+    const { createCustomer, searchCustomers } = useCustomerApiService();
 
     const {
         register,

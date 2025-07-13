@@ -10,5 +10,5 @@ export const auth0 = new Auth0Client({
   authorizationParameters: {
     scope: process.env.AUTH0_SCOPE,
     audience: process.env.AUTH0_AUDIENCE,
-  }
+  },
 });

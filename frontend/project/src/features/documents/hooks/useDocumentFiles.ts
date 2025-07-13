@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { FileItem, DocumentType } from '../types/document.types';
 import { FileUtils } from '@/src/shared/utils/fileUtils';
 import useDocumentApiService from '../services/documentApiService';
-import useUploadService from '@/src/services/useUploadService';
+import useDocumentUploadService from '../services/documentUploadService';
 
 interface UseDocumentFilesProps {
   editingDocument?: DocumentType;
@@ -16,7 +16,7 @@ export const useDocumentFiles = ({ editingDocument, dialogMode }: UseDocumentFil
   const [loading, setLoading] = useState(false);
   
   const { getDocumentFiles, deleteDocumentFile, getFileDownloadUrl, getFilePresignedUrl } = useDocumentApiService();
-  const { uploadDocumentFile } = useUploadService();
+  const { uploadDocumentFile } = useDocumentUploadService();
 
   const loadDocumentFiles = useCallback(async () => {
     if (!editingDocument || !['view', 'edit', 'upload'].includes(dialogMode)) {

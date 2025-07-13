@@ -45,7 +45,7 @@ export function Navbar() {
             >
               <Menu className="h-5 w-5" />
             </Button>
-            <div className="flex items-center ml-4 lg:ml-0">
+            <Link href="/" className="flex items-center ml-4 lg:ml-0 hover:opacity-80 transition-opacity">
               <Image
                 src="/logo.png"
                 alt="Văn phòng Công chứng Nhà Rồng"
@@ -56,7 +56,7 @@ export function Navbar() {
               <span className="ml-2 text-xl font-bold text-foreground">
                 VaultNotary
               </span>
-            </div>
+            </Link>
           </div>
           <div className="flex items-center space-x-4">
             <ModeToggle />

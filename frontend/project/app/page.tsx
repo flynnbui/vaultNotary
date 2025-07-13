@@ -127,7 +127,7 @@ export default function Home() {
               <a href="#contact" className="text-gray-700 hover:text-[#800020] transition-colors">Liên hệ</a>
               
               {!isLoading && !user && (
-                <a href="/auth/login">
+                <a href="/auth/login?returnTo=/documents/manage">
                   <Button className="bg-[#800020] hover:bg-[#722F37] text-white">
                     Dành cho nhân viên
                   </Button>
@@ -142,7 +142,7 @@ export default function Home() {
                     </Button>
                   </Link>
                   <a href="/auth/logout">
-                    <Button variant="outline" className="border-[#800020] text-[#800020] hover:bg-[#800020] hover:text-white">
+                    <Button variant="outline" className="border-[#800020] text-[#800020] hover:bg-[#800020] hover:text-white bg-white">
                       <LogOut className="w-4 h-4 mr-2" />
                       Đăng xuất
                     </Button>
@@ -169,7 +169,7 @@ export default function Home() {
               <a href="#contact" className="block text-gray-700 hover:text-[#800020]">Liên hệ</a>
               
               {!isLoading && !user && (
-                <a href="/auth/login" className="block">
+                <a href="/auth/login?returnTo=/documents/manage" className="block">
                   <Button className="w-full bg-[#800020] hover:bg-[#722F37] text-white">
                     Dành cho nhân viên
                   </Button>
@@ -184,7 +184,7 @@ export default function Home() {
                     </Button>
                   </Link>
                   <a href="/auth/logout" className="block">
-                    <Button variant="outline" className="w-full border-[#800020] text-[#800020] hover:bg-[#800020] hover:text-white">
+                    <Button variant="outline" className="w-full border-[#800020] text-[#800020] hover:bg-[#800020] hover:text-white bg-white">
                       <LogOut className="w-4 h-4 mr-2" />
                       Đăng xuất
                     </Button>
@@ -339,10 +339,10 @@ export default function Home() {
             <div className="inline-flex items-center px-6 py-3 bg-[#800020]/10 rounded-full mb-6">
               <span className="text-[#800020] font-medium">Dịch vụ chuyên nghiệp</span>
             </div>
-            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+            <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-6">
               Dịch vụ công chứng đa dạng
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
               Chúng tôi cung cấp đầy đủ các dịch vụ công chứng theo quy định pháp luật với quy trình nhanh chóng, chính xác
             </p>
           </div>
@@ -351,7 +351,7 @@ export default function Home() {
             {services.map((service, index) => {
               const Icon = service.icon;
               return (
-                <Card key={index} className="group hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border-0 shadow-lg overflow-hidden">
+                <Card key={index} className="group hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border-0 shadow-lg overflow-hidden bg-white">
                   <div className="relative">
                     <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#800020] to-[#722F37] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
                     <CardContent className="p-8">
@@ -360,15 +360,15 @@ export default function Home() {
                           <Icon className="h-8 w-8 text-[#800020] group-hover:text-white transition-colors duration-300" />
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                          <h3 className="text-2xl font-bold text-slate-900 mb-3">
                             {service.title}
                           </h3>
-                          <p className="text-gray-600 leading-relaxed mb-4">
+                          <p className="text-slate-600 leading-relaxed mb-4">
                             {service.description}
                           </p>
                           <ul className="space-y-2">
                             {service.features.map((feature, idx) => (
-                              <li key={idx} className="flex items-center text-sm text-gray-600">
+                              <li key={idx} className="flex items-center text-sm text-slate-600">
                                 <CheckCircle className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
                                 {feature}
                               </li>
@@ -392,10 +392,10 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8">
               <div>
-                <h2 className="text-4xl font-bold text-gray-900 mb-6">
+                <h2 className="text-4xl font-bold text-slate-900 mb-6">
                   Tại sao chọn Văn phòng Công chứng Nhà Rồng?
                 </h2>
-                <p className="text-xl text-gray-600 leading-relaxed mb-8">
+                <p className="text-xl text-slate-600 leading-relaxed mb-8">
                   Với hơn 20 năm kinh nghiệm và đội ngũ chuyên gia pháp lý giàu kinh nghiệm, chúng tôi cam kết mang đến dịch vụ công chứng chất lượng cao nhất.
                 </p>
               </div>
@@ -406,8 +406,8 @@ export default function Home() {
                     <Award className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Chuyên nghiệp & Uy tín</h3>
-                    <p className="text-gray-600">Đội ngũ công chứng viên có chứng chỉ hành nghề và kinh nghiệm lâu năm trong nghề.</p>
+                    <h3 className="text-lg font-semibold text-slate-900 mb-2">Chuyên nghiệp & Uy tín</h3>
+                    <p className="text-slate-600">Đội ngũ công chứng viên có chứng chỉ hành nghề và kinh nghiệm lâu năm trong nghề.</p>
                   </div>
                 </div>
 
@@ -416,8 +416,8 @@ export default function Home() {
                     <Clock className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Nhanh chóng & Chính xác</h3>
-                    <p className="text-gray-600">Quy trình làm việc khoa học, đảm bảo hoàn thành đúng thời hạn cam kết.</p>
+                    <h3 className="text-lg font-semibold text-slate-900 mb-2">Nhanh chóng & Chính xác</h3>
+                    <p className="text-slate-600">Quy trình làm việc khoa học, đảm bảo hoàn thành đúng thời hạn cam kết.</p>
                   </div>
                 </div>
 
@@ -426,8 +426,8 @@ export default function Home() {
                     <Shield className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Bảo mật tuyệt đối</h3>
-                    <p className="text-gray-600">Cam kết bảo mật thông tin khách hàng theo đúng quy định pháp luật.</p>
+                    <h3 className="text-lg font-semibold text-slate-900 mb-2">Bảo mật tuyệt đối</h3>
+                    <p className="text-slate-600">Cam kết bảo mật thông tin khách hàng theo đúng quy định pháp luật.</p>
                   </div>
                 </div>
               </div>
