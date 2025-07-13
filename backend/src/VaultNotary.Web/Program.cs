@@ -169,17 +169,18 @@ builder.Services.AddScoped<IFileService, FileService>();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAuth0", policy =>
+    options.AddPolicy("AllowCaller", policy =>
     {
         policy.WithOrigins("http://localhost:3000", "https://localhost:3000", "https://nharong.vn", "http://nharong.vn")
               .AllowAnyMethod()
               .AllowAnyHeader()
-              .AllowCredentials();
+              .AllowCredentials()
+              .SetPreflightMaxAge(TimeSpan.FromMinutes(10));
     });
 });
 
 var app = builder.Build();
-
+app.UseCors("AllowCaller");
 // Initialize database
 using (var scope = app.Services.CreateScope())
 {
@@ -210,7 +211,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Test"))
 app.UseHttpsRedirection();
 
 app.UseRouting();
-app.UseCors("AllowAuth0");
+
 
 app.UseRateLimiter();
 
