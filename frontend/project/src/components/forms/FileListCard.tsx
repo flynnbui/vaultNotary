@@ -473,46 +473,104 @@ export function FileListCard({
           />
         )}
 
-        {/* Files Table */}
+        {/* Files Table - Desktop */}
         {files.length > 0 ? (
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted/50">
-                  <TableHead className="w-8">#</TableHead>
-                  <TableHead>Tên file</TableHead>
-                  <TableHead className="w-20">Loại</TableHead>
-                  <TableHead className="w-32">Ngày tải lên</TableHead>
-                  <TableHead className="w-24 text-center">Thao tác</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-              {files.map((file, index) => {
-  if (allowDelete) {
+          <>
+            <div className="hidden md:block rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/50">
+                    <TableHead className="w-8">#</TableHead>
+                    <TableHead>Tên file</TableHead>
+                    <TableHead className="w-20">Loại</TableHead>
+                    <TableHead className="w-32">Ngày tải lên</TableHead>
+                    <TableHead className="w-24 text-center">Thao tác</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                {files.map((file, index) => {
+    if (allowDelete) {
+      return (
+        <EditableFileRow
+          key={file.id}
+          file={file}
+          index={index}
+          onDownload={handleDownload}
+          onDelete={handleDelete}
+          onPreview={handlePreview}
+        />
+      );
+    }
     return (
-      <EditableFileRow
+      <ReadOnlyFileRow
         key={file.id}
         file={file}
         index={index}
         onDownload={handleDownload}
-        onDelete={handleDelete}
         onPreview={handlePreview}
       />
     );
-  }
-  return (
-    <ReadOnlyFileRow
-      key={file.id}
-      file={file}
-      index={index}
-      onDownload={handleDownload}
-      onPreview={handlePreview}
-    />
-  );
-})}
-              </TableBody>
-            </Table>
-          </div>
+  })}
+                </TableBody>
+              </Table>
+            </div>
+            
+            {/* Files Cards - Mobile */}
+            <div className="block md:hidden space-y-3">
+              {files.map((file, index) => (
+                <Card key={file.id} className="p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      {getFileIcon(file.type, file.name)}
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm truncate" title={file.name}>
+                          {file.name}
+                        </p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Badge variant="outline" className="text-xs">
+                            {getFileTypeLabel(file.name)}
+                          </Badge>
+                          <span className="text-xs text-muted-foreground">
+                            {formatFileSize(file.size)}
+                          </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {formatDate(file.uploadDate)}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-1 flex-shrink-0">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDownload(file)}
+                        title="Tải xuống"
+                        className="h-8 w-8 p-0 min-h-[44px] md:min-h-0"
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
+                      {allowDelete && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            if (confirm(`Bạn có chắc chắn muốn xóa file "${file.name}"?`)) {
+                              handleDelete(file);
+                            }
+                          }}
+                          title="Xóa file"
+                          className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50 min-h-[44px] md:min-h-0"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          <>
         ) : (
           <div className="text-center py-12">
             <FileText className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
