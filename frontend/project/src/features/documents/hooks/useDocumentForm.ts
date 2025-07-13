@@ -139,22 +139,16 @@ export const useDocumentForm = ({
         console.log('🔄 Final update data with ID:', updateData);
         
         try {
-          console.log('🚀 About to call updateDocument API...');
           const updatedDocument = await updateDocument(editingDocument.id, updateData);
-          console.log('✅ updateDocument returned:', updatedDocument);
-          console.log('✅ Type of returned value:', typeof updatedDocument);
-          console.log('✅ Is truthy?', !!updatedDocument);
-          
           if (updatedDocument) {
             toast.success("Hồ sơ đã được cập nhật thành công!");
             onSuccess?.();
           } else {
-            console.warn('⚠️ updateDocument returned falsy value, but no error was thrown');
             toast.warning("Cập nhật có thể không thành công - vui lòng kiểm tra lại");
           }
         } catch (updateError) {
           console.error('❌ Error in updateDocument call:', updateError);
-          throw updateError; // Re-throw to be caught by outer try/catch
+          throw updateError;
         }
       } else {
         // Create new document
