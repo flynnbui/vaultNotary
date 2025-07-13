@@ -12,7 +12,7 @@ import { Edit } from 'lucide-react';
 import { DialogMode, FileItem } from '../types/document.types';
 import { FileMetaCard } from '@/src/components/forms/FileMetaCard';
 import { PartiesAccordion } from '@/src/components/forms/PartiesAccordion';
-import { FileListCard } from '@/src/components/forms/FileListCard';
+import { FileListCard, UploadProgress } from '@/src/components/forms/FileListCard';
 import { useDocumentForm } from '../hooks/useDocumentForm';
 
 interface DocumentDialogProps {
@@ -21,6 +21,8 @@ interface DocumentDialogProps {
   mode: DialogMode;
   editingDocument?: any;
   attachedFiles: FileItem[];
+  uploadProgress?: UploadProgress;
+  isUploading?: boolean;
   onFilesChange: (files: FileItem[]) => void;
   onFileUpload?: (fileList: FileList) => void;
   onFileDownload?: (file: FileItem) => void;
@@ -38,6 +40,8 @@ export const DocumentDialog: React.FC<DocumentDialogProps> = ({
   mode,
   editingDocument,
   attachedFiles,
+  uploadProgress,
+  isUploading,
   onFilesChange,
   onFileUpload,
   onFileDownload,
@@ -132,6 +136,8 @@ export const DocumentDialog: React.FC<DocumentDialogProps> = ({
         <FileListCard
           allowUpload={true}
           files={attachedFiles}
+          uploadProgress={uploadProgress}
+          isUploading={isUploading}
           onFilesChange={onFilesChange}
           onFileUpload={onFileUpload}
           onFileDownload={onFileDownload}

@@ -19,6 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/src/components/ui/table";
+import { Progress } from "@/src/components/ui/progress";
 import { 
   FileText, 
   Download, 
@@ -41,6 +42,10 @@ export interface FileItem {
   type: string;
   uploadDate: string;
   url?: string;
+}
+
+export interface UploadProgress {
+  [fileId: string]: number;
 }
 
 // Helper functions
@@ -278,9 +283,17 @@ interface FileUploadProps {
   onFilesUpload: (files: FileList) => void;
   accept?: string;
   multiple?: boolean;
+  uploadProgress?: UploadProgress;
+  isUploading?: boolean;
 }
 
-function FileUpload({ onFilesUpload, accept, multiple = true }: FileUploadProps) {
+function FileUpload({ 
+  onFilesUpload, 
+  accept, 
+  multiple = true, 
+  uploadProgress = {},
+  isUploading = false 
+}: FileUploadProps) {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = React.useState(false);
 
@@ -319,25 +332,51 @@ function FileUpload({ onFilesUpload, accept, multiple = true }: FileUploadProps)
     <div className="mb-4">
       <div
         className={`
-          border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors
+          border-2 border-dashed rounded-lg p-4 sm:p-6 text-center cursor-pointer transition-colors
           ${isDragging 
             ? 'border-[#800020] bg-[#800020]/10' 
             : 'border-muted-foreground/25 hover:border-muted-foreground/50'
           }
+          ${isUploading ? 'opacity-75 cursor-not-allowed' : ''}
         `}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        onClick={() => fileInputRef.current?.click()}
+        onClick={() => !isUploading && fileInputRef.current?.click()}
       >
-        <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-        <p className="text-sm text-muted-foreground">
-          <span className="font-medium">Nhấp để chọn file</span> hoặc kéo thả file vào đây
+        <Upload className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 text-muted-foreground" />
+        <p className="text-xs sm:text-sm text-muted-foreground">
+          <span className="font-medium">
+            {isUploading ? 'Đang tải lên...' : 'Nhấp để chọn file'}
+          </span> 
+          {!isUploading && ' hoặc kéo thả file vào đây'}
         </p>
         <p className="text-xs text-muted-foreground mt-1">
           Hỗ trợ các định dạng: PDF, DOC, DOCX, XLS, XLSX, JPG, PNG...
         </p>
       </div>
+
+      {/* Upload Progress Display */}
+      {isUploading && Object.keys(uploadProgress).length > 0 && (
+        <div className="mt-4 space-y-3">
+          {Object.entries(uploadProgress).map(([fileId, progress]) => (
+            <div key={fileId} className="space-y-2">
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-muted-foreground truncate max-w-[200px] sm:max-w-[300px]">
+                  Đang tải lên...
+                </span>
+                <span className="text-muted-foreground text-xs sm:text-sm">
+                  {Math.round(progress)}%
+                </span>
+              </div>
+              <Progress 
+                value={progress} 
+                className="h-2 sm:h-3 w-full"
+              />
+            </div>
+          ))}
+        </div>
+      )}
       
       <input
         ref={fileInputRef}
@@ -346,6 +385,7 @@ function FileUpload({ onFilesUpload, accept, multiple = true }: FileUploadProps)
         accept={accept}
         multiple={multiple}
         className="hidden"
+        disabled={isUploading}
       />
     </div>
   );
@@ -360,6 +400,8 @@ export interface FileListCardProps {
   accept?: string;         
   multiple?: boolean;     
   title?: string;
+  uploadProgress?: UploadProgress;
+  isUploading?: boolean;
   onFilesChange?: (files: FileItem[]) => void;
   onFileUpload?: (files: FileList) => void;
   onFileDownload?: (file: FileItem) => void;
@@ -379,6 +421,8 @@ export function FileListCard({
   multiple = true,
   allowDelete,
   allowUpload,
+  uploadProgress = {},
+  isUploading = false,
   title = "Danh sách file đính kèm"
 }: FileListCardProps) {
   const { t } = useTranslation();
@@ -470,6 +514,8 @@ export function FileListCard({
             onFilesUpload={handleFilesUpload}
             accept={accept}
             multiple={multiple}
+            uploadProgress={uploadProgress}
+            isUploading={isUploading}
           />
         )}
 
@@ -518,35 +564,37 @@ export function FileListCard({
             {/* Files Cards - Mobile */}
             <div className="block md:hidden space-y-3">
               {files.map((file, index) => (
-                <Card key={file.id} className="p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                      {getFileIcon(file.type, file.name)}
+                <Card key={file.id} className="p-3 sm:p-4">
+                  <div className="flex items-start justify-between gap-2 sm:gap-3">
+                    <div className="flex items-start gap-2 sm:gap-3 flex-1 min-w-0">
+                      <div className="flex-shrink-0 pt-1">
+                        {getFileIcon(file.type, file.name)}
+                      </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm truncate" title={file.name}>
+                        <p className="font-medium text-sm leading-tight truncate" title={file.name}>
                           {file.name}
                         </p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Badge variant="outline" className="text-xs">
+                        <div className="flex flex-wrap items-center gap-2 mt-1">
+                          <Badge variant="outline" className="text-xs flex-shrink-0">
                             {getFileTypeLabel(file.name)}
                           </Badge>
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-xs text-muted-foreground flex-shrink-0">
                             {formatFileSize(file.size)}
                           </span>
                         </div>
-                        <p className="text-xs text-muted-foreground mt-1">
+                        <p className="text-xs text-muted-foreground mt-1 leading-tight">
                           {formatDate(file.uploadDate)}
                         </p>
                       </div>
                     </div>
                     
-                    <div className="flex gap-1 flex-shrink-0">
+                    <div className="flex flex-col gap-1 flex-shrink-0">
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => handleDownload(file)}
                         title="Tải xuống"
-                        className="h-8 w-8 p-0 min-h-[44px] md:min-h-0"
+                        className="h-10 w-10 p-0"
                       >
                         <Download className="h-4 w-4" />
                       </Button>
@@ -560,7 +608,7 @@ export function FileListCard({
                             }
                           }}
                           title="Xóa file"
-                          className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50 min-h-[44px] md:min-h-0"
+                          className="h-10 w-10 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -572,14 +620,14 @@ export function FileListCard({
             </div>
           </>
         ) : (
-          <div className="text-center py-12">
-            <FileText className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-foreground mb-2">
+          <div className="text-center py-8 sm:py-12">
+            <FileText className="h-12 w-12 sm:h-16 sm:w-16 text-muted-foreground/50 mx-auto mb-4" />
+            <h3 className="text-base sm:text-lg font-medium text-foreground mb-2">
               {files.length === 0 && readOnly && !allowUpload
                 ? "Chưa có file đính kèm"
                 : "Chưa có file nào"}
             </h3>
-            <p className="text-muted-foreground">
+            <p className="text-sm sm:text-base text-muted-foreground px-4">
               {readOnly 
                 ? "Hồ sơ này chưa có file đính kèm nào."
                 : "Kéo thả file vào đây hoặc nhấp vào khu vực phía trên để thêm file."

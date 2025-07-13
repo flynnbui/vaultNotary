@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "@/src/components/ui/select";
 import { CLERKS, NOTARIES, FILE_TYPES } from "@/src/lib/constants";
+import { DocumentTypeUtils } from "@/src/shared/utils/documentTypeUtils";
 import {
   CalendarIcon,
   ChevronLeft,
@@ -446,14 +447,19 @@ interface ReadOnlyBadgeSelectProps {
 }
 
 function ReadOnlyBadgeSelect({ value, options }: ReadOnlyBadgeSelectProps) {
-  const selectedOption = options.find((option) => option.value === value);
+  const displayValue = DocumentTypeUtils.getDisplayLabel(value) || "Chưa chọn";
+  const badgeColor = DocumentTypeUtils.getColorClass(value);
+  const isCustom = !DocumentTypeUtils.isPredefinedType(value);
 
   return (
     <div className="flex items-center gap-2 p-3 bg-muted rounded-md border">
       <FileText className="h-4 w-4 text-muted-foreground" />
-      <Badge className={getDocumentTypeColor(value)}>
-        {selectedOption?.label || value || "Chưa chọn"}
+      <Badge className={badgeColor}>
+        {displayValue}
       </Badge>
+      {isCustom && value && (
+        <span className="text-xs text-muted-foreground">(Tùy chỉnh)</span>
+      )}
     </div>
   );
 }
@@ -476,6 +482,37 @@ export function FileMetaCard({ readOnly = false }: FileMetaCardProps) {
   const maGiaoDich = watch("maGiaoDich");
   const loaiHoSo = watch("loaiHoSo");
   const description = watch("description");
+
+  const [isCustomType, setIsCustomType] = React.useState(false);
+  const [customTypeValue, setCustomTypeValue] = React.useState("");
+
+  // Check if current value is custom (not in FILE_TYPES)
+  React.useEffect(() => {
+    if (loaiHoSo) {
+      const isPredefined = DocumentTypeUtils.isPredefinedType(loaiHoSo);
+      if (!isPredefined) {
+        setIsCustomType(true);
+        setCustomTypeValue(loaiHoSo);
+      }
+    }
+  }, [loaiHoSo]);
+
+  const handleTypeChange = (value: string) => {
+    if (value === "__custom__") {
+      setIsCustomType(true);
+      setCustomTypeValue("");
+      setValue("loaiHoSo", "");
+    } else {
+      setIsCustomType(false);
+      setCustomTypeValue("");
+      setValue("loaiHoSo", value);
+    }
+  };
+
+  const handleCustomTypeChange = (value: string) => {
+    setCustomTypeValue(value);
+    setValue("loaiHoSo", value);
+  };
 
 
   return (
@@ -664,30 +701,38 @@ export function FileMetaCard({ readOnly = false }: FileMetaCardProps) {
               <ReadOnlyBadgeSelect value={loaiHoSo} options={FILE_TYPES} />
             ) : (
               <>
-                <Select
-                  value={loaiHoSo}
-                  onValueChange={(value) => setValue("loaiHoSo", value)}
-                >
-                  <SelectTrigger
-                    className={errors.loaiHoSo ? "border-red-500" : ""}
+                <div className="space-y-3">
+                  <Select
+                    value={isCustomType ? "__custom__" : loaiHoSo}
+                    onValueChange={handleTypeChange}
                   >
-                    <SelectValue placeholder="Chọn loại hồ sơ" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {FILE_TYPES.map((type) => (
-                      <SelectItem key={type.value} value={type.value}>
-                        {type.label}
+                    <SelectTrigger
+                      className={errors.loaiHoSo ? "border-red-500" : ""}
+                    >
+                      <SelectValue placeholder="Chọn loại hồ sơ" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {FILE_TYPES.map((type) => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                      <SelectItem value="__custom__">
+                        <span className="font-medium">Khác (nhập tùy chỉnh)</span>
                       </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {/* <Input
-                  id="loaiHoSo"
-                    value={loaiHoSo || ""}
-                    onChange={(e) => setValue("loaiHoSo", e.target.value)}
-                    placeholder="Nhập loại hồ sơ"
-                    className={errors.loaiHoSo ? "border-red-500" : ""}
-                /> */}
+                    </SelectContent>
+                  </Select>
+                  
+                  {isCustomType && (
+                    <Input
+                      value={customTypeValue}
+                      onChange={(e) => handleCustomTypeChange(e.target.value)}
+                      placeholder="Nhập loại hồ sơ tùy chỉnh"
+                      className={errors.loaiHoSo ? "border-red-500" : ""}
+                    />
+                  )}
+                </div>
+                
                 {errors.loaiHoSo && (
                   <p className="text-sm text-red-500 mt-1">
                     {(errors.loaiHoSo as any)?.message || "Lỗi loại hồ sơ"}
