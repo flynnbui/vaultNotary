@@ -24,12 +24,14 @@ export function Layout({ children }: LayoutProps) {
       <div className="flex">
         <Sidebar />
         <motion.main 
-          className="flex-1"
+          className="flex-1 min-w-0 lg:ml-0"
           initial={{ opacity: 0, x: 8 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.3 }}
         >
-          {children}
+          <div className="w-full">
+            {children}
+          </div>
         </motion.main>
       </div>
     </div>

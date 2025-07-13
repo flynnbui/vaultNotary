@@ -245,36 +245,59 @@ export default function CustomersPage() {
   return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-2">
+        <div className="mb-6 md:mb-8">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
             <div className="flex items-center gap-3">
-              <Users className="h-8 w-8 text-[#800020]" />
+              <Users className="h-5 w-5 md:h-8 md:w-8 text-[#800020]" />
               <div>
-                <h1 className="text-3xl font-bold text-foreground">
+                <h1 className="text-lg md:text-3xl font-bold text-foreground">
                   Quản lý khách hàng
                 </h1>
-                <p className="text-muted-foreground">
+                <p className="text-xs md:text-base text-muted-foreground">
                   Quản lý thông tin khách hàng và lịch sử giao dịch
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleBulkExport(customers.map(c => c.id))}
-                disabled={customers.length === 0}
-              >
-                <Download className="h-4 w-4 mr-1" />
-                Xuất tất cả
-              </Button>
-              <Button
-                onClick={handleAddCustomer}
-                className="bg-[#800020] hover:bg-[#722F37] text-white"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Thêm khách hàng
-              </Button>
+              {/* Desktop buttons */}
+              <div className="hidden md:flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleBulkExport(customers.map(c => c.id))}
+                  disabled={customers.length === 0}
+                >
+                  <Download className="h-4 w-4 mr-1" />
+                  Xuất tất cả
+                </Button>
+                <Button
+                  onClick={handleAddCustomer}
+                  className="bg-[#800020] hover:bg-[#722F37] text-white"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Thêm khách hàng
+                </Button>
+              </div>
+
+              {/* Mobile buttons */}
+              <div className="flex md:hidden items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleBulkExport(customers.map(c => c.id))}
+                  disabled={customers.length === 0}
+                  className="min-h-[44px] px-3"
+                >
+                  <Download className="h-4 w-4" />
+                </Button>
+                <Button
+                  onClick={handleAddCustomer}
+                  className="bg-[#800020] hover:bg-[#722F37] text-white min-h-[44px] px-4"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Thêm
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -302,10 +325,10 @@ export default function CustomersPage() {
           <CardHeader className="bg-muted/50 border-b">
             <CardTitle className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-[#800020]" />
-                Danh sách khách hàng
+                <Users className="h-4 w-4 md:h-5 md:w-5 text-[#800020]" />
+                <span className="text-base md:text-lg">Danh sách khách hàng</span>
                 {totalItems > 0 && (
-                  <Badge variant="secondary" className="ml-2">
+                  <Badge variant="secondary" className="ml-2 text-xs">
                     {totalItems}
                   </Badge>
                 )}
@@ -381,29 +404,30 @@ export default function CustomersPage() {
                 )}
               </div>
             ) : viewMode === "table" ? (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-muted/50">
-                      <TableHead className="w-12">
-                        <Checkbox
-                          checked={selectedCustomers.length === displayCustomers.length && displayCustomers.length > 0}
-                          onCheckedChange={handleSelectAll}
-                          ref={(el) => {
-                            if (el) (el as any).indeterminate = selectedCustomers.length > 0 && selectedCustomers.length < displayCustomers.length;
-                          }}
-                        />
-                      </TableHead>
-                      <TableHead className="font-semibold">Loại</TableHead>
-                      <TableHead className="font-semibold">Họ tên</TableHead>
-                      <TableHead className="font-semibold">Tổ chức</TableHead>
-                      <TableHead className="font-semibold">Điện thoại</TableHead>
-                      <TableHead className="font-semibold">Địa chỉ</TableHead>
-                      <TableHead className="font-semibold">CMND/CCCD</TableHead>
-                      <TableHead className="font-semibold">Passport</TableHead>
-                      <TableHead className="font-semibold">Thao tác</TableHead>
-                    </TableRow>
-                  </TableHeader>
+              <div className="border rounded-lg overflow-hidden">
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-muted/50">
+                        <TableHead className="w-12">
+                          <Checkbox
+                            checked={selectedCustomers.length === displayCustomers.length && displayCustomers.length > 0}
+                            onCheckedChange={handleSelectAll}
+                            ref={(el) => {
+                              if (el) (el as any).indeterminate = selectedCustomers.length > 0 && selectedCustomers.length < displayCustomers.length;
+                            }}
+                          />
+                        </TableHead>
+                        <TableHead className="font-semibold whitespace-nowrap">Loại</TableHead>
+                        <TableHead className="font-semibold whitespace-nowrap min-w-[120px]">Họ tên</TableHead>
+                        <TableHead className="font-semibold whitespace-nowrap">Tổ chức</TableHead>
+                        <TableHead className="font-semibold whitespace-nowrap">Điện thoại</TableHead>
+                        <TableHead className="font-semibold whitespace-nowrap min-w-[150px]">Địa chỉ</TableHead>
+                        <TableHead className="font-semibold whitespace-nowrap">CMND/CCCD</TableHead>
+                        <TableHead className="font-semibold whitespace-nowrap">Passport</TableHead>
+                        <TableHead className="font-semibold whitespace-nowrap">Thao tác</TableHead>
+                      </TableRow>
+                    </TableHeader>
                   <TableBody>
                     {displayCustomers.map((customer) => (
                       <TableRow 
@@ -423,23 +447,42 @@ export default function CustomersPage() {
                           {getCustomerTypeBadge(customer.type)}
                         </TableCell>
                         <TableCell className="font-medium">
-                          {customer.fullName}
-                        </TableCell>
-                        <TableCell>{customer.businessName || "-"}</TableCell>
-                        <TableCell>{customer.phone || "-"}</TableCell>
-                        <TableCell>{customer.address || "-"}</TableCell>
-                        <TableCell className="font-mono">
-                          {customer.documentId || "-"}
-                        </TableCell>
-                        <TableCell className="font-mono">
-                          {customer.passportId || "-"}
+                          <div className="max-w-[120px] truncate" title={customer.fullName}>
+                            {customer.fullName}
+                          </div>
                         </TableCell>
                         <TableCell>
-                          <div className="flex gap-2">
+                          <div className="max-w-[100px] truncate" title={customer.businessName || "-"}>
+                            {customer.businessName || "-"}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="max-w-[100px] truncate" title={customer.phone || "-"}>
+                            {customer.phone || "-"}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="max-w-[150px] truncate" title={customer.address || "-"}>
+                            {customer.address || "-"}
+                          </div>
+                        </TableCell>
+                        <TableCell className="font-mono">
+                          <div className="max-w-[100px] truncate" title={customer.documentId || "-"}>
+                            {customer.documentId || "-"}
+                          </div>
+                        </TableCell>
+                        <TableCell className="font-mono">
+                          <div className="max-w-[100px] truncate" title={customer.passportId || "-"}>
+                            {customer.passportId || "-"}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-1">
                             <Button
                               variant="outline"
                               size="sm"
                               onClick={() => handleViewCustomer(customer)}
+                              className="min-h-[40px] min-w-[40px] p-2"
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
@@ -447,6 +490,7 @@ export default function CustomersPage() {
                               variant="outline"
                               size="sm"
                               onClick={() => handleEditCustomer(customer)}
+                              className="min-h-[40px] min-w-[40px] p-2"
                             >
                               <Edit className="h-4 w-4" />
                             </Button>
@@ -456,6 +500,7 @@ export default function CustomersPage() {
                     ))}
                   </TableBody>
                 </Table>
+                </div>
               </div>
             ) : (
               <CustomerCardView
@@ -470,73 +515,112 @@ export default function CustomersPage() {
 
             {/* Pagination */}
             {totalItems > 0 && (
-              <div className="flex items-center justify-between px-6 py-4 border-t bg-muted/20 mt-6">
-                <div className="text-sm text-muted-foreground">
-                  Hiển thị {(pageNumber - 1) * pageSize + 1}-
-                  {Math.min(pageNumber * pageSize, totalItems)} trong tổng số{" "}
-                  {totalItems} kết quả
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handlePageChange(pageNumber - 1)}
-                    disabled={pageNumber === 1 || loading}
-                    className="h-8 px-3"
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-
-                  <div className="flex items-center gap-1">
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                      (page) => {
-                        const showPage =
-                          page === 1 ||
-                          page === totalPages ||
-                          (page >= pageNumber - 1 && page <= pageNumber + 1);
-
-                        if (!showPage) {
-                          if (page === 2 && pageNumber > 4)
-                            return <span key={page} className="px-2">...</span>;
-                          if (
-                            page === totalPages - 1 &&
-                            pageNumber < totalPages - 3
-                          )
-                            return <span key={page} className="px-2">...</span>;
-                          return null;
-                        }
-
-                        return (
-                          <Button
-                            key={page}
-                            variant={
-                              pageNumber === page ? "default" : "outline"
-                            }
-                            size="sm"
-                            onClick={() => handlePageChange(page)}
-                            disabled={loading}
-                            className={cn(
-                              "h-8 w-8 p-0",
-                              pageNumber === page && "bg-[#800020] hover:bg-[#722F37] text-white"
-                            )}
-                          >
-                            {page}
-                          </Button>
-                        );
-                      }
-                    )}
+              <div className="px-6 py-4 border-t bg-muted/20 mt-6">
+                {/* Desktop pagination */}
+                <div className="hidden md:flex items-center justify-between">
+                  <div className="text-sm text-muted-foreground">
+                    Hiển thị {(pageNumber - 1) * pageSize + 1}-
+                    {Math.min(pageNumber * pageSize, totalItems)} trong tổng số{" "}
+                    {totalItems} kết quả
                   </div>
 
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handlePageChange(pageNumber + 1)}
-                    disabled={pageNumber === totalPages || loading}
-                    className="h-8 px-3"
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(pageNumber - 1)}
+                      disabled={pageNumber === 1 || loading}
+                      className="h-8 px-3"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                        (page) => {
+                          const showPage =
+                            page === 1 ||
+                            page === totalPages ||
+                            (page >= pageNumber - 1 && page <= pageNumber + 1);
+
+                          if (!showPage) {
+                            if (page === 2 && pageNumber > 4)
+                              return <span key={page} className="px-2">...</span>;
+                            if (
+                              page === totalPages - 1 &&
+                              pageNumber < totalPages - 3
+                            )
+                              return <span key={page} className="px-2">...</span>;
+                            return null;
+                          }
+
+                          return (
+                            <Button
+                              key={page}
+                              variant={
+                                pageNumber === page ? "default" : "outline"
+                              }
+                              size="sm"
+                              onClick={() => handlePageChange(page)}
+                              disabled={loading}
+                              className={cn(
+                                "h-8 w-8 p-0",
+                                pageNumber === page && "bg-[#800020] hover:bg-[#722F37] text-white"
+                              )}
+                            >
+                              {page}
+                            </Button>
+                          );
+                        }
+                      )}
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(pageNumber + 1)}
+                      disabled={pageNumber === totalPages || loading}
+                      className="h-8 px-3"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Mobile pagination - simplified */}
+                <div className="md:hidden space-y-4">
+                  <div className="text-center text-xs text-muted-foreground">
+                    Hiển thị {(pageNumber - 1) * pageSize + 1}-
+                    {Math.min(pageNumber * pageSize, totalItems)} trong tổng số{" "}
+                    {totalItems} kết quả
+                  </div>
+                  <div className="flex justify-center items-center gap-3">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(pageNumber - 1)}
+                      disabled={pageNumber === 1 || loading}
+                      className="min-h-[44px] px-3 text-sm"
+                    >
+                      <ChevronLeft className="h-4 w-4 mr-1" />
+                      <span className="text-xs">Trước</span>
+                    </Button>
+                    
+                    <span className="text-xs font-medium px-2 py-2 bg-muted rounded">
+                      {pageNumber}/{totalPages}
+                    </span>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(pageNumber + 1)}
+                      disabled={pageNumber === totalPages || loading}
+                      className="min-h-[44px] px-3 text-sm"
+                    >
+                      <span className="text-xs">Sau</span>
+                      <ChevronRight className="h-4 w-4 ml-1" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             )}
