@@ -220,10 +220,10 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
       {/* Mobile card view */}
       <div className="block md:hidden space-y-4">
         {documents.map((document) => (
-          <Card key={document.id} className="w-full">
+          <Card key={document.id} className="w-full min-w-0">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg font-semibold">
+                <CardTitle className="text-lg font-semibold break-all">
                   {document.transactionCode}
                 </CardTitle>
                 <Badge className={getDocumentTypeColor(document.documentType)}>
@@ -236,7 +236,7 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
               {document.description && (
                 <div>
                   <p className="text-sm font-medium text-muted-foreground mb-1">Mô tả</p>
-                  <p className="text-sm">{document.description}</p>
+                  <p className="text-sm break-words">{document.description}</p>
                 </div>
               )}
               
@@ -244,13 +244,13 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
               
               {/* Staff info */}
               <div className="space-y-2">
-                <div className="flex justify-between">
+                <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
                   <span className="text-sm font-medium text-muted-foreground">Thư ký:</span>
-                  <span className="text-sm">{document.secretary}</span>
+                  <span className="text-sm truncate sm:text-right min-w-0">{document.secretary}</span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
                   <span className="text-sm font-medium text-muted-foreground">CCV:</span>
-                  <span className="text-sm">{document.notaryPublic}</span>
+                  <span className="text-sm truncate sm:text-right min-w-0">{document.notaryPublic}</span>
                 </div>
               </div>
               

@@ -125,7 +125,7 @@ export function CustomerDetailsDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
+        <DialogContent className="w-full max-w-[95vw] sm:max-w-lg md:max-w-2xl lg:max-w-4xl max-h-[90vh] overflow-hidden">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3">
               <TypeIcon className="h-6 w-6 text-[#800020]" />
@@ -310,7 +310,7 @@ export function CustomerDetailsDialog({
                           <div
                             key={document.id}
                             className={cn(
-                              "flex items-center gap-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer",
+                              "flex items-start sm:items-center gap-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer flex-wrap sm:flex-nowrap",
                               selectedDocument?.id === document.id && "bg-[#800020]/10 dark:bg-[#800020]/20 border-[#800020]/30 dark:border-[#800020]/40"
                             )}
                             onClick={() => handleDocumentClick(document)}
@@ -321,24 +321,24 @@ export function CustomerDetailsDialog({
                               </div>
                             </div>
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1">
-                                <h4 className="font-medium truncate">
+                              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                <h4 className="font-medium break-words min-w-0">
                                   {document.documentType}
                                 </h4>
-                                <Badge variant="secondary" className="text-xs">
+                                <Badge variant="secondary" className="text-xs break-all">
                                   {document.transactionCode}
                                 </Badge>
                               </div>
-                              <p className="text-sm text-muted-foreground truncate">
+                              <p className="text-sm text-muted-foreground break-words">
                                 {document.description || "Không có mô tả"}
                               </p>
-                              <div className="flex items-center gap-4 text-xs text-muted-foreground mt-1">
-                                <span>Thư ký: {document.secretary}</span>
-                                <span>Công chứng viên: {document.notaryPublic}</span>
+                              <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs text-muted-foreground mt-1">
+                                <span className="break-words">Thư ký: {document.secretary}</span>
+                                <span className="break-words">Công chứng viên: {document.notaryPublic}</span>
                                 <span>{formatDate(new Date(document.createdDate))}</span>
                               </div>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                               <Button 
                                 size="sm" 
                                 variant="outline"
@@ -346,11 +346,12 @@ export function CustomerDetailsDialog({
                                   e.stopPropagation();
                                   handleDocumentView(document);
                                 }}
+                                className="min-h-[44px] w-full sm:w-auto"
                               >
                                 <Eye className="h-4 w-4 mr-1" />
                                 Xem
                               </Button>
-                              <Button size="sm" variant="outline">
+                              <Button size="sm" variant="outline" className="min-h-[44px] w-full sm:w-auto">
                                 <Download className="h-4 w-4 mr-1" />
                                 Tải
                               </Button>

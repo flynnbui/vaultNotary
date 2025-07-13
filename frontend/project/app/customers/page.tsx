@@ -599,7 +599,7 @@ export default function CustomersPage() {
                               onClick={() => handlePageChange(page)}
                               disabled={loading}
                               className={cn(
-                                "h-8 w-8 p-0",
+                                "h-8 w-8 min-h-[44px] min-w-[44px] p-0",
                                 pageNumber === page && "bg-[#800020] hover:bg-[#722F37] text-white"
                               )}
                             >
