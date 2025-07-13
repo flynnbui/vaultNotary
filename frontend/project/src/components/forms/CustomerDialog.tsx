@@ -543,7 +543,6 @@ export function CustomerDialog({
     };
 
     const onSubmit = async (data: any) => {
-    const onSubmit = async (data: any) => {
         console.log("🚀 CustomerDialog onSubmit called with data:", data);
         console.log("🚀 Form errors:", errors);
 
