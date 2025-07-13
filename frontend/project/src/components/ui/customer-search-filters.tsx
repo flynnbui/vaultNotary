@@ -73,12 +73,12 @@ export function CustomerSearchFilters({
   return (
     <Card className="mb-6">
       <CardHeader className="bg-muted/50 border-b">
-        <CardTitle className="flex items-center justify-between">
+        <CardTitle className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <SearchIcon className="h-5 w-5 text-[#800020] dark:text-[#e6b3b3]" />
-            Tìm kiếm khách hàng
+            <SearchIcon className="h-4 w-4 md:h-5 md:w-5 text-[#800020] dark:text-[#e6b3b3]" />
+            <span className="text-base md:text-lg">Tìm kiếm khách hàng</span>
             {activeFiltersCount > 0 && (
-              <Badge variant="secondary" className="ml-2">
+              <Badge variant="secondary" className="ml-2 text-xs">
                 {activeFiltersCount} bộ lọc
               </Badge>
             )}
@@ -89,36 +89,39 @@ export function CustomerSearchFilters({
                 variant="ghost"
                 size="sm"
                 onClick={clearFilters}
-                className="text-muted-foreground hover:text-foreground"
+                className="text-muted-foreground hover:text-foreground min-h-[44px] text-sm"
               >
                 <X className="h-4 w-4 mr-1" />
-                Xóa bộ lọc
+                <span className="hidden sm:inline">Xóa bộ lọc</span>
+                <span className="sm:hidden">Xóa</span>
               </Button>
             )}
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-6">
-        <div className="flex gap-4 mb-4">
-          <div className="flex-1">
-            <Label htmlFor="search">
-              Tìm kiếm CMND/CCCD, Passport cho cá nhân | Số doanh nghiệp cho KH doanh nghiệp
+      <CardContent className="p-4 md:p-6">
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="search" className="text-sm font-medium">
+              <span className="block md:hidden">Tìm kiếm CMND/CCCD, Passport, số doanh nghiệp</span>
+              <span className="hidden md:block">Tìm kiếm CMND/CCCD, Passport cho cá nhân | Số doanh nghiệp cho KH doanh nghiệp</span>
             </Label>
             <Input
               id="search"
               value={searchTerm}
               onChange={(e) => handleSearchChange(e.target.value)}
               placeholder="Nhập thông tin tìm kiếm..."
-              className="mt-1"
+              className="min-h-[44px] text-base"
               disabled={loading}
             />
           </div>
-          <div className="flex items-end gap-2">
+          
+          <div className="flex flex-col sm:flex-row gap-2">
             <Button
               variant="outline"
               onClick={() => handleFilterChange('type', 0)}
               className={cn(
-                "transition-colors",
+                "transition-colors min-h-[44px] text-sm flex-1 sm:flex-none",
                 filters.type === 0 && "bg-[#800020]/10 dark:bg-[#800020]/20 border-[#800020]/30 dark:border-[#800020]/50 text-[#800020] dark:text-[#e6b3b3]"
               )}
             >
@@ -128,7 +131,7 @@ export function CustomerSearchFilters({
               variant="outline"
               onClick={() => handleFilterChange('type', 1)}
               className={cn(
-                "transition-colors",
+                "transition-colors min-h-[44px] text-sm flex-1 sm:flex-none",
                 filters.type === 1 && "bg-[#800020]/10 dark:bg-[#800020]/20 border-[#800020]/30 dark:border-[#800020]/50 text-[#800020] dark:text-[#e6b3b3]"
               )}
             >
@@ -136,7 +139,6 @@ export function CustomerSearchFilters({
             </Button>
           </div>
         </div>
-
       </CardContent>
     </Card>
   );
