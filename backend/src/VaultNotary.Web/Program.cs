@@ -65,7 +65,14 @@ if (!builder.Environment.IsEnvironment("Testing") && !builder.Environment.IsEnvi
             options.Audience = auth0Config.Audience;
             options.TokenValidationParameters = new TokenValidationParameters
             {
-                NameClaimType = ClaimTypes.NameIdentifier
+                NameClaimType = ClaimTypes.NameIdentifier,
+                ValidateIssuer = true,
+                ValidIssuer = $"https://{auth0Config.Domain}/",
+                ValidateAudience = true,
+                ValidAudience = auth0Config.Audience,
+                ValidateLifetime = true,
+                ValidAlgorithms = new[] { "RS256" },
+                ClockSkew = TimeSpan.FromMinutes(5)
             };
         });
 }
@@ -164,7 +171,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAuth0", policy =>
     {
-        policy.WithOrigins("http://localhost:3000", "https://localhost:3000") // React app
+        policy.WithOrigins("http://localhost:3000", "https://localhost:3000", "https://nharong.vn", "http://nharong.vn")
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials();

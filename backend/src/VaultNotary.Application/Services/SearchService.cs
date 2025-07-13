@@ -60,11 +60,11 @@ public class SearchService : ISearchService
         return filtered.Select(MapDocumentToDto).ToList();
     }
 
-    public async Task<List<DocumentDto>> SearchDocumentsByTypeAsync(DocumentType documentType)
+    public async Task<List<DocumentDto>> SearchDocumentsByTypeAsync(string documentType)
     {
         var documents = await _documentRepository.GetAllAsync();
         // Using LINQ for optimized filtering
-        var filtered = documents.Where(d => d.DocumentType == documentType)
+        var filtered = documents.Where(d => d.DocumentType.Equals(documentType, StringComparison.OrdinalIgnoreCase))
                                .OrderByDescending(d => d.CreatedDate)
                                .ToList();
         return filtered.Select(MapDocumentToDto).ToList();
