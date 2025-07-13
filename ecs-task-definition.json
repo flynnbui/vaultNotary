@@ -9,7 +9,7 @@
   "containerDefinitions": [
     {
       "name": "vaultnotary-api",
-      "image": "119107229504.dkr.ecr.ap-southeast-1.amazonaws.com/vaultnotary@sha256:eef59193ac5782e010b9c8f9c6fe60c938d788aa3d32f973e7f578598c6176e0",
+      "image": "119107229504.dkr.ecr.ap-southeast-1.amazonaws.com/vaultnotary:latest",
       "portMappings": [
         {
           "containerPort": 80,
