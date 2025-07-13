@@ -230,6 +230,23 @@ export default function CustomersPage() {
     loadCustomers();
   }, [pageNumber, filters, searchTerm, loadCustomers]);
 
+  // Force card view on mobile screens
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) { // md breakpoint
+        setViewMode("card");
+      }
+    };
+
+    // Check on initial load
+    handleResize();
+
+    // Listen for resize events
+    window.addEventListener('resize', handleResize);
+    
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // Memoized computed values
   const displayCustomers = useMemo(() => customers, [customers]);
   
@@ -333,18 +350,21 @@ export default function CustomersPage() {
                   </Badge>
                 )}
               </div>
-              <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as "table" | "card")}>
-                <TabsList>
-                  <TabsTrigger value="table" className="flex items-center gap-2">
-                    <List className="h-4 w-4" />
-                    Bảng
-                  </TabsTrigger>
-                  <TabsTrigger value="card" className="flex items-center gap-2">
-                    <Grid3X3 className="h-4 w-4" />
-                    Thẻ
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
+              {/* Hide view toggle on mobile, show only on desktop */}
+              <div className="hidden md:block">
+                <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as "table" | "card")}>
+                  <TabsList>
+                    <TabsTrigger value="table" className="flex items-center gap-2">
+                      <List className="h-4 w-4" />
+                      Bảng
+                    </TabsTrigger>
+                    <TabsTrigger value="card" className="flex items-center gap-2">
+                      <Grid3X3 className="h-4 w-4" />
+                      Thẻ
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </div>
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6">
@@ -404,104 +424,119 @@ export default function CustomersPage() {
                 )}
               </div>
             ) : viewMode === "table" ? (
-              <div className="border rounded-lg overflow-hidden">
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="bg-muted/50">
-                        <TableHead className="w-12">
-                          <Checkbox
-                            checked={selectedCustomers.length === displayCustomers.length && displayCustomers.length > 0}
-                            onCheckedChange={handleSelectAll}
-                            ref={(el) => {
-                              if (el) (el as any).indeterminate = selectedCustomers.length > 0 && selectedCustomers.length < displayCustomers.length;
-                            }}
-                          />
-                        </TableHead>
-                        <TableHead className="font-semibold whitespace-nowrap">Loại</TableHead>
-                        <TableHead className="font-semibold whitespace-nowrap min-w-[120px]">Họ tên</TableHead>
-                        <TableHead className="font-semibold whitespace-nowrap">Tổ chức</TableHead>
-                        <TableHead className="font-semibold whitespace-nowrap">Điện thoại</TableHead>
-                        <TableHead className="font-semibold whitespace-nowrap min-w-[150px]">Địa chỉ</TableHead>
-                        <TableHead className="font-semibold whitespace-nowrap">CMND/CCCD</TableHead>
-                        <TableHead className="font-semibold whitespace-nowrap">Passport</TableHead>
-                        <TableHead className="font-semibold whitespace-nowrap">Thao tác</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                  <TableBody>
-                    {displayCustomers.map((customer) => (
-                      <TableRow 
-                        key={customer.id} 
-                        className={cn(
-                          "hover:bg-muted/50",
-                          selectedCustomers.includes(customer.id) && "bg-[#800020]/10 dark:bg-[#800020]/20"
-                        )}
-                      >
-                        <TableCell>
-                          <Checkbox
-                            checked={selectedCustomers.includes(customer.id)}
-                            onCheckedChange={() => handleCustomerSelect(customer.id)}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          {getCustomerTypeBadge(customer.type)}
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          <div className="max-w-[120px] truncate" title={customer.fullName}>
-                            {customer.fullName}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="max-w-[100px] truncate" title={customer.businessName || "-"}>
-                            {customer.businessName || "-"}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="max-w-[100px] truncate" title={customer.phone || "-"}>
-                            {customer.phone || "-"}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="max-w-[150px] truncate" title={customer.address || "-"}>
-                            {customer.address || "-"}
-                          </div>
-                        </TableCell>
-                        <TableCell className="font-mono">
-                          <div className="max-w-[100px] truncate" title={customer.documentId || "-"}>
-                            {customer.documentId || "-"}
-                          </div>
-                        </TableCell>
-                        <TableCell className="font-mono">
-                          <div className="max-w-[100px] truncate" title={customer.passportId || "-"}>
-                            {customer.passportId || "-"}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-1">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleViewCustomer(customer)}
-                              className="min-h-[40px] min-w-[40px] p-2"
-                            >
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleEditCustomer(customer)}
-                              className="min-h-[40px] min-w-[40px] p-2"
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+              <>
+                {/* Desktop table view */}
+                <div className="border rounded-lg overflow-hidden hidden md:block">
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-muted/50">
+                          <TableHead className="w-12">
+                            <Checkbox
+                              checked={selectedCustomers.length === displayCustomers.length && displayCustomers.length > 0}
+                              onCheckedChange={handleSelectAll}
+                              ref={(el) => {
+                                if (el) (el as any).indeterminate = selectedCustomers.length > 0 && selectedCustomers.length < displayCustomers.length;
+                              }}
+                            />
+                          </TableHead>
+                          <TableHead className="font-semibold whitespace-nowrap">Loại</TableHead>
+                          <TableHead className="font-semibold whitespace-nowrap min-w-[120px]">Họ tên</TableHead>
+                          <TableHead className="font-semibold whitespace-nowrap">Tổ chức</TableHead>
+                          <TableHead className="font-semibold whitespace-nowrap">Điện thoại</TableHead>
+                          <TableHead className="font-semibold whitespace-nowrap min-w-[150px]">Địa chỉ</TableHead>
+                          <TableHead className="font-semibold whitespace-nowrap">CMND/CCCD</TableHead>
+                          <TableHead className="font-semibold whitespace-nowrap">Passport</TableHead>
+                          <TableHead className="font-semibold whitespace-nowrap">Thao tác</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                    <TableBody>
+                      {displayCustomers.map((customer) => (
+                        <TableRow 
+                          key={customer.id} 
+                          className={cn(
+                            "hover:bg-muted/50",
+                            selectedCustomers.includes(customer.id) && "bg-[#800020]/10 dark:bg-[#800020]/20"
+                          )}
+                        >
+                          <TableCell>
+                            <Checkbox
+                              checked={selectedCustomers.includes(customer.id)}
+                              onCheckedChange={() => handleCustomerSelect(customer.id)}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            {getCustomerTypeBadge(customer.type)}
+                          </TableCell>
+                          <TableCell className="font-medium">
+                            <div className="max-w-[120px] truncate" title={customer.fullName}>
+                              {customer.fullName}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="max-w-[100px] truncate" title={customer.businessName || "-"}>
+                              {customer.businessName || "-"}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="max-w-[100px] truncate" title={customer.phone || "-"}>
+                              {customer.phone || "-"}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="max-w-[150px] truncate" title={customer.address || "-"}>
+                              {customer.address || "-"}
+                            </div>
+                          </TableCell>
+                          <TableCell className="font-mono">
+                            <div className="max-w-[100px] truncate" title={customer.documentId || "-"}>
+                              {customer.documentId || "-"}
+                            </div>
+                          </TableCell>
+                          <TableCell className="font-mono">
+                            <div className="max-w-[100px] truncate" title={customer.passportId || "-"}>
+                              {customer.passportId || "-"}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-1">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleViewCustomer(customer)}
+                                className="min-h-[40px] min-w-[40px] p-2"
+                              >
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleEditCustomer(customer)}
+                                className="min-h-[40px] min-w-[40px] p-2"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                  </div>
                 </div>
-              </div>
+                
+                {/* Mobile card view fallback when table view is selected */}
+                <div className="block md:hidden">
+                  <CustomerCardView
+                    customers={displayCustomers}
+                    selectedCustomers={selectedCustomers}
+                    onCustomerSelect={handleCustomerSelect}
+                    onCustomerEdit={handleEditCustomer}
+                    onCustomerView={handleViewCustomer}
+                    loading={loading}
+                  />
+                </div>
+              </>
             ) : (
               <CustomerCardView
                 customers={displayCustomers}

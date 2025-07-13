@@ -31,6 +31,8 @@ import useCustomerApiService from "@/src/features/customers/services/customerApi
 import useDocumentApiService from "@/src/features/documents/services/documentApiService";
 import { formatDate } from "@/src/lib/constants";
 import { cn } from "@/src/lib/utils";
+import { useDocumentDialog } from "@/src/features/documents/hooks/useDocumentDialog";
+import { DocumentDialog } from "@/src/features/documents/components/DocumentDialog";
 
 interface CustomerDetailsDialogProps {
   customer: CustomerType | null;
@@ -48,6 +50,7 @@ export function CustomerDetailsDialog({
   const [customerDocuments, setCustomerDocuments] = useState<DocumentListType[]>([]);
   const [documentsLoading, setDocumentsLoading] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<DocumentListType | null>(null);
+  const [customerDialogOpen, setCustomerDialogOpen] = useState(false);
   const { getCustomerDocuments } = useCustomerApiService();
   const { getDocumentById } = useDocumentApiService();
 
@@ -64,6 +67,11 @@ export function CustomerDetailsDialog({
     }
   }, [customer, getCustomerDocuments]);
 
+  // Document dialog hook
+  const documentDialog = useDocumentDialog({
+    onRefresh: loadCustomerDocuments
+  });
+
   useEffect(() => {
     if (customer && open) {
       loadCustomerDocuments();
@@ -72,6 +80,24 @@ export function CustomerDetailsDialog({
 
   const handleDocumentClick = async (document: DocumentListType) => {
     setSelectedDocument(document);
+  };
+
+  const handleDocumentView = async (document: DocumentListType) => {
+    // Convert DocumentListType to DocumentType format expected by the dialog
+    const documentForDialog = {
+      id: document.id,
+      transactionCode: document.transactionCode,
+      documentType: document.documentType,
+      description: document.description,
+      secretary: document.secretary,
+      notaryPublic: document.notaryPublic,
+      createdDate: document.createdDate,
+      updatedAt: document.updatedAt,
+      createdAt: document.createdAt,
+      partyDocumentLinks: []
+    };
+    
+    documentDialog.handleView(documentForDialog);
   };
 
   const getCustomerTypeInfo = (type: number) => {
@@ -97,27 +123,28 @@ export function CustomerDetailsDialog({
   const TypeIcon = typeInfo.icon;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-3">
-            <TypeIcon className="h-6 w-6 text-[#800020]" />
-            Chi tiết khách hàng
-          </DialogTitle>
-        </DialogHeader>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3">
+              <TypeIcon className="h-6 w-6 text-[#800020]" />
+              Chi tiết khách hàng
+            </DialogTitle>
+          </DialogHeader>
 
-        <Tabs defaultValue="info" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="info">Thông tin cá nhân</TabsTrigger>
-            <TabsTrigger value="documents" className="relative">
-              Tài liệu liên quan
-              {customerDocuments.length > 0 && (
-                <Badge variant="secondary" className="ml-2 text-xs">
-                  {customerDocuments.length}
-                </Badge>
-              )}
-            </TabsTrigger>
-          </TabsList>
+          <Tabs defaultValue="info" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="info">Thông tin cá nhân</TabsTrigger>
+              <TabsTrigger value="documents" className="relative">
+                Tài liệu liên quan
+                {customerDocuments.length > 0 && (
+                  <Badge variant="secondary" className="ml-2 text-xs">
+                    {customerDocuments.length}
+                  </Badge>
+                )}
+              </TabsTrigger>
+            </TabsList>
 
           <TabsContent value="info" className="space-y-4">
             <Card>
@@ -312,7 +339,14 @@ export function CustomerDetailsDialog({
                               </div>
                             </div>
                             <div className="flex items-center gap-2">
-                              <Button size="sm" variant="outline">
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDocumentView(document);
+                                }}
+                              >
                                 <Eye className="h-4 w-4 mr-1" />
                                 Xem
                               </Button>
@@ -331,7 +365,26 @@ export function CustomerDetailsDialog({
             </Card>
           </TabsContent>
         </Tabs>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Document Dialog */}
+      <DocumentDialog
+        open={documentDialog.isOpen}
+        onOpenChange={documentDialog.handleDialogChange}
+        mode={documentDialog.dialogMode}
+        editingDocument={documentDialog.editingDocument}
+        attachedFiles={documentDialog.attachedFiles}
+        onFilesChange={documentDialog.handleFilesChange}
+        onFileUpload={documentDialog.handleFileUpload}
+        onFileDownload={documentDialog.handleFileDownload}
+        onFilePreview={documentDialog.handleFilePreview}
+        onFileDelete={documentDialog.handleFileDelete}
+        onCustomerDialogChange={setCustomerDialogOpen}
+        onSuccess={documentDialog.handleSuccess}
+        onCancel={documentDialog.handleCancel}
+        onModeChange={documentDialog.handleModeChange}
+      />
+    </>
   );
 }
