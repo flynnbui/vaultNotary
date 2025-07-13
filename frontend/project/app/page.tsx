@@ -103,7 +103,7 @@ export default function Home() {
       features: ['Tư vấn miễn phí', 'Hỗ trợ soạn thảo', 'Giải đáp thắc mắc']
     }
   ];
-
+  
 
   return (
     <div className="min-h-screen bg-white" style={{ scrollSnapType: 'y mandatory', scrollBehavior: 'smooth' }}>

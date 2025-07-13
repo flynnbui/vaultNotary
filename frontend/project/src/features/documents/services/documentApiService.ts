@@ -1,8 +1,8 @@
 import { useCallback } from "react";
-import useApi from "@/src/services/useApi";
+import useApiWithLoading from "@/src/hooks/useApiWithLoading";
 import { PaginatedResponse } from "@/src/types/pagination.type";
 import { DocumentWithPopulatedParties, PopulatedPartyDocumentLinkType } from "@/src/types/document.type";
-import useCustomerService from "@/src/services/useCustomerService";
+import useCustomerApiService from "@/src/features/customers/services/customerApiService";
 import { 
   DocumentDto,
   DocumentWithFilesDto,
@@ -21,8 +21,8 @@ import { ErrorHandler } from '@/src/shared/utils/errorHandler';
  * Document API service with proper typing
  */
 const useDocumentApiService = () => {
-  const { callApi, loading } = useApi();
-  const { getCustomerById } = useCustomerService();
+  const { loading, callApi } = useApiWithLoading();
+  const { getCustomerById } = useCustomerApiService();
 
   const getPaginatedDocuments = useCallback(
     async (
@@ -30,7 +30,7 @@ const useDocumentApiService = () => {
       pageSize = 10
     ): Promise<PagedResultDto<DocumentDto> | undefined> => {
       try {
-        const response = await callApi(
+        const response = await callApi<PagedResultDto<DocumentDto>>(
           "get",
           `/Documents/paginated?pageNumber=${pageNumber}&pageSize=${pageSize}`
         );
@@ -46,7 +46,7 @@ const useDocumentApiService = () => {
   const createDocument = useCallback(
     async (documentData: CreateDocumentDto): Promise<DocumentDto | undefined> => {
       try {
-        const response = await callApi("post", "/Documents", documentData as unknown as Record<string, unknown>);
+        const response = await callApi<DocumentDto>("post", "/Documents", documentData);
         return response?.data;
       } catch (error) {
         ErrorHandler.handleDocumentError(error, "create document");
@@ -63,12 +63,12 @@ const useDocumentApiService = () => {
     ): Promise<DocumentDto | undefined> => {
       try {
         
-        const response = await callApi("put", `/Documents/${id}`, documentData as unknown as Record<string, unknown>);
+        const response = await callApi<DocumentDto>("put", `/Documents/${id}`, documentData);
         
         // For update operations, the API returns 204 No Content on success
-        // Return the updated document data or a success indicator
+        // Return undefined for 204 status as the document was updated successfully
         if (response?.status === 204) {
-          return { ...documentData, id } as DocumentDto;
+          return undefined;
         }
         
         return response?.data;
@@ -96,7 +96,7 @@ const useDocumentApiService = () => {
   const getDocumentById = useCallback(
     async (id: string): Promise<DocumentWithFilesDto | undefined> => {
       try {
-        const response = await callApi("get", `/Documents/${id}`);
+        const response = await callApi<DocumentWithFilesDto>("get", `/Documents/${id}`);
         return response?.data;
       } catch (error) {
         ErrorHandler.handleDocumentError(error, "fetch document by ID");
@@ -119,7 +119,7 @@ const useDocumentApiService = () => {
         return [];
       }
     },
-    [getDocumentById]
+    [getDocumentById, callApi]
   );
 
   const deleteDocumentFile = useCallback(
@@ -139,13 +139,13 @@ const useDocumentApiService = () => {
     (fileId: string): string => {
       return `/api/Download/${fileId}`;
     },
-    []
+    [callApi]
   );
 
   const getFilePresignedUrl = useCallback(
     async (fileId: string, expirationHours: number = 24): Promise<string> => {
       try {
-        const response = await callApi("get", `/Download/${fileId}/presigned?expirationHours=${expirationHours}`);
+        const response = await callApi<{url: string}>("get", `/Download/${fileId}/presigned?expirationHours=${expirationHours}`);
         
         const presignedData = response?.data;
         
@@ -170,7 +170,7 @@ const useDocumentApiService = () => {
       pageSize = 10
     ): Promise<PagedResultDto<DocumentDto> | undefined> => {
       try {
-        const response = await callApi(
+        const response = await callApi<PagedResultDto<DocumentDto>>(
           "get",
           `/Documents/search?searchTerm=${encodeURIComponent(searchTerm)}&pageNumber=${pageNumber}&pageSize=${pageSize}`
         );
@@ -247,7 +247,7 @@ const useDocumentApiService = () => {
         throw error;
       }
     },
-    [getDocumentById, getCustomerById]
+    [getDocumentById, getCustomerById, callApi]
   );
 
   return {
