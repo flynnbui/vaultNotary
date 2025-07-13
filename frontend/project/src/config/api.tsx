@@ -2,12 +2,16 @@ import axios from "axios";
 import { getAccessToken } from '@auth0/nextjs-auth0';
 import { ApiError } from '../shared/utils/errorHandler';
 
-// const SERVER = process.env.VITE_API_URL_SERVER;
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 
 const api = axios.create({
   baseURL: BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  },
+  timeout: 30000,
 });
 
 api.interceptors.request.use(
@@ -18,6 +22,7 @@ api.interceptors.request.use(
         config.headers.Authorization = `Bearer ${accessToken}`;
       }
     } catch (error) {
+      console.error('❌ Token Error:', error);
     }
     return config;
   },

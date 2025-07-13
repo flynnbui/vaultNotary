@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import { CustomerType } from "@/src/types/customer.type";
 import { DocumentListType } from "@/src/types/document.type";
-import useCustomerService from "@/src/services/useCustomerService";
+import useCustomerApiService from "@/src/features/customers/services/customerApiService";
 import useDocumentApiService from "@/src/features/documents/services/documentApiService";
 import { formatDate } from "@/src/lib/constants";
 import { cn } from "@/src/lib/utils";
@@ -48,7 +48,7 @@ export function CustomerDetailsDialog({
   const [customerDocuments, setCustomerDocuments] = useState<DocumentListType[]>([]);
   const [documentsLoading, setDocumentsLoading] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<DocumentListType | null>(null);
-  const { getCustomerDocuments } = useCustomerService();
+  const { getCustomerDocuments } = useCustomerApiService();
   const { getDocumentById } = useDocumentApiService();
 
   const loadCustomerDocuments = useCallback(async () => {

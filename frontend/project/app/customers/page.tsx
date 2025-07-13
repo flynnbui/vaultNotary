@@ -41,7 +41,7 @@ import {
 import { toast } from "sonner";
 
 import "@/src/lib/i18n";
-import useCustomerService from "@/src/services/useCustomerService";
+import useCustomerApiService from "@/src/features/customers/services/customerApiService";
 import { CustomerType, CustomerFilterOptions } from "@/src/types/customer.type";
 import { exportCustomersToCSV, exportCustomersToExcel } from "@/src/lib/export-utils";
 import { cn } from "@/src/lib/utils";
@@ -97,7 +97,7 @@ export default function CustomersPage() {
     deleteCustomer, 
     bulkDeleteCustomers,
     searchCustomers 
-  } = useCustomerService();
+  } = useCustomerApiService();
 
   const loadCustomers = useCallback(async () => {
     try {
