@@ -74,7 +74,7 @@ function getFileIcon(fileType: string, fileName: string) {
   
   // Archive files
   if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext)) {
-    return <Archive className="h-4 w-4 text-orange-500" />;
+    return <Archive className="h-4 w-4 text-[#800020] dark:text-[#e6b3b3]" />;
   }
   
   // PDF and documents
@@ -321,7 +321,7 @@ function FileUpload({ onFilesUpload, accept, multiple = true }: FileUploadProps)
         className={`
           border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors
           ${isDragging 
-            ? 'border-primary bg-primary/10' 
+            ? 'border-[#800020] bg-[#800020]/10' 
             : 'border-muted-foreground/25 hover:border-muted-foreground/50'
           }
         `}
@@ -454,7 +454,7 @@ export function FileListCard({
     <Card className="shadow-md border-0">
       <CardHeader className="bg-muted/50 border-b">
         <CardTitle className="flex items-center gap-2">
-          <FileText className="h-5 w-5 text-orange-600" />
+          <FileText className="h-5 w-5 text-[#800020] dark:text-[#e6b3b3]" />
           {title}
           {files.length > 0 && (
             <Badge variant="secondary" className="ml-2">

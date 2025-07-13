@@ -59,7 +59,6 @@ export function CustomerDetailsDialog({
       const response = await getCustomerDocuments(customer.id);
       setCustomerDocuments(response?.items || []);
     } catch (error) {
-      console.error("Error loading customer documents:", error);
     } finally {
       setDocumentsLoading(false);
     }
@@ -102,7 +101,7 @@ export function CustomerDetailsDialog({
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3">
-            <TypeIcon className="h-6 w-6 text-orange-600" />
+            <TypeIcon className="h-6 w-6 text-[#800020]" />
             Chi tiết khách hàng
           </DialogTitle>
         </DialogHeader>
@@ -125,7 +124,7 @@ export function CustomerDetailsDialog({
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <TypeIcon className="h-5 w-5 text-orange-600" />
+                    <TypeIcon className="h-5 w-5 text-[#800020]" />
                     Thông tin cơ bản
                   </div>
                   <Badge variant={typeInfo.variant as "default" | "destructive" | "outline" | "secondary"}>
@@ -232,7 +231,7 @@ export function CustomerDetailsDialog({
                 <div className="flex gap-2 pt-4">
                   <Button 
                     onClick={() => onEdit?.(customer)}
-                    className="bg-orange-600 hover:bg-orange-700"
+                    className="bg-[#800020] hover:bg-[#722F37] text-white"
                   >
                     Chỉnh sửa thông tin
                   </Button>
@@ -248,7 +247,7 @@ export function CustomerDetailsDialog({
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <FileText className="h-5 w-5 text-orange-600" />
+                  <FileText className="h-5 w-5 text-[#800020]" />
                   Tài liệu liên quan ({customerDocuments.length})
                 </CardTitle>
               </CardHeader>
@@ -285,13 +284,13 @@ export function CustomerDetailsDialog({
                             key={document.id}
                             className={cn(
                               "flex items-center gap-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer",
-                              selectedDocument?.id === document.id && "bg-orange-50 dark:bg-orange-950/50 border-orange-200 dark:border-orange-800"
+                              selectedDocument?.id === document.id && "bg-[#800020]/10 dark:bg-[#800020]/20 border-[#800020]/30 dark:border-[#800020]/40"
                             )}
                             onClick={() => handleDocumentClick(document)}
                           >
                             <div className="flex-shrink-0">
-                              <div className="h-12 w-12 bg-orange-100 dark:bg-orange-900/50 rounded-lg flex items-center justify-center">
-                                <FileText className="h-6 w-6 text-orange-600 dark:text-orange-400" />
+                              <div className="h-12 w-12 bg-[#800020]/20 dark:bg-[#800020]/40 rounded-lg flex items-center justify-center">
+                                <FileText className="h-6 w-6 text-[#800020] dark:text-[#e6b3b3]" />
                               </div>
                             </div>
                             <div className="flex-1 min-w-0">

@@ -32,13 +32,6 @@ const useUploadService = () => {
   const uploadDocumentFile = useCallback(
     async ({ documentId, file }: UploadPayload): Promise<UploadedFileResponse> => {
       try {
-        console.log("=== UPLOAD DEBUG ===");
-        console.log("Document ID:", documentId);
-        console.log("File info:", {
-          name: file.name,
-          size: file.size,
-          type: file.type,
-        });
 
         const formData = new FormData();
         formData.append("DocumentId", documentId);
@@ -47,7 +40,6 @@ const useUploadService = () => {
         const res = await callApi("post", "/Upload", formData);
         const apiResponse = res.data as ApiUploadResponse;
         
-        console.log("Upload API response:", apiResponse);
 
         const transformedResponse: UploadedFileResponse = {
           id: apiResponse.id,
@@ -58,12 +50,9 @@ const useUploadService = () => {
           url: `/api/Download/${apiResponse.id}`, // Sử dụng đúng download endpoint
         };
 
-        console.log("Transformed response:", transformedResponse);
-        console.log("=== END UPLOAD DEBUG ===");
 
         return transformedResponse;
       } catch (error) {
-        console.error("Lỗi khi upload file tài liệu:", error);
         throw error;
       }
     },

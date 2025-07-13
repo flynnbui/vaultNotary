@@ -101,7 +101,8 @@ const useCustomerService = () => {
         await callApi("delete", `${CUSTOMER.BY_ID}/${id}`);
       } catch (error) {
         handleCustomerError(error, "delete");
-        throw error;
+        // Don't re-throw after handling the error to prevent unhandled rejections
+        return;
       }
     },
     [callApi, handleCustomerError]
@@ -146,15 +147,24 @@ const useCustomerService = () => {
   );
 
   const bulkDeleteCustomers = useCallback(
-    async (customerIds: string[]): Promise<void> => {
-      try {
-        await Promise.all(customerIds.map((id) => deleteCustomer(id)));
-      } catch (error) {
-        handleCustomerError(error, "bulk delete");
-        throw error;
+    async (customerIds: string[]): Promise<{ success: number; failed: number }> => {
+      let successCount = 0;
+      let failedCount = 0;
+      
+      // Process deletions sequentially to avoid overwhelming the server
+      for (const id of customerIds) {
+        try {
+          await callApi("delete", `${CUSTOMER.BY_ID}/${id}`);
+          successCount++;
+        } catch (error) {
+          failedCount++;
+          handleCustomerError(error, "bulk delete");
+        }
       }
+      
+      return { success: successCount, failed: failedCount };
     },
-    [deleteCustomer, handleCustomerError]
+    [callApi, handleCustomerError]
   );
 
   return {

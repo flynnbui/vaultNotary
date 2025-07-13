@@ -338,7 +338,7 @@ function CustomDatePicker({
                       hover:bg-accent hover:text-accent-foreground
                       focus:bg-accent focus:text-accent-foreground
                       ${isSelected
-                        ? "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
+                        ? "bg-[#800020] text-white hover:bg-[#722F37] hover:text-white"
                         : ""
                       }
                       ${isToday && !isSelected
@@ -482,7 +482,7 @@ export function FileMetaCard({ readOnly = false }: FileMetaCardProps) {
     <Card className="shadow-md border-0">
       <CardHeader className="bg-muted/50 border-b">
         <CardTitle className="flex items-center gap-2">
-          <CalendarIcon className="h-5 w-5 text-orange-600" />
+          <CalendarIcon className="h-5 w-5 text-[#800020] dark:text-[#e6b3b3]" />
           {t("fileForm.fileInfo", "Thông tin hồ sơ")}
         </CardTitle>
       </CardHeader>
