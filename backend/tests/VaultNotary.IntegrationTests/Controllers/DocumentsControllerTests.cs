@@ -91,7 +91,7 @@ public class DocumentsControllerTests : IClassFixture<WebApplicationFactory<Prog
             NotaryPublic = "Test Notary",
             CreatedDate = DateTime.UtcNow,
             Description = "Test document",
-            DocumentType = VaultNotary.Domain.Entities.DocumentType.HopDong,
+            DocumentType = "Hợp đồng",
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };

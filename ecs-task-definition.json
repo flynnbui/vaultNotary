@@ -19,7 +19,7 @@
       "environment": [
         {
           "name": "ASPNETCORE_ENVIRONMENT",
-          "value": "Test"
+          "value": "Production"
         },
         {
           "name": "ASPNETCORE_URLS",
@@ -60,6 +60,14 @@
         {
           "name": "Aws__Kms__SymmetricKeyId",
           "value": "6db124ee-f212-47a7-bbe4-c93d472af3ab"
+        },
+        {
+          "name": "Auth0__Domain",
+          "value": "auth.nharong.vn"
+        },
+        {
+          "name": "Auth0__Audience",
+          "value": "https://vaultnotary-api"
         }
       ],
       "logConfiguration": {

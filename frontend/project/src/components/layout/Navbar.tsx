@@ -45,7 +45,7 @@ export function Navbar() {
             >
               <Menu className="h-5 w-5" />
             </Button>
-            <div className="flex items-center ml-4 lg:ml-0">
+            <Link href="/" className="flex items-center ml-4 lg:ml-0 hover:opacity-80 transition-opacity">
               <Image
                 src="/logo.png"
                 alt="Văn phòng Công chứng Nhà Rồng"
@@ -56,7 +56,7 @@ export function Navbar() {
               <span className="ml-2 text-xl font-bold text-foreground">
                 VaultNotary
               </span>
-            </div>
+            </Link>
           </div>
           <div className="flex items-center space-x-4">
             <ModeToggle />
@@ -66,7 +66,7 @@ export function Navbar() {
                   <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                     <Avatar className="h-10 w-10">
                       <AvatarImage src={user.picture} alt={user.name || 'User avatar'} />
-                      <AvatarFallback className="bg-orange-600 text-white">
+                      <AvatarFallback className="bg-[#800020] text-white">
                         {getInitials(user.name || user.email || 'U')}
                       </AvatarFallback>
                     </Avatar>
@@ -86,12 +86,6 @@ export function Navbar() {
                     <Link href="/profile" className="cursor-pointer">
                       <User className="mr-2 h-4 w-4" />
                       <span>Tài khoản</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/cai-dat" className="cursor-pointer">
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Cài đặt</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />

@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { FileItem, DocumentType } from '../types/document.types';
 import { FileUtils } from '@/src/shared/utils/fileUtils';
 import useDocumentApiService from '../services/documentApiService';
-import useUploadService from '@/src/services/useUploadService';
+import useDocumentUploadService from '../services/documentUploadService';
 
 interface UseDocumentFilesProps {
   editingDocument?: DocumentType;
@@ -16,7 +16,7 @@ export const useDocumentFiles = ({ editingDocument, dialogMode }: UseDocumentFil
   const [loading, setLoading] = useState(false);
   
   const { getDocumentFiles, deleteDocumentFile, getFileDownloadUrl, getFilePresignedUrl } = useDocumentApiService();
-  const { uploadDocumentFile } = useUploadService();
+  const { uploadDocumentFile } = useDocumentUploadService();
 
   const loadDocumentFiles = useCallback(async () => {
     if (!editingDocument || !['view', 'edit', 'upload'].includes(dialogMode)) {
@@ -77,7 +77,6 @@ export const useDocumentFiles = ({ editingDocument, dialogMode }: UseDocumentFil
             url: result.url,
           });
         } catch (err) {
-          console.error("Upload error:", err);
           toast.error(`Upload thất bại: ${file.name}`);
         }
       }
@@ -134,7 +133,6 @@ export const useDocumentFiles = ({ editingDocument, dialogMode }: UseDocumentFil
 
       toast.success(`Đã tải xuống: ${file.name}`);
     } catch (error) {
-      console.error("Download error:", error);
       toast.error(`Không thể tải xuống file: ${file.name}`);
     } finally {
       setLoading(false);
@@ -156,7 +154,6 @@ export const useDocumentFiles = ({ editingDocument, dialogMode }: UseDocumentFil
         toast.success("Đã mở file");
       }
     } catch (error) {
-      console.error("Preview error:", error);
       toast.error(`Không thể xem trước file: ${file.name}`);
     } finally {
       setLoading(false);
@@ -176,7 +173,6 @@ export const useDocumentFiles = ({ editingDocument, dialogMode }: UseDocumentFil
       // Reload files from server
       await loadDocumentFiles();
     } catch (error) {
-      console.error("Delete error:", error);
       toast.error(`Không thể xóa file: ${file.name}`);
     } finally {
       setLoading(false);

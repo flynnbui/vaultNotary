@@ -292,7 +292,7 @@ export function IdentitySearchComponent() {
       const searchResults = await searchByIdentity(identity);
       setResults(searchResults);
     } catch (error) {
-      console.error('Search failed:', error);
+      // Handle search error
     } finally {
       setLoading(false);
     }

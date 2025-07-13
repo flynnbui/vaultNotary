@@ -50,7 +50,6 @@ export const useDocumentSearch = ({
         setTotalItems(0);
       }
     } catch (error) {
-      console.error("Error loading documents:", error);
       toast.error("Không thể tải danh sách hồ sơ từ máy chủ");
       setDocuments([]);
       setTotalItems(0);

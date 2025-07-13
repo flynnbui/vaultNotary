@@ -70,7 +70,6 @@ export const useDocumentOperations = ({
         onRefresh?.();
       }
     } catch (error) {
-      console.error("Error deleting document:", error);
       toast.error("Có lỗi xảy ra khi xóa hồ sơ");
     } finally {
       setLoading(false);
@@ -83,7 +82,6 @@ export const useDocumentOperations = ({
       toast.success("Đã sao chép hồ sơ. Vui lòng chỉnh sửa thông tin cần thiết.");
       onEdit?.(document, 'create');
     } catch (error) {
-      console.error("Error copying document:", error);
       toast.error("Có lỗi khi sao chép hồ sơ");
     }
   }, [onEdit]);
