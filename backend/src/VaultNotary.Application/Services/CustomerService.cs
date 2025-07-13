@@ -45,7 +45,7 @@ public class CustomerService : ICustomerService
 
     public async Task<List<CustomerDto>> GetAllAsync()
     {
-        var customers = await _customerRepository.GetAllCustomersAsync();
+        var customers = await _customerRepository.GetAllCustomersAsync(0, 100); // Get first 100 customers with safety limit
         return customers.Select(MapToDto).ToList();
     }
 

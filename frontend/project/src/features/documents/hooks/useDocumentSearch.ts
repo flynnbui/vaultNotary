@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 
 import { DocumentDto, PagedResultDto } from '@/src/types/api.types';
@@ -16,35 +16,24 @@ export const useDocumentSearch = ({
   const [documents, setDocuments] = useState<DocumentDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [itemsPerPage] = useState(initialItemsPerPage);
   const [totalItems, setTotalItems] = useState(0);
+  const debounceTimerRef = useRef<NodeJS.Timeout>();
 
   const { getPaginatedDocuments } = useDocumentApiService();
 
   const loadDocuments = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await getPaginatedDocuments(currentPage, itemsPerPage);
+      
+      // Use unified paginated endpoint with optional search term
+      const response = await getPaginatedDocuments(currentPage, itemsPerPage, debouncedSearchTerm.trim() || undefined);
 
       if (response) {
-        let filteredItems = response.items || [];
-
-        // Apply search filter
-        if (searchTerm.trim()) {
-          const searchLower = searchTerm.toLowerCase();
-          filteredItems = filteredItems.filter(
-            (doc) =>
-              doc.transactionCode?.toLowerCase().includes(searchLower) ||
-              doc.description?.toLowerCase().includes(searchLower) ||
-              doc.secretary?.toLowerCase().includes(searchLower) ||
-              doc.notaryPublic?.toLowerCase().includes(searchLower) ||
-              doc.documentType?.toLowerCase().includes(searchLower)
-          );
-        }
-
-        setDocuments(filteredItems);
-        setTotalItems(searchTerm.trim() ? filteredItems.length : response.totalItems || 0);
+        setDocuments(response.items || []);
+        setTotalItems(response.totalCount || 0);
       } else {
         setDocuments([]);
         setTotalItems(0);
@@ -56,16 +45,33 @@ export const useDocumentSearch = ({
     } finally {
       setLoading(false);
     }
-  }, [currentPage, itemsPerPage, searchTerm, getPaginatedDocuments]);
+  }, [currentPage, itemsPerPage, debouncedSearchTerm, getPaginatedDocuments]);
 
-  // Load documents when page or search term changes
+  // Debounce search term changes
+  useEffect(() => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    debounceTimerRef.current = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+      setCurrentPage(1); // Reset to first page when search changes
+    }, 500); // 500ms debounce delay
+
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, [searchTerm]);
+
+  // Load documents when page or debounced search term changes
   useEffect(() => {
     loadDocuments();
-  }, [currentPage, searchTerm, loadDocuments]);
+  }, [currentPage, debouncedSearchTerm, loadDocuments]);
 
   const handleSearchChange = useCallback((newSearchTerm: string) => {
     setSearchTerm(newSearchTerm);
-    setCurrentPage(1); // Reset to first page when searching
   }, []);
 
   const handlePageChange = useCallback((page: number) => {

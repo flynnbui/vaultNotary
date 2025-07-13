@@ -93,6 +93,12 @@ export const useDocumentDialog = ({ onRefresh }: UseDocumentDialogProps = {}): U
   }, [handleEditDocument]);
 
   const handleView = useCallback((document: DocumentType) => {
+    // For view mode, show the dialog immediately with existing data
+    setEditingDocument(document);
+    setDialogMode('view');
+    setIsOpen(true);
+    
+    // Then asynchronously load additional details in the background
     handleViewDocument(document);
   }, [handleViewDocument]);
 

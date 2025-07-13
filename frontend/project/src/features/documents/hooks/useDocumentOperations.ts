@@ -18,39 +18,64 @@ export const useDocumentOperations = ({
   onRefresh
 }: UseDocumentOperationsProps) => {
   const [loading, setLoading] = useState(false);
-  const { deleteDocument, getDocumentWithPopulatedParties } = useDocumentApiService();
+  const { deleteDocument, getDocumentWithPopulatedParties, getOptimizedDocumentData } = useDocumentApiService();
 
   const handleEditDocument = useCallback(async (document: DocumentType) => {
     try {
       setLoading(true);
       
-      const populatedDocument = await getDocumentWithPopulatedParties(document.id);
-      if (!populatedDocument) {
+      // For edit mode, we need parties data but can load files on-demand
+      const documentData = await getOptimizedDocumentData(document.id, { 
+        includeParties: true, 
+        includeFiles: false 
+      });
+      
+      if (!documentData) {
         throw new Error('Không thể tải thông tin hồ sơ');
       }
-      onEdit?.(populatedDocument, 'edit');
+      
+      // Create a compatible document object for the existing interface
+      const compatibleDocument = {
+        ...documentData.document,
+        partyDocumentLinks: documentData.parties
+      };
+      
+      onEdit?.(compatibleDocument, 'edit');
     } catch (error) {
       toast.error("Có lỗi khi tải thông tin hồ sơ");
     } finally {
       setLoading(false);
     }
-  }, [getDocumentWithPopulatedParties, onEdit]);
+  }, [getOptimizedDocumentData, onEdit]);
 
   const handleViewDocument = useCallback(async (document: DocumentType) => {
     try {
       setLoading(true);
       
-      const populatedDocument = await getDocumentWithPopulatedParties(document.id);
-      if (!populatedDocument) {
+      // For view mode, show document immediately and load parties/files on-demand
+      const documentData = await getOptimizedDocumentData(document.id, { 
+        includeParties: true, 
+        includeFiles: true 
+      });
+      
+      if (!documentData) {
         throw new Error('Không thể tải thông tin hồ sơ');
       }
-      onView?.(populatedDocument, 'view');
+      
+      // Create a compatible document object for the existing interface
+      const compatibleDocument = {
+        ...documentData.document,
+        partyDocumentLinks: documentData.parties,
+        files: documentData.files
+      };
+      
+      onView?.(compatibleDocument, 'view');
     } catch (error) {
       toast.error("Có lỗi khi tải thông tin hồ sơ");
     } finally {
       setLoading(false);
     }
-  }, [getDocumentWithPopulatedParties, onView]);
+  }, [getOptimizedDocumentData, onView]);
 
   const handleUploadDocument = useCallback((document: DocumentType) => {
     onUpload?.(document, 'upload');

@@ -27,12 +27,19 @@ const useDocumentApiService = () => {
   const getPaginatedDocuments = useCallback(
     async (
       pageNumber = 1,
-      pageSize = 10
+      pageSize = 10,
+      searchTerm?: string
     ): Promise<PagedResultDto<DocumentDto> | undefined> => {
       try {
+        const params = new URLSearchParams({
+          pageNumber: pageNumber.toString(),
+          pageSize: pageSize.toString(),
+          ...(searchTerm && { searchTerm })
+        });
+        
         const response = await callApi<PagedResultDto<DocumentDto>>(
           "get",
-          `/Documents/paginated?pageNumber=${pageNumber}&pageSize=${pageSize}`
+          `/Documents/paginated?${params.toString()}`
         );
         return response?.data;
       } catch (error) {
@@ -109,17 +116,27 @@ const useDocumentApiService = () => {
   const getDocumentFiles = useCallback(
     async (documentId: string): Promise<DocumentFileDto[]> => {
       try {
-        const documentWithFiles = await getDocumentById(documentId);
-        
-        const files = documentWithFiles?.files || [];
-        
-        return files;
+        const response = await callApi<DocumentFileDto[]>("get", `/Documents/${documentId}/files`);
+        return response?.data || [];
       } catch (error) {
         ErrorHandler.handleFileError(error, "fetch document files");
         return [];
       }
     },
-    [getDocumentById, callApi]
+    [callApi]
+  );
+
+  const getDocumentParties = useCallback(
+    async (documentId: string): Promise<any[]> => {
+      try {
+        const response = await callApi<any[]>("get", `/search/party-links/document/${documentId}`);
+        return response?.data || [];
+      } catch (error) {
+        ErrorHandler.handleDocumentError(error, "fetch document parties");
+        return [];
+      }
+    },
+    [callApi]
   );
 
   const deleteDocumentFile = useCallback(
@@ -250,6 +267,48 @@ const useDocumentApiService = () => {
     [getDocumentById, getCustomerById, callApi]
   );
 
+  const getOptimizedDocumentData = useCallback(
+    async (id: string, options: { includeFiles?: boolean; includeParties?: boolean } = {}) => {
+      try {
+        const { includeFiles = false, includeParties = false } = options;
+        
+        // Start with basic document info
+        const document = await getDocumentById(id);
+        if (!document) return null;
+
+        const result = {
+          document,
+          files: [] as DocumentFileDto[],
+          parties: [] as any[]
+        };
+
+        // Load additional data only if requested
+        const requests = [];
+        
+        if (includeFiles) {
+          requests.push(
+            getDocumentFiles(id).then(files => { result.files = files; })
+          );
+        }
+        
+        if (includeParties) {
+          requests.push(
+            getDocumentParties(id).then(parties => { result.parties = parties; })
+          );
+        }
+
+        // Execute all requests in parallel
+        await Promise.all(requests);
+        
+        return result;
+      } catch (error) {
+        ErrorHandler.handleDocumentError(error, "fetch optimized document data");
+        throw error;
+      }
+    },
+    [getDocumentById, getDocumentFiles, getDocumentParties, callApi]
+  );
+
   return {
     loading,
     getPaginatedDocuments,
@@ -258,7 +317,9 @@ const useDocumentApiService = () => {
     deleteDocument,
     getDocumentById,
     getDocumentWithPopulatedParties,
+    getOptimizedDocumentData,
     getDocumentFiles,
+    getDocumentParties,
     deleteDocumentFile,
     getFileDownloadUrl,
     getFilePresignedUrl,

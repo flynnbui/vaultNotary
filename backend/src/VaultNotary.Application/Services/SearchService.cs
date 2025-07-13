@@ -32,42 +32,26 @@ public class SearchService : ISearchService
 
     public async Task<List<DocumentDto>> SearchDocumentsByTransactionCodeAsync(string transactionCode)
     {
-        var documents = await _documentRepository.GetAllAsync();
-        // Using LINQ for optimized filtering
-        var filtered = documents.Where(d => d.TransactionCode.Contains(transactionCode, StringComparison.OrdinalIgnoreCase))
-                               .OrderByDescending(d => d.CreatedDate)
-                               .ToList();
-        return filtered.Select(MapDocumentToDto).ToList();
+        var document = await _documentRepository.GetByTransactionCodeAsync(transactionCode);
+        return document != null ? new List<DocumentDto> { MapDocumentToDto(document) } : new List<DocumentDto>();
     }
 
     public async Task<List<DocumentDto>> SearchDocumentsByNotaryAsync(string notaryPublic)
     {
-        var documents = await _documentRepository.GetAllAsync();
-        // Using LINQ for optimized filtering
-        var filtered = documents.Where(d => d.NotaryPublic.Contains(notaryPublic, StringComparison.OrdinalIgnoreCase))
-                               .OrderByDescending(d => d.CreatedDate)
-                               .ToList();
-        return filtered.Select(MapDocumentToDto).ToList();
+        var documents = await _documentRepository.GetByNotaryPublicAsync(notaryPublic);
+        return documents.Select(MapDocumentToDto).ToList();
     }
 
     public async Task<List<DocumentDto>> SearchDocumentsBySecretaryAsync(string secretary)
     {
-        var documents = await _documentRepository.GetAllAsync();
-        // Using LINQ for optimized filtering
-        var filtered = documents.Where(d => d.Secretary.Contains(secretary, StringComparison.OrdinalIgnoreCase))
-                               .OrderByDescending(d => d.CreatedDate)
-                               .ToList();
-        return filtered.Select(MapDocumentToDto).ToList();
+        var documents = await _documentRepository.GetBySecretaryAsync(secretary);
+        return documents.Select(MapDocumentToDto).ToList();
     }
 
     public async Task<List<DocumentDto>> SearchDocumentsByTypeAsync(string documentType)
     {
-        var documents = await _documentRepository.GetAllAsync();
-        // Using LINQ for optimized filtering
-        var filtered = documents.Where(d => d.DocumentType.Equals(documentType, StringComparison.OrdinalIgnoreCase))
-                               .OrderByDescending(d => d.CreatedDate)
-                               .ToList();
-        return filtered.Select(MapDocumentToDto).ToList();
+        var documents = await _documentRepository.GetByDocumentTypeAsync(documentType);
+        return documents.Select(MapDocumentToDto).ToList();
     }
 
     public async Task<List<DocumentDto>> SearchDocumentsByDateRangeAsync(DateTime from, DateTime to)
@@ -175,29 +159,27 @@ public class SearchService : ISearchService
     // Paginated search methods
     public async Task<PagedResultDto<DocumentDto>> SearchDocumentsByTransactionCodePagedAsync(string transactionCode, int pageNumber, int pageSize)
     {
-        var documents = await _documentRepository.GetAllAsync();
-        var filtered = documents.Where(d => d.TransactionCode.Contains(transactionCode, StringComparison.OrdinalIgnoreCase))
-                               .OrderByDescending(d => d.CreatedDate);
+        var document = await _documentRepository.GetByTransactionCodeAsync(transactionCode);
+        var documents = document != null ? new List<Document> { document } : new List<Document>();
+        var ordered = documents.OrderByDescending(d => d.CreatedDate);
         
-        return CreatePagedResult(filtered, pageNumber, pageSize, MapDocumentToDto);
+        return CreatePagedResult(ordered, pageNumber, pageSize, MapDocumentToDto);
     }
 
     public async Task<PagedResultDto<DocumentDto>> SearchDocumentsByNotaryPagedAsync(string notaryPublic, int pageNumber, int pageSize)
     {
-        var documents = await _documentRepository.GetAllAsync();
-        var filtered = documents.Where(d => d.NotaryPublic.Contains(notaryPublic, StringComparison.OrdinalIgnoreCase))
-                               .OrderByDescending(d => d.CreatedDate);
+        var documents = await _documentRepository.GetByNotaryPublicAsync(notaryPublic);
+        var ordered = documents.OrderByDescending(d => d.CreatedDate);
         
-        return CreatePagedResult(filtered, pageNumber, pageSize, MapDocumentToDto);
+        return CreatePagedResult(ordered, pageNumber, pageSize, MapDocumentToDto);
     }
 
     public async Task<PagedResultDto<DocumentDto>> SearchDocumentsBySecretaryPagedAsync(string secretary, int pageNumber, int pageSize)
     {
-        var documents = await _documentRepository.GetAllAsync();
-        var filtered = documents.Where(d => d.Secretary.Contains(secretary, StringComparison.OrdinalIgnoreCase))
-                               .OrderByDescending(d => d.CreatedDate);
+        var documents = await _documentRepository.GetBySecretaryAsync(secretary);
+        var ordered = documents.OrderByDescending(d => d.CreatedDate);
         
-        return CreatePagedResult(filtered, pageNumber, pageSize, MapDocumentToDto);
+        return CreatePagedResult(ordered, pageNumber, pageSize, MapDocumentToDto);
     }
 
     public async Task<PagedResultDto<DocumentDto>> SearchDocumentsByDateRangePagedAsync(DateTime from, DateTime to, int pageNumber, int pageSize)
