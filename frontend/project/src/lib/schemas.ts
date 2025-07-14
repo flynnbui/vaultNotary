@@ -6,6 +6,7 @@ export type PartyKey = 'A' | 'B' | 'C';
 export interface CustomerSummary {
   id: string;
   fullName: string;
+  gender: number;
   address: string;
   phone: string;
   email: string;

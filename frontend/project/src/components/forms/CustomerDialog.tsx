@@ -13,7 +13,6 @@ import { Input } from '@/src/components/ui/input';
 import { Label } from '@/src/components/ui/label';
 import { Textarea } from '@/src/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/components/ui/select';
-import { Alert, AlertDescription } from '@/src/components/ui/alert';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/src/components/ui/accordion';
 import { Badge } from '@/src/components/ui/badge';
 import { Search, Info, User, CalendarIcon, ChevronLeft, ChevronRight, Loader2, CheckCircle, XCircle, Phone, Mail, MapPin, Building2, CreditCard, Lightbulb } from 'lucide-react';
@@ -330,6 +329,7 @@ interface CustomerDialogProps {
     initialData?: CustomerSummary | null;
     title?: string;
     existingCustomers?: CustomerSummary[]; // All customers currently in all parties
+    shouldCreateCustomer?: boolean; // Whether this dialog should create the customer via API
 }
 
 interface CustomerSearchResult {
@@ -344,7 +344,8 @@ export function CustomerDialog({
     onSave,
     initialData,
     title = 'Thêm khách hàng mới',
-    existingCustomers = []
+    existingCustomers = [],
+    shouldCreateCustomer = true // Default to true for backward compatibility
 }: CustomerDialogProps) {
     const isMobile = useIsMobile();
     // Search state
@@ -356,6 +357,9 @@ export function CustomerDialog({
 
     // Legacy states for backwards compatibility
     const [idType, setIdType] = useState<'CMND' | 'Passport'>('CMND');
+    
+    // Submission guard to prevent double submissions
+    const [isSubmissionInProgress, setIsSubmissionInProgress] = useState<boolean>(false);
 
     const { createCustomer, searchCustomers } = useCustomerApiService();
 
@@ -368,7 +372,6 @@ export function CustomerDialog({
         formState: { errors, isSubmitting }
     } = useForm<CustomerSummary & {
         customerType: string;
-        isVip: boolean;
         cmndNumber?: string;
         cmndIssueDate?: Date;
         cmndIssuePlace?: string;
@@ -516,6 +519,7 @@ export function CustomerDialog({
         const customerSummary: CustomerSummary = {
             id: customer.id,
             fullName: customer.fullName,
+            gender: customer.gender || 0,
             address: customer.address,
             phone: customer.phone || '',
             email: customer.email || '',
@@ -531,13 +535,18 @@ export function CustomerDialog({
         onSave(customerSummary);
     }, [searchResult, onSave, isCustomerAlreadyAdded, isDocumentIdAlreadyUsed]);
 
+
+    // Stabilize form functions to prevent unnecessary re-renders
+    const stableSetValue = useCallback(setValue, [setValue]);
+    const stableReset = useCallback(reset, [reset]);
+
     // Reset dialog state when opened/closed
     useEffect(() => {
         if (open && initialData) {
             // Editing existing customer
             Object.keys(initialData).forEach(key => {
                 if (key !== 'index') {
-                    setValue(key as any, (initialData as any)[key]);
+                    stableSetValue(key as any, (initialData as any)[key]);
                 }
             });
             setIdType(initialData.documentId ? 'CMND' : 'Passport');
@@ -545,9 +554,8 @@ export function CustomerDialog({
             setSearchResult(null);
         } else if (open) {
             // New customer - reset everything
-            reset({
+            stableReset({
                 customerType: 'individual',
-                isVip: false,
                 fullName: '',
                 permanentAddress: '',
                 phone: '',
@@ -557,10 +565,14 @@ export function CustomerDialog({
             setIdType('CMND');
             setIdSearchTerm('');
             setSearchResult(null);
-            setShowCreateForm(false);
+            setShowCreateForm(false); // Form only shows after search confirms customer doesn't exist
             setSearchInputError('');
+            setIsSubmissionInProgress(false);
+        } else {
+            // Dialog is being closed, reset submission guard
+            setIsSubmissionInProgress(false);
         }
-    }, [open, initialData, setValue, reset]);
+    }, [open, initialData, stableSetValue, stableReset]);
 
     // Get customer type badge (following customer page pattern)
     const getCustomerTypeBadge = (type: number) => {
@@ -586,24 +598,37 @@ export function CustomerDialog({
     };
 
     const onSubmit = async (data: any) => {
+        // The `isSubmitting` flag from `react-hook-form` already disables the submit button
+        // during form validation and submission, preventing rapid multiple clicks.
+
+        // CRITICAL: Additional guard to prevent double submissions - check IMMEDIATELY
+        if (isSubmissionInProgress || isSubmitting) {
+            return;
+        }
+
+        // Set guard IMMEDIATELY to prevent any race conditions
+        setIsSubmissionInProgress(true);
 
         try {
             let customerId = initialData?.id;
+
 
             // Check for duplicates when creating new customer
             if (!initialData) {
                 const docId = idType === 'CMND' ? data.cmndNumber : data.passportNumber;
                 if (isDocumentIdAlreadyUsed(idType === 'CMND' ? docId : '', idType === 'Passport' ? docId : '')) {
                     toast.error(`Số giấy tờ "${docId}" đã được sử dụng bởi khách hàng khác trong hồ sơ này.`);
+                    setIsSubmissionInProgress(false);
                     return;
                 }
             }
 
-            // Only create customer via API if this is a new customer (not editing)
-            if (!initialData) {
+            // Only create customer via API if this is a new customer (not editing) AND shouldCreateCustomer is true
+            if (!initialData && shouldCreateCustomer) {
                 // Transform form data to match backend customer format
                 const customerApiData: CreateCustomerType = {
                     fullName: data.fullName,
+                    gender: data.gender === 'male' ? 0 : data.gender === 'female' ? 1 : 2,
                     address: data.permanentAddress,
                     phone: data.phone || null,
                     email: data.email || null,
@@ -614,13 +639,34 @@ export function CustomerDialog({
                     businessName: data.businessName || null,
                 };
 
-                customerId = await createCustomer(customerApiData);
+
+                // Await the API call to create the customer and get the new ID.
+                // If the API call fails, `newCustomerId` will be undefined due to the catch block in useCustomerApiService.
+                const newCustomerId = await createCustomer(customerApiData);
+
+                if (!newCustomerId) {
+                    // If the API call did not return a valid ID, prevent further processing.
+                    // The error would have been handled by `useCustomerApiService` and toasted.
+                    toast.error("Không thể tạo khách hàng: API không trả về ID hợp lệ. Vui lòng thử lại!");
+                    setIsSubmissionInProgress(false);
+                    return;
+                }
+                customerId = newCustomerId;
+            }
+
+            // Final check to ensure we have a valid customer ID before proceeding
+            const finalCustomerId = customerId || initialData?.id || (!shouldCreateCustomer ? uuidv4() : null);
+            if (!finalCustomerId) {
+                toast.error("Lỗi: Không có ID khách hàng để lưu. Vui lòng thử lại!");
+                setIsSubmissionInProgress(false);
+                return;
             }
 
             // Transform form data to CustomerSummary format for the parties array
             const customerSummaryData: CustomerSummary = {
-                id: customerId || initialData?.id || uuidv4(),
+                id: finalCustomerId, // Now guaranteed to be a string
                 fullName: data.fullName,
+                gender: data.gender === 'male' ? 0 : data.gender === 'female' ? 1 : 2,
                 address: data.permanentAddress,
                 phone: data.phone || '',
                 email: data.email || '',
@@ -634,8 +680,19 @@ export function CustomerDialog({
             };
 
             onSave(customerSummaryData);
-        } catch (error) {
-            toast.error("Không thể tạo khách hàng. Vui lòng thử lại!");
+        } catch (error: any) {
+            // Provide more specific error messages from the API response if available
+            let errorMessage = "Không thể tạo khách hàng. Vui lòng thử lại!";
+            if (error.details && error.details.message) {
+                errorMessage = `Lỗi từ máy chủ: ${error.details.message}`;
+            } else if (error.details) {
+                errorMessage = `Lỗi ${error.status}: ${JSON.stringify(error.details)}`;
+            } else if (error.message) {
+                errorMessage = `Lỗi: ${error.message}`;
+            }
+            toast.error(errorMessage);
+        } finally {
+            setIsSubmissionInProgress(false);
         }
     };
 
@@ -844,32 +901,34 @@ export function CustomerDialog({
                                                                     </div>
                                                                 </div>
 
-                                                                <div className="flex-shrink-0">
-                                                                    <Button
-                                                                        type="button"
-                                                                        onClick={handleUseExistingCustomer}
-                                                                        disabled={hasAnyDuplicate}
-                                                                        className={`shadow-lg hover:shadow-xl transition-all duration-200 px-6 py-2.5 ${hasAnyDuplicate
-                                                                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-700 dark:text-gray-400'
-                                                                            : 'bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white'
-                                                                            }`}
-                                                                        size="lg"
-                                                                    >
-                                                                        {hasAnyDuplicate ? (
-                                                                            <>
-                                                                                <XCircle className="h-4 w-4 mr-2" />
-                                                                                <span className="hidden sm:inline">Không thể sử dụng</span>
-                                                                                <span className="sm:hidden">Không dùng được</span>
-                                                                            </>
-                                                                        ) : (
-                                                                            <>
-                                                                                <CheckCircle className="h-4 w-4 mr-2" />
-                                                                                <span className="hidden sm:inline">Sử dụng khách hàng này</span>
-                                                                                <span className="sm:hidden">Sử dụng</span>
-                                                                            </>
-                                                                        )}
-                                                                    </Button>
-                                                                </div>
+                                                                {!shouldCreateCustomer && (
+                                                                    <div className="flex-shrink-0">
+                                                                        <Button
+                                                                            type="button"
+                                                                            onClick={handleUseExistingCustomer}
+                                                                            disabled={hasAnyDuplicate}
+                                                                            className={`shadow-lg hover:shadow-xl transition-all duration-200 px-6 py-2.5 ${hasAnyDuplicate
+                                                                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-700 dark:text-gray-400'
+                                                                                : 'bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white'
+                                                                                }`}
+                                                                            size="lg"
+                                                                        >
+                                                                            {hasAnyDuplicate ? (
+                                                                                <>
+                                                                                    <XCircle className="h-4 w-4 mr-2" />
+                                                                                    <span className="hidden sm:inline">Không thể sử dụng</span>
+                                                                                    <span className="sm:hidden">Không dùng được</span>
+                                                                                </>
+                                                                            ) : (
+                                                                                <>
+                                                                                    <CheckCircle className="h-4 w-4 mr-2" />
+                                                                                    <span className="hidden sm:inline">Sử dụng khách hàng này</span>
+                                                                                    <span className="sm:hidden">Sử dụng</span>
+                                                                                </>
+                                                                            )}
+                                                                        </Button>
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                         </CardContent>
                                                     </Card>
@@ -1169,10 +1228,17 @@ export function CustomerDialog({
                                 </Button>
                                 <Button
                                     type="submit"
-                                    disabled={isSubmitting}
+                                    disabled={isSubmitting || isSubmissionInProgress}
                                     className="px-8 min-h-[44px] sm:min-h-auto"
                                 >
-                                    {isSubmitting ? 'Đang lưu...' : (initialData ? 'Cập nhật' : 'Thêm')}
+                                    {(isSubmitting || isSubmissionInProgress) ? (
+                                        <>
+                                            <span className="mr-2">⏳</span>
+                                            Đang lưu...
+                                        </>
+                                    ) : (
+                                        initialData ? 'Cập nhật' : 'Thêm'
+                                    )}
                                 </Button>
                             </DialogFooter>
                         </form>
