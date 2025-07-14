@@ -20,6 +20,7 @@ public class EfDocumentFileRepository : IDocumentFileRepository
             .Include(f => f.Document)
             .ThenInclude(d => d.PartyDocumentLinks)
             .ThenInclude(pdl => pdl.Customer)
+            .AsNoTracking()
             .FirstOrDefaultAsync(f => f.Id == id);
     }
 
