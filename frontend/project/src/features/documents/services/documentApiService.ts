@@ -191,18 +191,10 @@ const useDocumentApiService = () => {
     [callApi]
   );
 
-  // New optimized function that uses backend include parameter
   const getDocumentWithParties = useCallback(
     async (id: string): Promise<DocumentWithPopulatedParties | undefined> => {
       try {
-        const documentWithParties = await getDocumentById(id, { include: ['parties'] });
-        
-        if (!documentWithParties) {
-          return undefined;
-        }
-
-        // Backend already populated the parties, so we can return directly
-        return documentWithParties as DocumentWithPopulatedParties;
+        return await getDocumentWithPopulatedParties(id);
       } catch (error) {
         ErrorHandler.handleDocumentError(error, "fetch document with parties");
         throw error;
@@ -224,18 +216,10 @@ const useDocumentApiService = () => {
     [getDocumentById]
   );
 
-  // New function to get document with both parties and files
   const getDocumentFull = useCallback(
     async (id: string): Promise<DocumentWithPopulatedParties | undefined> => {
       try {
-        const documentFull = await getDocumentById(id, { include: ['parties', 'files'] });
-        
-        if (!documentFull) {
-          return undefined;
-        }
-
-        // Backend already populated both parties and files
-        return documentFull as DocumentWithPopulatedParties;
+        return await getDocumentWithPopulatedParties(id);
       } catch (error) {
         ErrorHandler.handleDocumentError(error, "fetch document full");
         throw error;

@@ -3,6 +3,7 @@ import useCustomerApiService from '../services/customerApiService';
 import { customerQueryKeys } from './useCustomerQueries';
 import { documentQueryKeys } from '../../documents/hooks/useDocumentQueries';
 import { CustomerDto, CreateCustomerDto, UpdateCustomerDto } from '@/src/types/api.types';
+import { CreateCustomerType } from '@/src/types/customer.type';
 
 /**
  * Hook to create a new customer with optimistic updates
@@ -12,7 +13,7 @@ export const useCreateCustomer = () => {
   const { createCustomer } = useCustomerApiService();
 
   return useMutation({
-    mutationFn: (customerData: CreateCustomerDto) => createCustomer(customerData),
+    mutationFn: (customerData: CreateCustomerType) => createCustomer(customerData),
     onMutate: async (newCustomer) => {
       // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
       await queryClient.cancelQueries({ queryKey: customerQueryKeys.lists() });
@@ -36,9 +37,17 @@ export const useCreateCustomer = () => {
       // Invalidate and refetch customer lists
       queryClient.invalidateQueries({ queryKey: customerQueryKeys.lists() });
       
-      // Set the created customer in the detail cache
-      if (data?.id) {
-        queryClient.setQueryData(customerQueryKeys.detail(data.id), data);
+      // After successful creation, `data` is the new customer's ID. 
+      // We can pre-fetch the new customer's data and add it to the cache.
+      if (data) {
+        queryClient.prefetchQuery({
+          queryKey: customerQueryKeys.detail(data),
+          queryFn: () => {
+            // Assuming you have a function to get customer by ID
+            const { getCustomerById } = useCustomerApiService();
+            return getCustomerById(data);
+          },
+        });
       }
     },
     onSettled: () => {
@@ -82,10 +91,8 @@ export const useUpdateCustomer = () => {
       }
     },
     onSuccess: (data, { id }) => {
-      // Update the customer detail cache with the response
-      if (data) {
-        queryClient.setQueryData(customerQueryKeys.detail(id), data);
-      }
+      // Invalidate the customer detail cache to refetch the updated data
+      queryClient.invalidateQueries({ queryKey: customerQueryKeys.detail(id) });
       
       // Invalidate customer lists to show updated data
       queryClient.invalidateQueries({ queryKey: customerQueryKeys.lists() });
@@ -100,7 +107,7 @@ export const useUpdateCustomer = () => {
         }
       });
     },
-    onSettled: ({ id }) => {
+    onSettled: (data, error, { id }) => {
       // Always refetch after error or success
       queryClient.invalidateQueries({ queryKey: customerQueryKeys.detail(id) });
     },

@@ -355,6 +355,7 @@ export function CustomerDialog({
     const [searchResult, setSearchResult] = useState<CustomerSearchResult | null>(null);
     const [showCreateForm, setShowCreateForm] = useState<boolean>(false);
     const [searchInputError, setSearchInputError] = useState<string>('');
+    const [isSearching, setIsSearching] = useState<boolean>(false);
 
     // Legacy states for backwards compatibility
     const [idType, setIdType] = useState<'CMND' | 'Passport'>('CMND');
@@ -385,7 +386,7 @@ export function CustomerDialog({
             } else {
                 setSearchResult({
                     found: false,
-                    customer: null,
+                    customer: undefined,
                     searchedId: normalizedId,
                 });
                 setShowCreateForm(true);
@@ -627,21 +628,21 @@ export function CustomerDialog({
 
             // Use React Query mutation for customer creation
             createCustomerMutation.mutate(customerApiData, {
-                onSuccess: (newCustomer) => {
+                onSuccess: (newCustomerId) => {
                     // Transform to CustomerSummary format for the parties array
                     const customerSummaryData: CustomerSummary = {
-                        id: newCustomer.id,
-                        fullName: newCustomer.fullName,
-                        address: newCustomer.address || '',
-                        phone: newCustomer.phone || '',
-                        email: newCustomer.email || '',
-                        type: newCustomer.type,
-                        documentId: newCustomer.documentId || '',
-                        passportId: newCustomer.passportId || '',
-                        businessRegistrationNumber: newCustomer.businessRegistrationNumber || '',
-                        businessName: newCustomer.businessName || '',
-                        createdAt: newCustomer.createdAt,
-                        updatedAt: newCustomer.updatedAt,
+                        id: newCustomerId,
+                        fullName: data.fullName,
+                        address: data.permanentAddress,
+                        phone: data.phone || '',
+                        email: data.email || '',
+                        type: data.customerType === 'organization' ? 1 : 0,
+                        documentId: idType === 'CMND' ? data.cmndNumber : '',
+                        passportId: idType === 'Passport' ? data.passportNumber : '',
+                        businessRegistrationNumber: data.businessRegistrationNumber || '',
+                        businessName: data.businessName || '',
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
                     };
 
                     onSave(customerSummaryData);

@@ -97,7 +97,7 @@ export const useUpdateDocument = () => {
         }
       });
     },
-    onSettled: ({ id }) => {
+    onSettled: (data, error, { id }) => {
       // Always refetch after error or success
       queryClient.invalidateQueries({ queryKey: documentQueryKeys.detail(id) });
     },

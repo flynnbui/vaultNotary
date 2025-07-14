@@ -47,7 +47,6 @@ import { CustomerType, CustomerFilterOptions } from "@/src/types/customer.type";
 import { exportCustomersToCSV, exportCustomersToExcel } from "@/src/lib/export-utils";
 import { cn } from "@/src/lib/utils";
 import { CustomerSummary } from "@/src/lib/schemas";
-import { ErrorHandler } from "@/src/shared/utils/errorHandler";
 import useCustomerApiService from "@/src/features/customers/services/customerApiService";
 
 
@@ -86,7 +85,7 @@ export default function CustomersPage() {
   const displayData = isSearching ? searchData : customersData;
   const loading = isSearching ? searchLoading : customersLoading;
   
-  const customers = displayData?.items || [];
+  const customers: CustomerType[] = displayData?.items || [];
   const totalItems = displayData?.totalCount || 0;
   const totalPages = displayData?.totalPages || 1;
 
@@ -161,6 +160,7 @@ export default function CustomersPage() {
     try {
       // Transform form data to match backend API schema
       const transformedData = {
+        id : customerData.id,
         fullName: customerData.fullName || "",
         address: customerData.permanentAddress || customerData.currentAddress || "",
         phone: customerData.phone || "",
@@ -206,7 +206,7 @@ export default function CustomersPage() {
   const handleBulkDelete = async (customerIds: string[]) => {
     const result = await bulkDeleteCustomers(customerIds);
     // Reload customers to reflect changes regardless of partial failures
-    await loadCustomers();
+    await useCustomers();
     return result;
   };
 

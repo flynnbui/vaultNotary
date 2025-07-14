@@ -6,8 +6,9 @@ import {
   UpdateCustomerType,
   CustomerFilterOptions,
 } from "@/src/types/customer.type";
-import { PaginatedResponse } from "@/src/types/pagination.type";
+import { CreateCustomerDto } from "@/src/types/api.types";
 import { CUSTOMER, SEARCH } from "@/src/lib/constants";
+import { PaginatedResponse } from "@/src/types/pagination.type";
 import { ErrorHandler } from "@/src/shared/utils/errorHandler";
 
 const useCustomerApiService = () => {

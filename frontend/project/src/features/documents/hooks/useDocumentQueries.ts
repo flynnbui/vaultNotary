@@ -1,7 +1,8 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import useDocumentApiService from '../services/documentApiService';
-import { DocumentWithPopulatedParties, DocumentWithFilesDto } from '@/src/types/document.type';
-import { CustomerDto } from '@/src/types/api.types';
+import { DocumentWithPopulatedParties } from '@/src/types/document.type';
+import { CustomerDto, DocumentWithFilesDto } from '@/src/types/api.types';
 
 // Query key factory for consistent cache keys
 export const documentQueryKeys = {
@@ -56,26 +57,27 @@ export const useDocumentWithParties = (id: string) => {
   const { getDocumentWithParties } = useDocumentApiService();
   const queryClient = useQueryClient();
   
-  return useQuery({
+  const queryResult = useQuery({
     queryKey: documentQueryKeys.detailWithParties(id),
     queryFn: () => getDocumentWithParties(id),
     enabled: !!id,
     staleTime: 1000 * 60 * 5, // 5 minutes
-    onSuccess: (data: DocumentWithPopulatedParties | undefined) => {
-      // Cache seeding: populate individual customer caches
-      if (data?.partyDocumentLinks) {
-        data.partyDocumentLinks.forEach((partyLink) => {
-          if (partyLink.customer) {
-            // Seed the customer cache with the customer data
-            queryClient.setQueryData(
-              customerQueryKeys.detail(partyLink.customerId),
-              partyLink.customer
-            );
-          }
-        });
-      }
-    },
   });
+
+  useEffect(() => {
+    if (queryResult.data?.partyDocumentLinks) {
+      queryResult.data.partyDocumentLinks.forEach((partyLink) => {
+        if (partyLink.customer) {
+          queryClient.setQueryData(
+            customerQueryKeys.detail(partyLink.customerId),
+            partyLink.customer
+          );
+        }
+      });
+    }
+  }, [queryResult.data, queryClient]);
+
+  return queryResult;
 };
 
 /**
@@ -99,26 +101,27 @@ export const useDocumentFull = (id: string) => {
   const { getDocumentFull } = useDocumentApiService();
   const queryClient = useQueryClient();
   
-  return useQuery({
+  const queryResult = useQuery({
     queryKey: documentQueryKeys.detailFull(id),
     queryFn: () => getDocumentFull(id),
     enabled: !!id,
     staleTime: 1000 * 60 * 5, // 5 minutes
-    onSuccess: (data: DocumentWithPopulatedParties | undefined) => {
-      // Cache seeding: populate individual customer caches
-      if (data?.partyDocumentLinks) {
-        data.partyDocumentLinks.forEach((partyLink) => {
-          if (partyLink.customer) {
-            // Seed the customer cache with the customer data
-            queryClient.setQueryData(
-              customerQueryKeys.detail(partyLink.customerId),
-              partyLink.customer
-            );
-          }
-        });
-      }
-    },
   });
+
+  useEffect(() => {
+    if (queryResult.data?.partyDocumentLinks) {
+      queryResult.data.partyDocumentLinks.forEach((partyLink) => {
+        if (partyLink.customer) {
+          queryClient.setQueryData(
+            customerQueryKeys.detail(partyLink.customerId),
+            partyLink.customer
+          );
+        }
+      });
+    }
+  }, [queryResult.data, queryClient]);
+
+  return queryResult;
 };
 
 /**
