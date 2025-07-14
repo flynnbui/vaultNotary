@@ -30,7 +30,6 @@ import { CustomerDialog } from "@/src/components/forms/CustomerDialog";
 import { Users, PenLine, Trash2, Plus, User, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import type { CustomerSummary, PartyKey } from "@/src/lib/schemas";
-import useCustomerApiService from "@/src/features/customers/services/customerApiService";
 
 interface PartiesAccordionProps {
   readOnly?: boolean;
@@ -52,6 +51,30 @@ interface CustomerDetails {
   updatedAt: string;
 }
 
+// Enhanced function to get customer type badge from customer data
+const getCustomerTypeBadge = (customer: CustomerSummary) => {
+  // Use form data for type determination
+  if (customer.type !== undefined) {
+    const isIndividual = customer.type === 0;
+    return isIndividual ? (
+      <Badge variant="secondary">Cá nhân</Badge>
+    ) : (
+      <Badge variant="outline">Tổ chức</Badge>
+    );
+  }
+
+  // Fallback based on business fields
+  const isOrganization =
+    customer.businessName ||
+    customer.businessRegistrationNumber;
+
+  return isOrganization ? (
+    <Badge variant="outline">Tổ chức</Badge>
+  ) : (
+    <Badge variant="secondary">Cá nhân</Badge>
+  );
+};
+
 export function PartiesAccordion({
   readOnly = false,
   onCustomerDialogChange,
@@ -66,17 +89,6 @@ export function PartiesAccordion({
   const [editingCustomer, setEditingCustomer] =
     useState<CustomerSummary | null>(null);
 
-  // 🆕 State để lưu thông tin chi tiết khách hàng
-  const [customerDetails, setCustomerDetails] = useState<
-    Record<string, CustomerDetails>
-  >({});
-  const [loadingCustomers, setLoadingCustomers] = useState<
-    Record<string, boolean>
-  >({});
-
-  // 🆕 Import customer service
-  const { getCustomerById } = useCustomerApiService();
-
   const partiesA = useFieldArray({ control, name: "parties.A" });
   const partiesB = useFieldArray({ control, name: "parties.B" });
   const partiesC = useFieldArray({ control, name: "parties.C" });
@@ -90,41 +102,6 @@ export function PartiesAccordion({
   const watchedPartiesB = useMemo(() => partiesBData || [], [partiesBData]);
   const watchedPartiesC = useMemo(() => partiesCData || [], [partiesCData]);
 
-  const loadCustomerDetails = useCallback(async (customerId: string) => {
-    if (!customerId || customerDetails[customerId] || loadingCustomers[customerId]) {
-      return;
-    }
-
-    setLoadingCustomers((prev) => ({ ...prev, [customerId]: true }));
-
-    try {
-      const customer = await getCustomerById(customerId);
-      if (customer) {
-        setCustomerDetails((prev) => ({
-          ...prev,
-          [customerId]: customer as CustomerDetails,
-        }));
-      }
-    } catch (error) {
-    } finally {
-      setLoadingCustomers((prev) => ({ ...prev, [customerId]: false }));
-    }
-  }, [customerDetails, loadingCustomers, getCustomerById]);
-
-  // Load customer details when parties change
-  useEffect(() => {
-    const allCustomers = [
-      ...watchedPartiesA,
-      ...watchedPartiesB,
-      ...watchedPartiesC
-    ];
-    
-    allCustomers.forEach(customer => {
-      if (customer?.id && !customerDetails[customer.id]) {
-        loadCustomerDetails(customer.id);
-      }
-    });
-  }, [watchedPartiesA, watchedPartiesB, watchedPartiesC, customerDetails, loadCustomerDetails]);
 
   // Notify parent when dialog state changes
   const handleDialogOpenChange = (open: boolean) => {
@@ -263,44 +240,8 @@ export function PartiesAccordion({
     handleDialogOpenChange(false);
   };
 
-  // Enhanced function to get customer type badge from API data or form data
-  const getCustomerTypeBadge = (customer: CustomerSummary) => {
-    const customerId = customer.id;
-    const details = customerDetails[customerId];
 
-    // Use API data if available
-    if (details && details.type !== undefined) {
-      const isIndividual = details.type === 0;
-      return isIndividual ? (
-        <Badge variant="secondary">Cá nhân</Badge>
-      ) : (
-        <Badge variant="outline">Tổ chức</Badge>
-      );
-    }
-
-    // Use form data as fallback
-    if (customer.type !== undefined) {
-      const isIndividual = customer.type === 0;
-      return isIndividual ? (
-        <Badge variant="secondary">Cá nhân</Badge>
-      ) : (
-        <Badge variant="outline">Tổ chức</Badge>
-      );
-    }
-
-    // Final fallback based on business fields
-    const isOrganization =
-      customer.businessName ||
-      customer.businessRegistrationNumber;
-
-    return isOrganization ? (
-      <Badge variant="outline">Tổ chức</Badge>
-    ) : (
-      <Badge variant="secondary">Cá nhân</Badge>
-    );
-  };
-
-  // 🆕 Enhanced table với thông tin đầy đủ từ API
+  // Optimized table that uses already populated customer data
   const renderCustomerTable = (
     customers: CustomerSummary[],
     party: PartyKey
@@ -325,184 +266,166 @@ export function PartiesAccordion({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {customers.map((customer, index) => {
-              const customerId = customer.id;
-              const details = customerDetails[customerId];
-              const isLoading = loadingCustomers[customerId];
-
-              return (
-                <TableRow key={customer.id} className="hover:bg-muted/50">
-                  <TableCell className="font-medium">
-                    <div className="flex items-center gap-2">
-                      {isLoading && (
-                        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                      )}
-                      <div>
-                        <div className="font-semibold">
-                          {details?.fullName || customer.fullName}
-                        </div>
-                        {(details?.businessName || customer.businessName) && (
-                          <div className="text-sm text-muted-foreground">
-                            {details?.businessName || customer.businessName}
-                          </div>
-                        )}
+            {customers.map((customer, index) => (
+              <TableRow key={customer.id} className="hover:bg-muted/50">
+                <TableCell className="font-medium">
+                  <div className="flex items-center gap-2">
+                    <div>
+                      <div className="font-semibold">
+                        {customer.fullName}
                       </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>{getCustomerTypeBadge(customer)}</TableCell>
-                  <TableCell>
-                    <div className="font-mono text-sm">
-                      {details?.phone || customer.phone || "-"}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="text-sm">{details?.email || customer.email || "-"}</div>
-                  </TableCell>
-                  <TableCell className="max-w-[200px]" title={details?.address || customer.address}>
-                    <div className="text-sm">{details?.address || customer.address || "-"}</div>
-                  </TableCell>
-                  <TableCell className="font-mono text-sm">
-                    {details?.documentId || customer.documentId || "-"}
-                  </TableCell>
-                  <TableCell className="font-mono text-sm">
-                    {details?.passportId || customer.passportId || "-"}
-                  </TableCell>
-                  <TableCell>
-                    <div className="text-sm">
-                      <div>{details?.businessName || customer.businessName || "-"}</div>
-                      {(details?.businessRegistrationNumber || customer.businessRegistrationNumber) && (
-                        <div className="text-xs text-muted-foreground font-mono">
-                          {details?.businessRegistrationNumber || customer.businessRegistrationNumber}
+                      {customer.businessName && (
+                        <div className="text-sm text-muted-foreground">
+                          {customer.businessName}
                         </div>
                       )}
                     </div>
-                  </TableCell>
-                  {!readOnly && (
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() =>
-                            handleEditCustomer(party, customer, index)
-                          }
-                          title="Chỉnh sửa"
-                        >
-                          <PenLine className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleRemoveCustomer(party, index)}
-                          className="border-red-200 text-red-600 hover:bg-red-50"
-                          title="Xóa"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                  </div>
+                </TableCell>
+                <TableCell>{getCustomerTypeBadge(customer)}</TableCell>
+                <TableCell>
+                  <div className="font-mono text-sm">
+                    {customer.phone || "-"}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="text-sm">{customer.email || "-"}</div>
+                </TableCell>
+                <TableCell className="max-w-[200px]" title={customer.address}>
+                  <div className="text-sm">{customer.address || "-"}</div>
+                </TableCell>
+                <TableCell className="font-mono text-sm">
+                  {customer.documentId || "-"}
+                </TableCell>
+                <TableCell className="font-mono text-sm">
+                  {customer.passportId || "-"}
+                </TableCell>
+                <TableCell>
+                  <div className="text-sm">
+                    <div>{customer.businessName || "-"}</div>
+                    {customer.businessRegistrationNumber && (
+                      <div className="text-xs text-muted-foreground font-mono">
+                        {customer.businessRegistrationNumber}
                       </div>
-                    </TableCell>
-                  )}
-                </TableRow>
-              );
-            })}
+                    )}
+                  </div>
+                </TableCell>
+                {!readOnly && (
+                  <TableCell>
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          handleEditCustomer(party, customer, index)
+                        }
+                        title="Chỉnh sửa"
+                      >
+                        <PenLine className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleRemoveCustomer(party, index)}
+                        className="border-red-200 text-red-600 hover:bg-red-50"
+                        title="Xóa"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                )}
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </div>
 
       {/* Mobile cards */}
       <div className="block lg:hidden space-y-4">
-        {customers.map((customer, index) => {
-          const customerId = customer.id;
-          const details = customerDetails[customerId];
-          const isLoading = loadingCustomers[customerId];
-
-          return (
-            <Card key={customer.id} className="p-4">
-              <div className="space-y-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-2 flex-1 min-w-0">
-                    {isLoading && (
-                      <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+        {customers.map((customer, index) => (
+          <Card key={customer.id} className="p-4">
+            <div className="space-y-3">
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-2 flex-1 min-w-0">
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-semibold text-base truncate">
+                      {customer.fullName}
+                    </h4>
+                    {customer.businessName && (
+                      <p className="text-sm text-muted-foreground truncate">
+                        {customer.businessName}
+                      </p>
                     )}
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-base truncate">
-                        {details?.fullName || customer.fullName}
-                      </h4>
-                      {(details?.businessName || customer.businessName) && (
-                        <p className="text-sm text-muted-foreground truncate">
-                          {details?.businessName || customer.businessName}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex gap-1 flex-shrink-0">
-                    {getCustomerTypeBadge(customer)}
                   </div>
                 </div>
-
-                <div className="grid grid-cols-1 gap-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Điện thoại:</span>
-                    <span className="font-mono">{details?.phone || customer.phone || "-"}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Email:</span>
-                    <span className="truncate ml-2">{details?.email || customer.email || "-"}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">CMND/CCCD:</span>
-                    <span className="font-mono">{details?.documentId || customer.documentId || "-"}</span>
-                  </div>
-                  {(details?.passportId || customer.passportId) && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Passport:</span>
-                      <span className="font-mono">{details?.passportId || customer.passportId}</span>
-                    </div>
-                  )}
-                  {(details?.businessRegistrationNumber || customer.businessRegistrationNumber) && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Mã DN:</span>
-                      <span className="font-mono">{details?.businessRegistrationNumber || customer.businessRegistrationNumber}</span>
-                    </div>
-                  )}
-                  {(details?.address || customer.address) && (
-                    <div className="pt-1">
-                      <span className="text-muted-foreground">Địa chỉ:</span>
-                      <p className="text-sm mt-1">{details?.address || customer.address}</p>
-                    </div>
-                  )}
+                <div className="flex gap-1 flex-shrink-0">
+                  {getCustomerTypeBadge(customer)}
                 </div>
+              </div>
 
-                {!readOnly && (
-                  <div className="flex gap-2 pt-2 border-t">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleEditCustomer(party, customer, index)}
-                      className="flex-1 min-h-[44px]"
-                    >
-                      <PenLine className="h-4 w-4 mr-2" />
-                      Sửa
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleRemoveCustomer(party, index)}
-                      className="flex-1 border-red-200 text-red-600 hover:bg-red-50 min-h-[44px]"
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Xóa
-                    </Button>
+              <div className="grid grid-cols-1 gap-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Điện thoại:</span>
+                  <span className="font-mono">{customer.phone || "-"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Email:</span>
+                  <span className="truncate ml-2">{customer.email || "-"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">CMND/CCCD:</span>
+                  <span className="font-mono">{customer.documentId || "-"}</span>
+                </div>
+                {customer.passportId && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Passport:</span>
+                    <span className="font-mono">{customer.passportId}</span>
+                  </div>
+                )}
+                {customer.businessRegistrationNumber && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Mã DN:</span>
+                    <span className="font-mono">{customer.businessRegistrationNumber}</span>
+                  </div>
+                )}
+                {customer.address && (
+                  <div className="pt-1">
+                    <span className="text-muted-foreground">Địa chỉ:</span>
+                    <p className="text-sm mt-1">{customer.address}</p>
                   </div>
                 )}
               </div>
-            </Card>
-          );
-        })}
+
+              {!readOnly && (
+                <div className="flex gap-2 pt-2 border-t">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleEditCustomer(party, customer, index)}
+                    className="flex-1 min-h-[44px]"
+                  >
+                    <PenLine className="h-4 w-4 mr-2" />
+                    Sửa
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleRemoveCustomer(party, index)}
+                    className="flex-1 border-red-200 text-red-600 hover:bg-red-50 min-h-[44px]"
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Xóa
+                  </Button>
+                </div>
+              )}
+            </div>
+          </Card>
+        ))}
       </div>
     </>
   );

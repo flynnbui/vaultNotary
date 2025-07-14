@@ -6,7 +6,8 @@ import { toast } from 'sonner';
 import { fileSchema } from '@/src/lib/schemas';
 import { FileFormData, DocumentType, DocumentWithPopulatedParties } from '../types/document.types';
 import { DocumentFormService } from '../services/documentFormService';
-import useDocumentApiService from '../services/documentApiService';
+import { useDocumentWithParties } from './useDocumentQueries';
+import { useCreateDocument, useUpdateDocument } from './useDocumentMutations';
 
 interface UseDocumentFormProps {
   editingDocument?: DocumentType | DocumentWithPopulatedParties;
@@ -19,7 +20,12 @@ export const useDocumentForm = ({
   dialogMode, 
   onSuccess 
 }: UseDocumentFormProps) => {
-  const { createDocument, updateDocument, getDocumentWithPopulatedParties } = useDocumentApiService();
+  // React Query hooks for data fetching and mutations
+  const createDocumentMutation = useCreateDocument();
+  const updateDocumentMutation = useUpdateDocument();
+  
+  // Fetch document with parties using React Query (only when needed)
+  const { data: fetchedDocument } = useDocumentWithParties(editingDocument?.id || '');
   
   // Memoize default values to prevent infinite re-renders
   const defaultValues = useMemo(() => DocumentFormService.getDefaultFormValues(), []);
@@ -29,52 +35,29 @@ export const useDocumentForm = ({
     defaultValues,
   });
 
-  const loadDocumentData = useCallback(async (document: DocumentType | DocumentWithPopulatedParties) => {
-    try {
-      // If document doesn't have populated parties, fetch them
-      let documentWithParties = document;
-      if (!('partyDocumentLinks' in document) || !document.partyDocumentLinks) {
-        const fetchedDocument = await getDocumentWithPopulatedParties(document.id);
-        if (!fetchedDocument) {
-          throw new Error('Không thể tải thông tin hồ sơ');
-        }
-        documentWithParties = fetchedDocument;
-      }
-
-      const formData = DocumentFormService.prepareFormDataForEdit(documentWithParties);
-      
-      // Reset form with all data including parties
-      methods.reset(formData);
-
-    } catch (error) {
-      toast.error("Có lỗi khi tải thông tin hồ sơ");
-    }
-  }, [getDocumentWithPopulatedParties]);
-
   // Load document data when in edit/view mode
   useEffect(() => {
-    
     if (editingDocument && (dialogMode === "edit" || dialogMode === "view")) {
-      loadDocumentData(editingDocument);
+      // Use already populated document if available, otherwise use fetched document
+      const documentToUse = ('partyDocumentLinks' in editingDocument && editingDocument.partyDocumentLinks) 
+        ? editingDocument 
+        : fetchedDocument;
+      
+      if (documentToUse) {
+        const formData = DocumentFormService.prepareFormDataForEdit(documentToUse);
+        methods.reset(formData);
+      }
     }
-  }, [editingDocument, dialogMode, loadDocumentData]);
+  }, [editingDocument, dialogMode, fetchedDocument, methods]);
 
   // Reset form to defaults when in create mode or no editing document
   useEffect(() => {
-    
     if (!editingDocument || (dialogMode !== "edit" && dialogMode !== "view")) {
       methods.reset(defaultValues);
     }
-  }, [editingDocument, dialogMode, defaultValues]);
+  }, [editingDocument, dialogMode, defaultValues, methods]);
 
   const handleSubmit = useCallback(async (data: FileFormData) => {
-    
-    // Debug each customer in the parties
-    data.parties.A.forEach((customer, idx) => {
-    });
-    data.parties.B.forEach((customer, idx) => {
-    });
-    
     try {
       // Validate parties data manually to see detailed errors
       const partiesValidation = fileSchema.shape.parties.safeParse(data.parties);
@@ -82,38 +65,42 @@ export const useDocumentForm = ({
         throw new Error(`Validation failed: ${partiesValidation.error.errors.map(e => e.message).join(', ')}`);
       }
       
-      
       // Prepare document data
       const documentData = DocumentFormService.prepareDocumentData(data);
 
       if (editingDocument) {
-        // Update existing document
+        // Update existing document using React Query mutation
         const updateData = { ...documentData, id: editingDocument.id };
         
-        try {
-          const updatedDocument = await updateDocument(editingDocument.id, updateData);
-          if (updatedDocument) {
-            toast.success("Hồ sơ đã được cập nhật thành công!");
-            onSuccess?.();
-          } else {
-            toast.warning("Cập nhật có thể không thành công - vui lòng kiểm tra lại");
+        await updateDocumentMutation.mutateAsync(
+          { id: editingDocument.id, documentData: updateData },
+          {
+            onSuccess: () => {
+              toast.success("Hồ sơ đã được cập nhật thành công!");
+              onSuccess?.();
+            },
+            onError: (error) => {
+              toast.error(`Có lỗi xảy ra khi cập nhật hồ sơ: ${error.message}`);
+            }
           }
-        } catch (updateError) {
-          throw updateError;
-        }
+        );
       } else {
-        // Create new document
-        const newDocument = await createDocument(documentData);
-        if (newDocument) {
-          toast.success("Hồ sơ đã được tạo thành công!");
-          onSuccess?.();
-        }
+        // Create new document using React Query mutation
+        await createDocumentMutation.mutateAsync(documentData, {
+          onSuccess: () => {
+            toast.success("Hồ sơ đã được tạo thành công!");
+            onSuccess?.();
+          },
+          onError: (error) => {
+            toast.error(`Có lỗi xảy ra khi tạo hồ sơ: ${error.message}`);
+          }
+        });
       }
 
     } catch (error) {
       toast.error((error instanceof Error && error.message) ? `Có lỗi xảy ra khi lưu hồ sơ: ${error.message}` : "Có lỗi xảy ra khi lưu hồ sơ");
     }
-  }, [editingDocument, createDocument, updateDocument, onSuccess]);
+  }, [editingDocument, createDocumentMutation, updateDocumentMutation, onSuccess]);
 
   const resetForm = useCallback(() => {
     methods.reset(defaultValues);
@@ -123,7 +110,7 @@ export const useDocumentForm = ({
     methods,
     handleSubmit: methods.handleSubmit(handleSubmit),
     resetForm,
-    isSubmitting: methods.formState.isSubmitting,
+    isSubmitting: methods.formState.isSubmitting || createDocumentMutation.isPending || updateDocumentMutation.isPending,
     errors: methods.formState.errors
   };
 };

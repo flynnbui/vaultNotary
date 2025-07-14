@@ -41,36 +41,54 @@ import {
 import { toast } from "sonner";
 
 import "@/src/lib/i18n";
-import useCustomerApiService from "@/src/features/customers/services/customerApiService";
+import { useCustomers, useCustomerSearch } from "@/src/features/customers/hooks/useCustomerQueries";
+import { useCreateCustomer, useUpdateCustomer } from "@/src/features/customers/hooks/useCustomerMutations";
 import { CustomerType, CustomerFilterOptions } from "@/src/types/customer.type";
 import { exportCustomersToCSV, exportCustomersToExcel } from "@/src/lib/export-utils";
 import { cn } from "@/src/lib/utils";
 import { CustomerSummary } from "@/src/lib/schemas";
 import { ErrorHandler } from "@/src/shared/utils/errorHandler";
+import useCustomerApiService from "@/src/features/customers/services/customerApiService";
 
 
 export default function CustomersPage() {
   const { t } = useTranslation();
   
-  // Data state
-  const [customers, setCustomers] = useState<CustomerType[]>([]);
-  const [loading, setLoading] = useState(true);
+  // UI state
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize] = useState(10);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
-  
-  // Search and filter state
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState<CustomerFilterOptions>({});
-  
-  // UI state
   const [viewMode, setViewMode] = useState<"table" | "card">("table");
   const [showDialog, setShowDialog] = useState(false);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<CustomerSummary | undefined>();
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerType | null>(null);
   const [selectedCustomers, setSelectedCustomers] = useState<string[]>([]);
+
+  // React Query hooks for data fetching
+  const { data: customersData, isLoading: customersLoading, error: customersError } = useCustomers(pageNumber, pageSize);
+  const { data: searchData, isLoading: searchLoading } = useCustomerSearch(
+    searchTerm, 
+    pageNumber, 
+    pageSize
+  );
+
+  // React Query mutations
+  const createCustomerMutation = useCreateCustomer();
+  const updateCustomerMutation = useUpdateCustomer();
+
+  // Legacy API service for bulk operations (can be migrated later)
+  const { bulkDeleteCustomers } = useCustomerApiService();
+
+  // Determine which data to use based on search state
+  const isSearching = searchTerm.trim().length > 0;
+  const displayData = isSearching ? searchData : customersData;
+  const loading = isSearching ? searchLoading : customersLoading;
+  
+  const customers = displayData?.items || [];
+  const totalItems = displayData?.totalCount || 0;
+  const totalPages = displayData?.totalPages || 1;
 
   // Helper function to convert CustomerType to CustomerSummary
   const convertToCustomerSummary = (customer: CustomerType): CustomerSummary => {
@@ -89,37 +107,6 @@ export default function CustomersPage() {
       updatedAt: customer.updatedAt
     };
   };
-
-  const { 
-    getPaginatedCustomers, 
-    createCustomer, 
-    updateCustomer, 
-    deleteCustomer, 
-    bulkDeleteCustomers,
-    searchCustomers 
-  } = useCustomerApiService();
-
-  const loadCustomers = useCallback(async () => {
-    try {
-      setLoading(true);
-      let response;
-      
-      if (searchTerm.trim()) {
-        response = await searchCustomers(searchTerm, pageNumber, pageSize);
-      } else {
-        response = await getPaginatedCustomers(pageNumber, pageSize, filters);
-      }
-      
-      setCustomers(response?.items || []);
-      setTotalItems(response?.totalCount || 0);
-      setTotalPages(response?.totalPages || 1);
-    } catch (error: any) {
-      // With the new axios interceptor, errors are now ApiError instances
-      ErrorHandler.handleApiError(error, "load customers");
-    } finally {
-      setLoading(false);
-    }
-  }, [searchTerm, pageNumber, pageSize, filters, searchCustomers, getPaginatedCustomers]);
 
   const handlePageChange = (page: number) => {
     setPageNumber(page);
@@ -172,7 +159,6 @@ export default function CustomersPage() {
 
   const handleSaveCustomer = async (customerData: any) => {
     try {
-      
       // Transform form data to match backend API schema
       const transformedData = {
         fullName: customerData.fullName || "",
@@ -186,31 +172,34 @@ export default function CustomersPage() {
         businessName: customerData.businessName || ""
       };
 
-
       if (editingCustomer) {
-        await updateCustomer(editingCustomer.id, transformedData);
-        toast.success("Thông tin khách hàng đã được cập nhật!");
-        await loadCustomers();
+        await updateCustomerMutation.mutateAsync(
+          { id: editingCustomer.id, customerData: transformedData },
+          {
+            onSuccess: () => {
+              toast.success("Thông tin khách hàng đã được cập nhật!");
+              setShowDialog(false);
+            },
+            onError: (error) => {
+              toast.error(`Có lỗi xảy ra khi cập nhật khách hàng: ${error.message}`);
+            }
+          }
+        );
       } else {
-        await createCustomer(transformedData);
-        toast.success("Khách hàng mới đã được thêm!");
-        await loadCustomers();
+        await createCustomerMutation.mutateAsync(transformedData, {
+          onSuccess: () => {
+            toast.success("Khách hàng mới đã được thêm!");
+            setShowDialog(false);
+          },
+          onError: (error) => {
+            toast.error(`Có lỗi xảy ra khi tạo khách hàng: ${error.message}`);
+          }
+        });
       }
-      setShowDialog(false);
     } catch (error: any) {
-      
-      // Handle Axios errors properly
-      if (error.response) {
-        // Server responded with error status
-        const errorMessage = error.response.data || error.response.statusText || error.message;
-        toast.error(`Lỗi ${error.response.status}: ${errorMessage}`);
-      } else if (error.request) {
-        // Request was made but no response received
-        toast.error("Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.");
-      } else {
-        // Something else happened
-        toast.error(error.message || "Có lỗi xảy ra khi lưu khách hàng");
-      }
+      // Handle any unexpected errors
+      console.error('Customer save error:', error);
+      toast.error(error.message || "Có lỗi xảy ra khi lưu khách hàng");
     }
   };
 
@@ -226,9 +215,7 @@ export default function CustomersPage() {
     exportCustomersToExcel(customersToExport);
   };
 
-  useEffect(() => {
-    loadCustomers();
-  }, [pageNumber, filters, searchTerm, loadCustomers]);
+  // React Query handles data fetching automatically based on dependencies
 
   // Force card view on mobile screens
   useEffect(() => {

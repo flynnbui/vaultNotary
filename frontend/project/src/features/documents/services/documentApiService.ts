@@ -94,9 +94,17 @@ const useDocumentApiService = () => {
   );
 
   const getDocumentById = useCallback(
-    async (id: string): Promise<DocumentWithFilesDto | undefined> => {
+    async (id: string, options?: { include?: string[] }): Promise<DocumentWithFilesDto | undefined> => {
       try {
-        const response = await callApi<DocumentWithFilesDto>("get", `/Documents/${id}`);
+        let url = `/Documents/${id}`;
+        
+        // Add include parameters if provided
+        if (options?.include && options.include.length > 0) {
+          const includeParams = options.include.join(',');
+          url += `?include=${includeParams}`;
+        }
+        
+        const response = await callApi<DocumentWithFilesDto>("get", url);
         return response?.data;
       } catch (error) {
         ErrorHandler.handleDocumentError(error, "fetch document by ID");
@@ -109,7 +117,7 @@ const useDocumentApiService = () => {
   const getDocumentFiles = useCallback(
     async (documentId: string): Promise<DocumentFileDto[]> => {
       try {
-        const documentWithFiles = await getDocumentById(documentId);
+        const documentWithFiles = await getDocumentById(documentId, { include: ['files'] });
         
         const files = documentWithFiles?.files || [];
         
@@ -119,7 +127,7 @@ const useDocumentApiService = () => {
         return [];
       }
     },
-    [getDocumentById, callApi]
+    [getDocumentById]
   );
 
   const deleteDocumentFile = useCallback(
@@ -183,6 +191,60 @@ const useDocumentApiService = () => {
     [callApi]
   );
 
+  // New optimized function that uses backend include parameter
+  const getDocumentWithParties = useCallback(
+    async (id: string): Promise<DocumentWithPopulatedParties | undefined> => {
+      try {
+        const documentWithParties = await getDocumentById(id, { include: ['parties'] });
+        
+        if (!documentWithParties) {
+          return undefined;
+        }
+
+        // Backend already populated the parties, so we can return directly
+        return documentWithParties as DocumentWithPopulatedParties;
+      } catch (error) {
+        ErrorHandler.handleDocumentError(error, "fetch document with parties");
+        throw error;
+      }
+    },
+    [getDocumentById]
+  );
+
+  // New function to get document with files
+  const getDocumentWithFiles = useCallback(
+    async (id: string): Promise<DocumentWithFilesDto | undefined> => {
+      try {
+        return await getDocumentById(id, { include: ['files'] });
+      } catch (error) {
+        ErrorHandler.handleDocumentError(error, "fetch document with files");
+        throw error;
+      }
+    },
+    [getDocumentById]
+  );
+
+  // New function to get document with both parties and files
+  const getDocumentFull = useCallback(
+    async (id: string): Promise<DocumentWithPopulatedParties | undefined> => {
+      try {
+        const documentFull = await getDocumentById(id, { include: ['parties', 'files'] });
+        
+        if (!documentFull) {
+          return undefined;
+        }
+
+        // Backend already populated both parties and files
+        return documentFull as DocumentWithPopulatedParties;
+      } catch (error) {
+        ErrorHandler.handleDocumentError(error, "fetch document full");
+        throw error;
+      }
+    },
+    [getDocumentById]
+  );
+
+  // Legacy function - kept for backward compatibility
   const getDocumentWithPopulatedParties = useCallback(
     async (id: string): Promise<DocumentWithPopulatedParties | undefined> => {
       try {
@@ -247,7 +309,7 @@ const useDocumentApiService = () => {
         throw error;
       }
     },
-    [getDocumentById, getCustomerById, callApi]
+    [getDocumentById, getCustomerById]
   );
 
   return {
@@ -257,7 +319,10 @@ const useDocumentApiService = () => {
     updateDocument,
     deleteDocument,
     getDocumentById,
-    getDocumentWithPopulatedParties,
+    getDocumentWithParties,
+    getDocumentWithFiles,
+    getDocumentFull,
+    getDocumentWithPopulatedParties, // Legacy - kept for backward compatibility
     getDocumentFiles,
     deleteDocumentFile,
     getFileDownloadUrl,

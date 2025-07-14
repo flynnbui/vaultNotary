@@ -2,7 +2,8 @@ import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 
 import { DocumentType, DialogMode } from '../types/document.types';
-import useDocumentApiService from '../services/documentApiService';
+import { useDocumentWithParties } from './useDocumentQueries';
+import { useDeleteDocument } from './useDocumentMutations';
 
 interface UseDocumentOperationsProps {
   onEdit?: (document: DocumentType, mode: DialogMode) => void;
@@ -18,39 +19,35 @@ export const useDocumentOperations = ({
   onRefresh
 }: UseDocumentOperationsProps) => {
   const [loading, setLoading] = useState(false);
-  const { deleteDocument, getDocumentWithPopulatedParties } = useDocumentApiService();
+  const deleteDocumentMutation = useDeleteDocument();
 
   const handleEditDocument = useCallback(async (document: DocumentType) => {
     try {
       setLoading(true);
       
-      const populatedDocument = await getDocumentWithPopulatedParties(document.id);
-      if (!populatedDocument) {
-        throw new Error('Không thể tải thông tin hồ sơ');
-      }
-      onEdit?.(populatedDocument, 'edit');
+      // For edit mode, we can pass the document directly and let the form handle fetching
+      // This allows React Query to handle caching and loading states
+      onEdit?.(document, 'edit');
     } catch (error) {
       toast.error("Có lỗi khi tải thông tin hồ sơ");
     } finally {
       setLoading(false);
     }
-  }, [getDocumentWithPopulatedParties, onEdit]);
+  }, [onEdit]);
 
   const handleViewDocument = useCallback(async (document: DocumentType) => {
     try {
       setLoading(true);
       
-      const populatedDocument = await getDocumentWithPopulatedParties(document.id);
-      if (!populatedDocument) {
-        throw new Error('Không thể tải thông tin hồ sơ');
-      }
-      onView?.(populatedDocument, 'view');
+      // For view mode, we can pass the document directly and let the form handle fetching
+      // This allows React Query to handle caching and loading states
+      onView?.(document, 'view');
     } catch (error) {
       toast.error("Có lỗi khi tải thông tin hồ sơ");
     } finally {
       setLoading(false);
     }
-  }, [getDocumentWithPopulatedParties, onView]);
+  }, [onView]);
 
   const handleUploadDocument = useCallback((document: DocumentType) => {
     onUpload?.(document, 'upload');
@@ -62,19 +59,19 @@ export const useDocumentOperations = ({
     }
 
     try {
-      setLoading(true);
-      const success = await deleteDocument(id);
-      
-      if (success) {
-        toast.success("Đã xóa hồ sơ thành công!");
-        onRefresh?.();
-      }
+      await deleteDocumentMutation.mutateAsync(id, {
+        onSuccess: () => {
+          toast.success("Đã xóa hồ sơ thành công!");
+          onRefresh?.();
+        },
+        onError: (error) => {
+          toast.error("Có lỗi xảy ra khi xóa hồ sơ");
+        }
+      });
     } catch (error) {
       toast.error("Có lỗi xảy ra khi xóa hồ sơ");
-    } finally {
-      setLoading(false);
     }
-  }, [deleteDocument, onRefresh]);
+  }, [deleteDocumentMutation, onRefresh]);
 
   const handleCopyDocument = useCallback(async (document: DocumentType) => {
     try {
@@ -92,6 +89,6 @@ export const useDocumentOperations = ({
     handleUploadDocument,
     handleDeleteDocument,
     handleCopyDocument,
-    loading
+    loading: loading || deleteDocumentMutation.isPending
   };
 };

@@ -20,6 +20,9 @@ import { Search, Info, User, CalendarIcon, ChevronLeft, ChevronRight, Loader2, C
 import { toast } from 'sonner';
 import { extendedCustomerSchema, type CustomerSummary } from '@/src/lib/schemas';
 import { z } from 'zod';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useCreateCustomer } from '@/src/features/customers/hooks/useCustomerMutations';
+import { customerQueryKeys } from '@/src/features/customers/hooks/useCustomerQueries';
 import useCustomerApiService from '@/src/features/customers/services/customerApiService';
 import { CreateCustomerType, CustomerType } from '@/src/types/customer.type';
 
@@ -350,14 +353,63 @@ export function CustomerDialog({
     // Search state
     const [idSearchTerm, setIdSearchTerm] = useState<string>('');
     const [searchResult, setSearchResult] = useState<CustomerSearchResult | null>(null);
-    const [isSearching, setIsSearching] = useState<boolean>(false);
     const [showCreateForm, setShowCreateForm] = useState<boolean>(false);
     const [searchInputError, setSearchInputError] = useState<string>('');
 
     // Legacy states for backwards compatibility
     const [idType, setIdType] = useState<'CMND' | 'Passport'>('CMND');
 
-    const { createCustomer, searchCustomers } = useCustomerApiService();
+    // React Query hooks
+    const { searchCustomers } = useCustomerApiService();
+    const queryClient = useQueryClient();
+    const createCustomerMutation = useCreateCustomer();
+
+    // Search mutation for customer lookup
+    const searchMutation = useMutation({
+        mutationFn: (normalizedId: string) => searchCustomers(normalizedId, 1, 10),
+        onSuccess: (response, normalizedId) => {
+            const customers = response?.items || [];
+            if (customers.length > 0) {
+                const existingCustomer = customers[0];
+                // Prime the cache with the found customer
+                queryClient.setQueryData(
+                    customerQueryKeys.detail(existingCustomer.id), 
+                    existingCustomer
+                );
+                setSearchResult({
+                    found: true,
+                    customer: existingCustomer,
+                    searchedId: normalizedId,
+                });
+                setShowCreateForm(false);
+            } else {
+                setSearchResult({
+                    found: false,
+                    customer: null,
+                    searchedId: normalizedId,
+                });
+                setShowCreateForm(true);
+                
+                // Pre-fill the ID field for when user creates new customer
+                const validation = validateIdFormat(normalizedId);
+                setIdType(validation.type || 'CMND');
+                
+                if (validation.type === 'Passport') {
+                    setValue('passportNumber', normalizedId);
+                    setValue('cmndNumber', '');
+                } else {
+                    setValue('cmndNumber', normalizedId);
+                    setValue('passportNumber', '');
+                }
+            }
+        },
+        onError: (error) => {
+            console.error('Search error:', error);
+            toast.error('Có lỗi khi tìm kiếm khách hàng');
+            setSearchResult(null);
+            setShowCreateForm(false);
+        },
+    });
 
     const {
         register,
@@ -365,7 +417,7 @@ export function CustomerDialog({
         setValue,
         watch,
         reset,
-        formState: { errors, isSubmitting }
+        formState: { errors }
     } = useForm<CustomerSummary & {
         customerType: string;
         isVip: boolean;
@@ -429,8 +481,8 @@ export function CustomerDialog({
         }
     }, []);
 
-    // Customer ID search handler
-    const handleIdSearch = useCallback(async (searchId: string) => {
+    // Customer ID search handler - refactored to use React Query mutation
+    const handleIdSearch = useCallback((searchId: string) => {
         const validation = validateIdFormat(searchId);
 
         if (!validation.isValid) {
@@ -438,48 +490,9 @@ export function CustomerDialog({
             return;
         }
 
-        try {
-            setIsSearching(true);
-            const normalizedId = validation.normalizedId || searchId.trim();
-
-            const response = await searchCustomers(normalizedId, 1, 10);
-            const customers = response?.items || [];
-
-            if (customers.length > 0) {
-                // Found existing customer
-                const foundCustomer = customers[0];
-
-                setSearchResult({
-                    found: true,
-                    customer: foundCustomer,
-                    searchedId: normalizedId
-                });
-                setShowCreateForm(false);
-            } else {
-                // No customer found
-                setSearchResult({
-                    found: false,
-                    searchedId: normalizedId
-                });
-                setShowCreateForm(false); // Don't auto-show create form
-
-                // Pre-fill the ID field for when user decides to create (but don't show form yet)
-                setIdType(validation.type || 'CMND');
-
-                if (validation.type === 'Passport') {
-                    setValue('passportNumber', normalizedId);
-                    setValue('cmndNumber', '');
-                } else {
-                    setValue('cmndNumber', normalizedId);
-                    setValue('passportNumber', '');
-                }
-            }
-        } catch (error) {
-            toast.error('Có lỗi khi tìm kiếm khách hàng');
-        } finally {
-            setIsSearching(false);
-        }
-    }, [searchCustomers, setValue]);
+        const normalizedId = validation.normalizedId || searchId.trim();
+        searchMutation.mutate(normalizedId);
+    }, [validateIdFormat, searchMutation]);
 
     // Check if customer already exists in parties
     const isCustomerAlreadyAdded = useCallback((customerId: string): boolean => {
@@ -585,41 +598,65 @@ export function CustomerDialog({
         }
     };
 
-    const onSubmit = async (data: any) => {
+    const onSubmit = (data: any) => {
+        let customerId = initialData?.id;
 
-        try {
-            let customerId = initialData?.id;
+        // Check for duplicates when creating new customer
+        if (!initialData) {
+            const docId = idType === 'CMND' ? data.cmndNumber : data.passportNumber;
+            if (isDocumentIdAlreadyUsed(idType === 'CMND' ? docId : '', idType === 'Passport' ? docId : '')) {
+                toast.error(`Số giấy tờ "${docId}" đã được sử dụng bởi khách hàng khác trong hồ sơ này.`);
+                return;
+            }
+        }
 
-            // Check for duplicates when creating new customer
-            if (!initialData) {
-                const docId = idType === 'CMND' ? data.cmndNumber : data.passportNumber;
-                if (isDocumentIdAlreadyUsed(idType === 'CMND' ? docId : '', idType === 'Passport' ? docId : '')) {
-                    toast.error(`Số giấy tờ "${docId}" đã được sử dụng bởi khách hàng khác trong hồ sơ này.`);
-                    return;
+        // Only create customer via API if this is a new customer (not editing)
+        if (!initialData) {
+            // Transform form data to match backend customer format
+            const customerApiData: CreateCustomerType = {
+                fullName: data.fullName,
+                address: data.permanentAddress,
+                phone: data.phone || null,
+                email: data.email || null,
+                type: data.customerType === 'organization' ? 1 : 0,
+                documentId: idType === 'CMND' ? data.cmndNumber : null,
+                passportId: idType === 'Passport' ? data.passportNumber : null,
+                businessRegistrationNumber: data.businessRegistrationNumber || null,
+                businessName: data.businessName || null,
+            };
+
+            // Use React Query mutation for customer creation
+            createCustomerMutation.mutate(customerApiData, {
+                onSuccess: (newCustomer) => {
+                    // Transform to CustomerSummary format for the parties array
+                    const customerSummaryData: CustomerSummary = {
+                        id: newCustomer.id,
+                        fullName: newCustomer.fullName,
+                        address: newCustomer.address || '',
+                        phone: newCustomer.phone || '',
+                        email: newCustomer.email || '',
+                        type: newCustomer.type,
+                        documentId: newCustomer.documentId || '',
+                        passportId: newCustomer.passportId || '',
+                        businessRegistrationNumber: newCustomer.businessRegistrationNumber || '',
+                        businessName: newCustomer.businessName || '',
+                        createdAt: newCustomer.createdAt,
+                        updatedAt: newCustomer.updatedAt,
+                    };
+
+                    onSave(customerSummaryData);
+                    toast.success('Khách hàng đã được tạo thành công!');
+                    onOpenChange(false);
+                },
+                onError: (error) => {
+                    console.error('Create customer error:', error);
+                    toast.error('Có lỗi khi tạo khách hàng');
                 }
-            }
-
-            // Only create customer via API if this is a new customer (not editing)
-            if (!initialData) {
-                // Transform form data to match backend customer format
-                const customerApiData: CreateCustomerType = {
-                    fullName: data.fullName,
-                    address: data.permanentAddress,
-                    phone: data.phone || null,
-                    email: data.email || null,
-                    type: data.customerType === 'organization' ? 1 : 0,
-                    documentId: idType === 'CMND' ? data.cmndNumber : null,
-                    passportId: idType === 'Passport' ? data.passportNumber : null,
-                    businessRegistrationNumber: data.businessRegistrationNumber || null,
-                    businessName: data.businessName || null,
-                };
-
-                customerId = await createCustomer(customerApiData);
-            }
-
-            // Transform form data to CustomerSummary format for the parties array
+            });
+        } else {
+            // Editing existing customer - just return the updated data
             const customerSummaryData: CustomerSummary = {
-                id: customerId || initialData?.id || uuidv4(),
+                id: initialData.id,
                 fullName: data.fullName,
                 address: data.permanentAddress,
                 phone: data.phone || '',
@@ -629,13 +666,12 @@ export function CustomerDialog({
                 passportId: idType === 'Passport' ? (data.passportNumber || '') : '',
                 businessRegistrationNumber: data.businessRegistrationNumber || '',
                 businessName: data.businessName || '',
-                createdAt: new Date().toISOString(),
+                createdAt: initialData.createdAt,
                 updatedAt: new Date().toISOString(),
             };
 
             onSave(customerSummaryData);
-        } catch (error) {
-            toast.error("Không thể tạo khách hàng. Vui lòng thử lại!");
+            onOpenChange(false);
         }
     };
 
@@ -708,10 +744,10 @@ export function CustomerDialog({
                                         <Button
                                             type="button"
                                             onClick={() => handleIdSearch(idSearchTerm)}
-                                            disabled={isSearching || !idSearchTerm.trim() || !!searchInputError}
+                                            disabled={searchMutation.isPending || !idSearchTerm.trim() || !!searchInputError}
                                             className="px-6 min-h-[44px] sm:min-h-auto"
                                         >
-                                            {isSearching ? (
+                                            {searchMutation.isPending ? (
                                                 <Loader2 className="h-4 w-4 animate-spin" />
                                             ) : (
                                                 <Search className="h-4 w-4" />
@@ -1169,10 +1205,10 @@ export function CustomerDialog({
                                 </Button>
                                 <Button
                                     type="submit"
-                                    disabled={isSubmitting}
+                                    disabled={createCustomerMutation.isPending}
                                     className="px-8 min-h-[44px] sm:min-h-auto"
                                 >
-                                    {isSubmitting ? 'Đang lưu...' : (initialData ? 'Cập nhật' : 'Thêm')}
+                                    {createCustomerMutation.isPending ? 'Đang lưu...' : (initialData ? 'Cập nhật' : 'Thêm')}
                                 </Button>
                             </DialogFooter>
                         </form>
