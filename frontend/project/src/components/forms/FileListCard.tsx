@@ -50,7 +50,8 @@ export interface UploadProgress {
 
 // Helper functions
 function formatFileSize(bytes: number): string {
-  if (bytes === 0) return '0 Bytes';
+  if (!bytes || bytes === 0) return '0 Bytes';
+  if (isNaN(bytes) || bytes < 0) return 'Unknown size';
   
   const k = 1024;
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
@@ -59,40 +60,70 @@ function formatFileSize(bytes: number): string {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
-function getFileIcon(fileType: string, fileName: string) {
-  const ext = fileName?.split('.').pop()?.toLowerCase() ?? "";
+function getFileIcon(file: FileItem) {
+  const fileName = file.name || '';
+  const fileType = file.type || '';
+  const ext = fileName.split('.').pop()?.toLowerCase() ?? "";
   
-  // Image files
-  if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'].includes(ext)) {
-    return <FileImage className="h-4 w-4 text-blue-500" />;
+  // Try to determine type from extension first
+  if (ext) {
+    // Image files
+    if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'].includes(ext)) {
+      return <FileImage className="h-4 w-4 text-blue-500" />;
+    }
+    
+    // Spreadsheet files
+    if (['xlsx', 'xls', 'csv'].includes(ext)) {
+      return <FileSpreadsheet className="h-4 w-4 text-green-500" />;
+    }
+    
+    // Code files
+    if (['js', 'ts', 'jsx', 'tsx', 'html', 'css', 'json', 'xml'].includes(ext)) {
+      return <FileCode className="h-4 w-4 text-purple-500" />;
+    }
+    
+    // Archive files
+    if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext)) {
+      return <Archive className="h-4 w-4 text-[#800020] dark:text-[#e6b3b3]" />;
+    }
+    
+    // PDF and documents
+    if (['pdf', 'doc', 'docx', 'txt', 'rtf'].includes(ext)) {
+      return <FileText className="h-4 w-4 text-red-500" />;
+    }
   }
   
-  // Spreadsheet files
-  if (['xlsx', 'xls', 'csv'].includes(ext)) {
-    return <FileSpreadsheet className="h-4 w-4 text-green-500" />;
-  }
-  
-  // Code files
-  if (['js', 'ts', 'jsx', 'tsx', 'html', 'css', 'json', 'xml'].includes(ext)) {
-    return <FileCode className="h-4 w-4 text-purple-500" />;
-  }
-  
-  // Archive files
-  if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext)) {
-    return <Archive className="h-4 w-4 text-[#800020] dark:text-[#e6b3b3]" />;
-  }
-  
-  // PDF and documents
-  if (['pdf', 'doc', 'docx', 'txt', 'rtf'].includes(ext)) {
-    return <FileText className="h-4 w-4 text-red-500" />;
+  // Fallback to MIME type if extension doesn't match
+  if (fileType) {
+    // Image files
+    if (fileType.startsWith('image/')) {
+      return <FileImage className="h-4 w-4 text-blue-500" />;
+    }
+    
+    // Spreadsheet files
+    if (fileType.includes('spreadsheet') || fileType.includes('excel') || fileType === 'text/csv') {
+      return <FileSpreadsheet className="h-4 w-4 text-green-500" />;
+    }
+    
+    // PDF and documents
+    if (fileType === 'application/pdf' || fileType.includes('word') || fileType === 'text/plain') {
+      return <FileText className="h-4 w-4 text-red-500" />;
+    }
+    
+    // Archive files
+    if (fileType.includes('zip') || fileType.includes('rar') || fileType.includes('compressed')) {
+      return <Archive className="h-4 w-4 text-[#800020] dark:text-[#e6b3b3]" />;
+    }
   }
   
   // Default file icon
   return <File className="h-4 w-4 text-muted-foreground" />;
 }
 
-function getFileTypeLabel(fileName: string): string {
- const ext = fileName?.split('.').pop()?.toLowerCase() ?? "";
+function getFileTypeLabel(file: FileItem): string {
+  const fileName = file.name || '';
+  const fileType = file.type || '';
+  const ext = fileName.split('.').pop()?.toLowerCase() ?? "";
   
   const typeMap: Record<string, string> = {
     pdf: 'PDF',
@@ -112,11 +143,63 @@ function getFileTypeLabel(fileName: string): string {
     '7z': 'Archive',
   };
   
-  return typeMap[ext] || ext.toUpperCase();
+  // Try extension first
+  if (ext && typeMap[ext]) {
+    return typeMap[ext];
+  }
+  
+  // Fallback to MIME type
+  if (fileType) {
+    const mimeTypeMap: Record<string, string> = {
+      'application/pdf': 'PDF',
+      'application/msword': 'Word',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'Word',
+      'application/vnd.ms-excel': 'Excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'Excel',
+      'text/csv': 'CSV',
+      'text/plain': 'Text',
+      'image/jpeg': 'Image',
+      'image/png': 'Image',
+      'image/gif': 'Image',
+      'image/bmp': 'Image',
+      'image/svg+xml': 'Image',
+      'image/webp': 'Image',
+      'application/zip': 'Archive',
+      'application/x-rar-compressed': 'Archive',
+      'application/x-7z-compressed': 'Archive',
+    };
+    
+    if (mimeTypeMap[fileType]) {
+      return mimeTypeMap[fileType];
+    }
+    
+    // Generic type detection
+    if (fileType.startsWith('image/')) {
+      return 'Image';
+    }
+    if (fileType.startsWith('text/')) {
+      return 'Text';
+    }
+    if (fileType.includes('word')) {
+      return 'Word';
+    }
+    if (fileType.includes('excel') || fileType.includes('spreadsheet')) {
+      return 'Excel';
+    }
+    if (fileType.includes('zip') || fileType.includes('rar') || fileType.includes('compressed')) {
+      return 'Archive';
+    }
+  }
+  
+  return ext ? ext.toUpperCase() : 'File';
 }
 
 function formatDate(dateString: string): string {
+  if (!dateString) return 'Unknown date';
+  
   const date = new Date(dateString);
+  if (isNaN(date.getTime())) return 'Invalid date';
+  
   return date.toLocaleString("vi-VN", {
     year: "numeric",
     month: "2-digit",
@@ -147,7 +230,7 @@ function ReadOnlyFileRow({ file, index, onDownload, onPreview }: ReadOnlyFileRow
       </TableCell>
       <TableCell>
         <div className="flex items-center gap-3">
-          {getFileIcon(file.type, file.name)}
+          {getFileIcon(file)}
           <div className="flex flex-col">
             <span className="font-medium text-foreground truncate max-w-[200px]" title={file.name}>
               {file.name}
@@ -160,7 +243,7 @@ function ReadOnlyFileRow({ file, index, onDownload, onPreview }: ReadOnlyFileRow
       </TableCell>
       <TableCell>
         <Badge variant="outline" className="text-xs">
-          {getFileTypeLabel(file.name)}
+          {getFileTypeLabel(file)}
         </Badge>
       </TableCell>
       <TableCell className="text-sm text-muted-foreground">
@@ -222,7 +305,7 @@ function EditableFileRow({ file, index, onDownload, onDelete, onPreview }: Edita
       </TableCell>
       <TableCell>
         <div className="flex items-center gap-3">
-          {getFileIcon(file.type, file.name)}
+          {getFileIcon(file)}
           <div className="flex flex-col">
             <span className="font-medium text-foreground truncate max-w-[200px]" title={file.name}>
               {file.name}
@@ -235,7 +318,7 @@ function EditableFileRow({ file, index, onDownload, onDelete, onPreview }: Edita
       </TableCell>
       <TableCell>
         <Badge variant="outline" className="text-xs">
-          {getFileTypeLabel(file.name)}
+          {getFileTypeLabel(file)}
         </Badge>
       </TableCell>
       <TableCell className="text-sm text-muted-foreground">
@@ -568,15 +651,15 @@ export function FileListCard({
                   <div className="flex items-start justify-between gap-2 sm:gap-3">
                     <div className="flex items-start gap-2 sm:gap-3 flex-1 min-w-0">
                       <div className="flex-shrink-0 pt-1">
-                        {getFileIcon(file.type, file.name)}
+                        {getFileIcon(file)}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm leading-tight truncate" title={file.name}>
-                          {file.name}
+                        <p className="font-medium text-sm leading-tight truncate" title={file.name || 'Unknown file'}>
+                          {file.name || 'Unknown file'}
                         </p>
                         <div className="flex flex-wrap items-center gap-2 mt-1">
                           <Badge variant="outline" className="text-xs flex-shrink-0">
-                            {getFileTypeLabel(file.name)}
+                            {getFileTypeLabel(file)}
                           </Badge>
                           <span className="text-xs text-muted-foreground flex-shrink-0">
                             {formatFileSize(file.size)}
