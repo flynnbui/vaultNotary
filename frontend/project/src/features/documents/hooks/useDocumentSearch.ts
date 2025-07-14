@@ -33,7 +33,7 @@ export const useDocumentSearch = ({
 
       if (response) {
         setDocuments(response.items || []);
-        setTotalItems(response.totalCount || 0);
+        setTotalItems(response.totalItems || 0);
       } else {
         setDocuments([]);
         setTotalItems(0);

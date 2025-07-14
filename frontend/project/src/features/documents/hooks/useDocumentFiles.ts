@@ -56,9 +56,10 @@ export const useDocumentFiles = ({ editingDocument, dialogMode }: UseDocumentFil
 
     try {
       for (const file of Array.from(fileList)) {
-        // Validate file type
-        if (!FileUtils.validateFileType(file)) {
-          toast.error(`Loại file không được hỗ trợ: ${file.name}`);
+        // Validate file 
+        const validation = FileUtils.validateFile(file);
+        if (!validation.isValid) {
+          toast.error(`${file.name}: ${validation.error}`);
           continue;
         }
 
