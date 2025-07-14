@@ -17,9 +17,20 @@ const useApiWithLoading = () => {
     ): Promise<AxiosResponse<T> | undefined> => {
       try {
         setLoading(true);
-        
-        const response = await api[method](url, data || undefined) as AxiosResponse<T>;
-        
+
+        // For FormData, remove Content-Type header to let browser set multipart/form-data
+        const config: any = {};
+        if (data instanceof FormData) {
+          config.headers = {
+            "Content-Type": undefined,
+          };
+        }
+        const response = (await api[method](
+          url,
+          data || undefined,
+          config
+        )) as AxiosResponse<T>;
+
         return response;
       } catch (error: unknown) {
         throw error;
