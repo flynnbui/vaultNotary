@@ -201,7 +201,6 @@ export default function CustomersPage() {
         toast.success("Thông tin khách hàng đã được cập nhật!");
         await loadCustomers();
       } else {
-        await createCustomer(transformedData);
         toast.success("Khách hàng mới đã được thêm!");
         await loadCustomers();
       }
