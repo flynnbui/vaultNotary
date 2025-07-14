@@ -1,4 +1,5 @@
 import { DocumentFileFromApi, FileItem } from '@/src/features/documents/types/document.types';
+import { DocumentFileDto } from '@/src/types/api.types';
 import { FILE_VALIDATION_CONFIG } from '@/src/config/fileValidation';
 
 export class FileUtils {
@@ -24,6 +25,20 @@ export class FileUtils {
    * Transform API file response using file data from API
    */
   static transformApiFileToFileItemAuto(apiFile: DocumentFileFromApi): FileItem {
+    return {
+      id: apiFile.id,
+      name: apiFile.fileName,
+      size: apiFile.fileSize,
+      type: apiFile.contentType,
+      uploadDate: apiFile.createdAt,
+      url: `/api/files/download/${apiFile.id}`,
+    };
+  }
+
+  /**
+   * Transform DocumentFileDto to FileItem
+   */
+  static transformDocumentFileDtoToFileItem(apiFile: DocumentFileDto): FileItem {
     return {
       id: apiFile.id,
       name: apiFile.fileName,

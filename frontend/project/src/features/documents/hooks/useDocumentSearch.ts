@@ -28,12 +28,26 @@ export const useDocumentSearch = ({
     try {
       setLoading(true);
       
-      // Use unified paginated endpoint with optional search term
-      const response = await getPaginatedDocuments(currentPage, itemsPerPage, debouncedSearchTerm.trim() || undefined);
+      const response = await getPaginatedDocuments(currentPage, itemsPerPage);
 
       if (response) {
-        setDocuments(response.items || []);
-        setTotalItems(response.totalItems || 0);
+        let filteredItems = response.items || [];
+
+        // Apply search filter
+        if (debouncedSearchTerm.trim()) {
+          const searchLower = debouncedSearchTerm.toLowerCase();
+          filteredItems = filteredItems.filter(
+            (doc) =>
+              doc.transactionCode?.toLowerCase().includes(searchLower) ||
+              doc.description?.toLowerCase().includes(searchLower) ||
+              doc.secretary?.toLowerCase().includes(searchLower) ||
+              doc.notaryPublic?.toLowerCase().includes(searchLower) ||
+              doc.documentType?.toLowerCase().includes(searchLower)
+          );
+        }
+
+        setDocuments(filteredItems);
+        setTotalItems(debouncedSearchTerm.trim() ? filteredItems.length : response.totalItems || 0);
       } else {
         setDocuments([]);
         setTotalItems(0);

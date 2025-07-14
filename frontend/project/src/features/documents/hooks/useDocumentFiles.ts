@@ -14,6 +14,7 @@ interface UseDocumentFilesProps {
 export const useDocumentFiles = ({ editingDocument, dialogMode }: UseDocumentFilesProps) => {
   const [attachedFiles, setAttachedFiles] = useState<FileItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<{[key: string]: number}>({});
   
   const { getDocumentFiles, deleteDocumentFile, getFileDownloadUrl, getFilePresignedUrl } = useDocumentApiService();
   const { uploadDocumentFile } = useDocumentUploadService();
@@ -28,7 +29,7 @@ export const useDocumentFiles = ({ editingDocument, dialogMode }: UseDocumentFil
       setLoading(true);      
       const files = await getDocumentFiles(editingDocument.id);
       const transformedFiles = files.map(apiFile => 
-        FileUtils.transformApiFileToFileItemAuto(apiFile)
+        FileUtils.transformDocumentFileDtoToFileItem(apiFile)
       );
       
       setAttachedFiles(transformedFiles);
@@ -63,10 +64,17 @@ export const useDocumentFiles = ({ editingDocument, dialogMode }: UseDocumentFil
           continue;
         }
 
+        const fileKey = `${file.name}_${Date.now()}`;
         try {
           const result = await uploadDocumentFile({
             documentId: editingDocument.id,
             file: file,
+            onProgress: (progress) => {
+              setUploadProgress(prev => ({
+                ...prev,
+                [fileKey]: progress
+              }));
+            }
           });
 
           uploadedFiles.push({
@@ -77,8 +85,21 @@ export const useDocumentFiles = ({ editingDocument, dialogMode }: UseDocumentFil
             uploadDate: result.uploadDate,
             url: result.url,
           });
+
+          // Clean up progress state
+          setUploadProgress(prev => {
+            const newState = { ...prev };
+            delete newState[fileKey];
+            return newState;
+          });
         } catch (err) {
           toast.error(`Upload thất bại: ${file.name}`);
+          // Clean up progress state on error
+          setUploadProgress(prev => {
+            const newState = { ...prev };
+            delete newState[fileKey];
+            return newState;
+          });
         }
       }
 
@@ -183,6 +204,7 @@ export const useDocumentFiles = ({ editingDocument, dialogMode }: UseDocumentFil
   return {
     attachedFiles,
     loading,
+    uploadProgress,
     handleFileUpload,
     handleFileDownload,
     handleFilePreview,
