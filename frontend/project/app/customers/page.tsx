@@ -77,6 +77,7 @@ export default function CustomersPage() {
     return {
       id: customer.id,
       fullName: customer.fullName,
+      gender: customer.gender || 0,
       address: customer.address || '',
       phone: customer.phone || '',
       email: customer.email || '',
@@ -172,20 +173,28 @@ export default function CustomersPage() {
 
   const handleSaveCustomer = async (customerData: any) => {
     try {
-      
+      // If customerData already has an ID, it means the CustomerDialog already created the customer
+      // So we just need to reload the customers list and close the dialog
+      if (customerData.id && !editingCustomer) {
+        toast.success("Khách hàng mới đã được thêm!");
+        await loadCustomers();
+        setShowDialog(false);
+        return;
+      }
+
       // Transform form data to match backend API schema
       const transformedData = {
         fullName: customerData.fullName || "",
-        address: customerData.permanentAddress || customerData.currentAddress || "",
+        gender: customerData.gender === 'male' ? 0 : customerData.gender === 'female' ? 1 : 2,
+        address: customerData.address || customerData.permanentAddress || customerData.currentAddress || "",
         phone: customerData.phone || "",
         email: customerData.email || "",
-        type: customerData.customerType === 'individual' ? 0 : 1,
-        documentId: customerData.idType === 'CMND' ? (customerData.cmndNumber || customerData.idNumber || "") : "",
-        passportId: customerData.idType === 'Passport' ? (customerData.passportNumber || customerData.idNumber || "") : "",
+        type: customerData.type !== undefined ? customerData.type : (customerData.customerType === 'individual' ? 0 : 1),
+        documentId: customerData.documentId || (customerData.idType === 'CMND' ? (customerData.cmndNumber || customerData.idNumber || "") : ""),
+        passportId: customerData.passportId || (customerData.idType === 'Passport' ? (customerData.passportNumber || customerData.idNumber || "") : ""),
         businessRegistrationNumber: customerData.businessRegistrationNumber || "",
         businessName: customerData.businessName || ""
       };
-
 
       if (editingCustomer) {
         await updateCustomer(editingCustomer.id, transformedData);
@@ -668,6 +677,7 @@ export default function CustomersPage() {
           onOpenChange={setShowDialog}
           initialData={editingCustomer}
           onSave={handleSaveCustomer}
+          shouldCreateCustomer={true}
         />
 
         <CustomerDetailsDialog

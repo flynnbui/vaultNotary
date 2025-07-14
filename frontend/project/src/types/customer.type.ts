@@ -1,6 +1,7 @@
 export interface CustomerType {
   id: string;
   fullName: string;
+  gender: number;
   address: string;
   phone: string | null;
   email: string | null;
@@ -15,6 +16,7 @@ export interface CustomerType {
 
 export interface CreateCustomerType {
   fullName: string;
+  gender: number;
   address: string;
   phone: string | null;
   email: string | null;
@@ -27,6 +29,7 @@ export interface CreateCustomerType {
 
 export interface UpdateCustomerType {
   fullName: string;
+  gender: number;
   address: string;
   phone: string | null;
   email: string | null;

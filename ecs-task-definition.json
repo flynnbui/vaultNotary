@@ -39,11 +39,11 @@
         },
         {
           "name": "Aws__AccessKey",
-          "value": "AKIARXO2YC5AHQASWLHE"
+          "value": "AKIARXO2YC5AHWZKHPIN"
         },
         {
           "name": "Aws__SecretKey",
-          "value": "3plE9X4ou5Vnq3F5dY4xLUKeskn+MilH/42onqZd"
+          "value": "h2bxRH39xAHICoQuzcjsHOWX5D2JDWk0Z+9eA3wI"
         },
         {
           "name": "Aws__S3__BucketName",
@@ -58,16 +58,40 @@
           "value": "24"
         },
         {
-          "name": "Aws__Kms__SymmetricKeyId",
-          "value": "6db124ee-f212-47a7-bbe4-c93d472af3ab"
-        },
-        {
           "name": "Auth0__Domain",
           "value": "auth.nharong.vn"
         },
         {
           "name": "Auth0__Audience",
           "value": "https://vaultnotary-api"
+        },
+        {
+          "name": "Aws__Kms__SymmetricKeyId",
+          "value": "f9998863-7bd3-4682-98cc-cdecc2df87b2"
+        },
+        {
+          "name": "RabbitMQ__ConnectionString",
+          "value": "amqp://admin:password@rabbitmq:5672"
+        },
+        {
+          "name": "RabbitMQ__DefaultUser",
+          "value": "admin"
+        },
+        {
+          "name": "RabbitMQ__DefaultPass",
+          "value": "password"
+        },
+        {
+          "name": "RateLimit__Window",
+          "value": "15"
+        },
+        {
+          "name": "RateLimit__MaxRequests",
+          "value": "100"
+        },
+        {
+          "name": "Auth0__ClientSecret",
+          "value": "WPz9MWHqrQDqYlPZ5tL_oAxbISHC50MIAN3TE5pdWH3CdtTBv6zZLQZQW3DWc1_3"
         }
       ],
       "logConfiguration": {
