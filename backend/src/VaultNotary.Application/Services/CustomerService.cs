@@ -78,6 +78,7 @@ public class CustomerService : ICustomerService
             DocumentId = createCustomerDto.DocumentId,
             PassportId = createCustomerDto.PassportId,
             BusinessRegistrationNumber = createCustomerDto.BusinessRegistrationNumber,
+            BusinessName = createCustomerDto.BusinessName,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
