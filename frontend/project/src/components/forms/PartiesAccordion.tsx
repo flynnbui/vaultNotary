@@ -626,6 +626,7 @@ export function PartiesAccordion({
             ...watchedPartiesB,
             ...watchedPartiesC
           ]}
+          shouldCreateCustomer={false}
         />
       )}
     </>

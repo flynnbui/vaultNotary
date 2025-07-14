@@ -186,6 +186,16 @@ export function CustomerDetailsDialog({
                       </div>
                     </div>
 
+                    <div className="flex items-center gap-3">
+                      <User className="h-4 w-4 text-muted-foreground" />
+                      <div>
+                        <p className="text-sm font-medium">Giới tính</p>
+                        <p className="text-sm text-muted-foreground">
+                          {customer.gender === 0 ? "Nam" : customer.gender === 1 ? "Nữ" : "Khác"}
+                        </p>
+                      </div>
+                    </div>
+
                     <div className="flex items-start gap-3">
                       <MapPin className="h-4 w-4 text-muted-foreground mt-1" />
                       <div>
