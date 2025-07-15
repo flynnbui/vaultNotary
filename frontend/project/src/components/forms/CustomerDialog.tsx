@@ -766,7 +766,7 @@ export function CustomerDialog({
                                             type="button"
                                             onClick={() => handleIdSearch(idSearchTerm)}
                                             disabled={isSearching || !idSearchTerm.trim() || !!searchInputError}
-                                            className="px-6 min-h-[44px] sm:min-h-auto"
+                                            className="px-6 min-h-[44px] sm:min-h-auto text-white"
                                         >
                                             {isSearching ? (
                                                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -908,7 +908,7 @@ export function CustomerDialog({
                                                                             onClick={handleUseExistingCustomer}
                                                                             disabled={hasAnyDuplicate}
                                                                             className={`shadow-lg hover:shadow-xl transition-all duration-200 px-6 py-2.5 ${hasAnyDuplicate
-                                                                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-700 dark:text-gray-400'
+                                                                                ? 'bg-gray-300 text-white cursor-not-allowed dark:bg-gray-700 dark:text-gray-400'
                                                                                 : 'bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white'
                                                                                 }`}
                                                                             size="lg"
@@ -1229,7 +1229,7 @@ export function CustomerDialog({
                                 <Button
                                     type="submit"
                                     disabled={isSubmitting || isSubmissionInProgress}
-                                    className="px-8 min-h-[44px] sm:min-h-auto"
+                                    className="px-8 min-h-[44px] sm:min-h-auto text-white"
                                 >
                                     {(isSubmitting || isSubmissionInProgress) ? (
                                         <>
