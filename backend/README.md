@@ -323,29 +323,6 @@ services:
 - File operation statistics
 - Authentication/authorization events
 
-## 🤝 Development Guidelines
-
-### Code Standards
-- Follow C# coding conventions
-- Use dependency injection
-- Implement comprehensive error handling
-- Write unit tests for all business logic
-- Document public APIs with XML comments
-
-### Git Workflow
-1. Create feature branch from `main`
-2. Implement feature with tests
-3. Run full test suite
-4. Create pull request
-5. Code review and merge
-
-### Performance Guidelines
-- Use async/await for I/O operations
-- Implement pagination for list endpoints
-- Cache frequently accessed data
-- Optimize database queries
-- Monitor memory usage
-
 ## 🔧 Troubleshooting
 
 ### Common Issues

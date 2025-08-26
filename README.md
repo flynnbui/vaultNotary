@@ -14,14 +14,14 @@ VaultNotary is a full-stack application designed for notary public offices and l
 
 ### ✨ Key Features
 
-- 🏛️ **Digital Notarization** - Complete digital notary workflow
-- 👥 **Customer Management** - Comprehensive customer database with ID validation
-- 📄 **Document Management** - Secure document storage and organization
-- 🔐 **Enterprise Security** - End-to-end encryption with AWS KMS
-- 📱 **Responsive Design** - Mobile-first responsive interface
-- 🌐 **Multi-language Support** - Vietnamese and English localization
-- ⚡ **Real-time Updates** - Live document status updates
-- 📊 **Analytics Dashboard** - Comprehensive reporting and insights
+- **Digital Notarization** - Complete digital notary workflow
+- **Customer Management** - Comprehensive customer database with ID validation
+- **Document Management** - Secure document storage and organization
+- **Enterprise Security** - End-to-end encryption with AWS KMS
+- **Responsive Design** - Mobile-first responsive interface
+- **Multi-language Support** - Vietnamese and English localization
+- **Real-time Updates** - Live document status updates
+- **Analytics Dashboard** - Comprehensive reporting and insights
 
 ## 🏗️ System Architecture
 
@@ -351,37 +351,6 @@ docker-compose -f docker-compose.prod.yml up -d
 - ✅ Performance benchmarks met
 - ✅ Code review approved
 
-## 🤝 Contributing
-
-### Development Guidelines
-- Follow established coding conventions
-- Write comprehensive tests
-- Update documentation
-- Follow security best practices
-- Use semantic commit messages
-
-### Pull Request Template
-```markdown
-## Description
-Brief description of changes
-
-## Type of Change
-- [ ] Bug fix
-- [ ] New feature
-- [ ] Breaking change
-- [ ] Documentation update
-
-## Testing
-- [ ] Unit tests added/updated
-- [ ] Integration tests added/updated
-- [ ] Manual testing completed
-
-## Security
-- [ ] Security implications considered
-- [ ] No secrets committed
-- [ ] Input validation implemented
-```
-
 ## 📈 Roadmap
 
 ### Phase 1 (Current)
@@ -390,62 +359,19 @@ Brief description of changes
 - ✅ Basic security implementation
 - ✅ Authentication integration
 
-### Phase 2 (Q1 2024)
+### Phase 2 (Q3 2025)
 - 🔄 Advanced search capabilities
 - 🔄 Digital signature workflows
 - 🔄 Audit trail implementation
 - 🔄 Mobile app development
 
-### Phase 3 (Q2 2024)
+### Phase 3 (Q4 2025)
 - 📅 AI-powered document analysis
-- 📅 Blockchain integration for immutability
 - 📅 Advanced analytics and reporting
 - 📅 Multi-tenant architecture
 
-### Phase 4 (Q3 2024)
+### Phase 4 (Q1 2026)
 - 📅 API marketplace integration
 - 📅 Third-party connector ecosystem
 - 📅 Advanced workflow automation
 - 📅 Machine learning insights
-
-## 📞 Support
-
-### Documentation
-- [Backend API Documentation](./backend/README.md)
-- [Frontend Documentation](./frontend/README.md)
-- [Infrastructure Guide](./infrastructure/README.md)
-- [Deployment Guide](./docs/deployment-guide.md)
-
-### Getting Help
-- 📧 Email: support@vaultnotary.com
-- 💬 GitHub Discussions
-- 📖 Wiki Documentation
-- 🐛 Issue Tracker
-
-### Community
-- 🌟 Star this repository
-- 🍴 Fork and contribute
-- 📣 Share feedback
-- 🤝 Join our Discord community
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- **Auth0** for authentication services
-- **AWS** for cloud infrastructure
-- **shadcn/ui** for beautiful UI components
-- **Next.js** team for the amazing framework
-- **.NET** team for the robust backend platform
-
----
-
-<div align="center">
-
-**Built with ❤️ for the future of digital notarization**
-
-[Website](https://vaultnotary.com) • [Documentation](./docs) • [API Reference](./backend/README.md) • [Contributing](./CONTRIBUTING.md)
-
-</div>
