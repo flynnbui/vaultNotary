@@ -1,0 +1,78 @@
+version: "3.8"
+
+services:
+  # ======================
+  # VAULTNOTARY BACKEND API
+  # ======================
+  vaultnotary-api:
+    build:
+      context: ./backend/src
+      dockerfile: VaultNotary.Web/Dockerfile
+    container_name: vaultnotary-api
+    ports:
+      - "5000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=${DATABASE_CONNECTION_STRING}
+      - Aws__Region=${AWS_REGION}
+      - Aws__AccessKey=${AWS_ACCESS_KEY}
+      - Aws__SecretKey=${AWS_SECRET_KEY}
+      - Aws__S3__BucketName=${AWS_S3_BUCKET_NAME}
+      - Aws__S3__FileKeyPrefix=${AWS_S3_FILE_PREFIX}
+      - Aws__S3__PresignedUrlExpirationHours=${AWS_S3_PRESIGNED_URL_HOURS}
+      - Aws__Kms__SymmetricKeyId=${AWS_KMS_SYMMETRIC_KEY_ID}
+      - ConnectionStrings__RabbitMQ=${RABBITMQ_CONNECTION_STRING}
+      - Auth0__Domain=${AUTH0_DOMAIN}
+      - Auth0__Audience=${AUTH0_AUDIENCE}
+    # depends_on:
+    #   - rabbitmq
+    networks:
+      - backend-network
+    restart: unless-stopped
+
+
+  # ======================
+  # FRONTEND
+  # ======================
+  vaultnotary-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: vaultnotary-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - AUTH0_SECRET=${AUTH0_SECRET}
+      - AUTH0_BASE_URL=${AUTH0_BASE_URL}
+      - AUTH0_DOMAIN=${AUTH0_DOMAIN}
+      - AUTH0_CLIENT_ID=${AUTH0_CLIENT_ID}
+      - AUTH0_CLIENT_SECRET=${AUTH0_CLIENT_SECRET}
+      - AUTH0_AUDIENCE=${AUTH0_AUDIENCE}
+      - AUTH0_SCOPE=${AUTH0_SCOPE}
+      - AUTH0_SESSION_ROLLING_DURATION=${AUTH0_SESSION_ROLLING_DURATION}
+      - AUTH0_SESSION_ABSOLUTE_DURATION=${AUTH0_SESSION_ABSOLUTE_DURATION}
+    depends_on:
+      - vaultnotary-api
+    networks:
+      - frontend-network
+      - backend-network
+    restart: unless-stopped
+
+# ======================
+# NETWORKS
+# ======================
+networks:
+  frontend-network:
+    driver: bridge
+  backend-network:
+    driver: bridge
+
+# ======================
+# VOLUMES
+# ======================
+volumes:
+  postgres-data:
+  rabbitmq-data:
