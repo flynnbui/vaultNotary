@@ -367,7 +367,6 @@ docker-compose -f docker-compose.prod.yml up -d
 
 ### Phase 3 (Q4 2025)
 - 📅 AI-powered document analysis
-- 📅 Blockchain integration for immutability
 - 📅 Advanced analytics and reporting
 - 📅 Multi-tenant architecture
 
