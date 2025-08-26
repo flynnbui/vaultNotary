@@ -171,7 +171,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowCaller", policy =>
     {
-        policy.WithOrigins("http://localhost:3000", "https://localhost:3000", "https://nharong.vn", "http://nharong.vn")
+        policy.WithOrigins("http://localhost:3000", "https://localhost:3000", builder.Configuration["FRONTEND_URL"] ?? "")
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials()
