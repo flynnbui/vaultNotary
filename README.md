@@ -14,14 +14,14 @@ VaultNotary is a full-stack application designed for notary public offices and l
 
 ### ✨ Key Features
 
-- 🏛️ **Digital Notarization** - Complete digital notary workflow
-- 👥 **Customer Management** - Comprehensive customer database with ID validation
-- 📄 **Document Management** - Secure document storage and organization
-- 🔐 **Enterprise Security** - End-to-end encryption with AWS KMS
-- 📱 **Responsive Design** - Mobile-first responsive interface
-- 🌐 **Multi-language Support** - Vietnamese and English localization
-- ⚡ **Real-time Updates** - Live document status updates
-- 📊 **Analytics Dashboard** - Comprehensive reporting and insights
+- **Digital Notarization** - Complete digital notary workflow
+- **Customer Management** - Comprehensive customer database with ID validation
+- **Document Management** - Secure document storage and organization
+- **Enterprise Security** - End-to-end encryption with AWS KMS
+- **Responsive Design** - Mobile-first responsive interface
+- **Multi-language Support** - Vietnamese and English localization
+- **Real-time Updates** - Live document status updates
+- **Analytics Dashboard** - Comprehensive reporting and insights
 
 ## 🏗️ System Architecture
 
@@ -376,31 +376,3 @@ docker-compose -f docker-compose.prod.yml up -d
 - 📅 Third-party connector ecosystem
 - 📅 Advanced workflow automation
 - 📅 Machine learning insights
-
-## 📞 Support
-
-### Documentation
-- [Backend API Documentation](./backend/README.md)
-- [Frontend Documentation](./frontend/README.md)
-- [Infrastructure Guide](./infrastructure/README.md)
-- [Deployment Guide](./docs/deployment-guide.md)
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- **Auth0** for authentication services
-- **AWS** for cloud infrastructure
-- **shadcn/ui** for beautiful UI components
-- **Next.js** team for the amazing framework
-- **.NET** team for the robust backend platform
-
----
-
-<div align="center">
-
-[Website](https://vaultnotary.com) • [Documentation](./docs) • [API Reference](./backend/README.md) • [Contributing](./CONTRIBUTING.md)
-
-</div>
