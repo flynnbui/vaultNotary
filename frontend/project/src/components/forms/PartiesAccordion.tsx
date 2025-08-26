@@ -192,7 +192,7 @@ export function PartiesAccordion({
     toast.success("Đã xóa khách hàng");
   };
 
-  const handleCustomerSave = (customerData: CustomerSummary) => {
+  const handleCustomerSave = (customerData: CustomerSummary, isEditing: boolean) => {
     if (readOnly) return;
     
     // Check for duplicates within the same party
@@ -626,7 +626,7 @@ export function PartiesAccordion({
             ...watchedPartiesB,
             ...watchedPartiesC
           ]}
-          shouldCreateCustomer={false}
+          isSaving={false}
         />
       )}
     </>

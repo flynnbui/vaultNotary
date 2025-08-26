@@ -171,54 +171,40 @@ export default function CustomersPage() {
     setShowDetailsDialog(true);
   };
 
-  const handleSaveCustomer = async (customerData: any) => {
-    try {
-      // If customerData already has an ID, it means the CustomerDialog already created the customer
-      // So we just need to reload the customers list and close the dialog
-      if (customerData.id && !editingCustomer) {
-        toast.success("Khách hàng mới đã được thêm!");
-        await loadCustomers();
-        setShowDialog(false);
-        return;
-      }
+  // Add state for saving indicator
+  const [isSavingCustomer, setIsSavingCustomer] = useState(false);
 
-      // Transform form data to match backend API schema
+  const handleSaveCustomer = async (customerData: CustomerSummary, isEditing: boolean) => {
+    setIsSavingCustomer(true);
+    try {
+      // Transform CustomerSummary to backend API format
       const transformedData = {
-        fullName: customerData.fullName || "",
-        gender: customerData.gender === 'male' ? 0 : customerData.gender === 'female' ? 1 : 2,
-        address: customerData.address || customerData.permanentAddress || customerData.currentAddress || "",
-        phone: customerData.phone || "",
-        email: customerData.email || "",
-        type: customerData.type !== undefined ? customerData.type : (customerData.customerType === 'individual' ? 0 : 1),
-        documentId: customerData.documentId || (customerData.idType === 'CMND' ? (customerData.cmndNumber || customerData.idNumber || "") : ""),
-        passportId: customerData.passportId || (customerData.idType === 'Passport' ? (customerData.passportNumber || customerData.idNumber || "") : ""),
-        businessRegistrationNumber: customerData.businessRegistrationNumber || "",
-        businessName: customerData.businessName || ""
+        fullName: customerData.fullName,
+        gender: customerData.gender,
+        address: customerData.address,
+        phone: customerData.phone || null,
+        email: customerData.email || null,
+        type: customerData.type,
+        documentId: customerData.documentId || null,
+        passportId: customerData.passportId || null,
+        businessRegistrationNumber: customerData.businessRegistrationNumber || null,
+        businessName: customerData.businessName || null,
       };
 
-      if (editingCustomer) {
-        await updateCustomer(editingCustomer.id, transformedData);
+      if (isEditing) {
+        await updateCustomer(customerData.id, transformedData);
         toast.success("Thông tin khách hàng đã được cập nhật!");
-        await loadCustomers();
       } else {
+        await createCustomer(transformedData);
         toast.success("Khách hàng mới đã được thêm!");
-        await loadCustomers();
       }
+      
+      await loadCustomers();
       setShowDialog(false);
     } catch (error: any) {
-      
-      // Handle Axios errors properly
-      if (error.response) {
-        // Server responded with error status
-        const errorMessage = error.response.data || error.response.statusText || error.message;
-        toast.error(`Lỗi ${error.response.status}: ${errorMessage}`);
-      } else if (error.request) {
-        // Request was made but no response received
-        toast.error("Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.");
-      } else {
-        // Something else happened
-        toast.error(error.message || "Có lỗi xảy ra khi lưu khách hàng");
-      }
+      ErrorHandler.handleApiError(error, "save customer");
+    } finally {
+      setIsSavingCustomer(false);
     }
   };
 
@@ -676,7 +662,7 @@ export default function CustomersPage() {
           onOpenChange={setShowDialog}
           initialData={editingCustomer}
           onSave={handleSaveCustomer}
-          shouldCreateCustomer={true}
+          isSaving={isSavingCustomer}
         />
 
         <CustomerDetailsDialog

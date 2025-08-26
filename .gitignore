@@ -57,6 +57,9 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
+# AWS and deployment files with secrets
+ecs-task-definition.json
+
 # OS generated files
 .DS_Store
 .DS_Store?

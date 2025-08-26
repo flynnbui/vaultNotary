@@ -1,182 +1,398 @@
-# VaultNotary Backend
+# VaultNotary Backend API
 
-A .NET backend implementation following Clean Architecture principles for a document notarization and verification system.
+A secure notary document management system built with .NET 8, implementing Clean Architecture patterns with AWS cloud integration and PostgreSQL database.
 
-## Architecture
+## 🏗️ Architecture
 
-This project implements Clean Architecture with the following layers:
+The backend follows Clean Architecture principles with clear separation of concerns:
 
-### Domain Layer (`VaultNotary.Domain`)
-- **Entities**: Core business entities (Customer, Document, PartyDocumentLink)
-- **Repositories**: Repository interfaces for data access
-- **Services**: Domain service interfaces (IHashService, ISignatureService)
-
-### Application Layer (`VaultNotary.Application`)
-- **DTOs**: Data Transfer Objects for API communication
-- **Services**: Business logic services and their implementations
-- **Use Cases**: Application-specific business logic
-
-### Infrastructure Layer (`VaultNotary.Infrastructure`)
-- **Repositories**: AWS DynamoDB and S3 implementations
-- **Services**: AWS KMS signature service and hash service implementations
-- **Configuration**: AWS service configurations
-
-### Web API Layer (`VaultNotary.Web`)
-- **Controllers**: REST API endpoints
-- **Dependency Injection**: Service configuration and registration
-
-## Features
-
-### Customer Management
-- Create, read, update, delete customers
-- Support for individual and business customers
-- Identity validation (Document ID, Passport, Business Registration)
-- Duplicate detection
-
-### Document Management
-- Document metadata storage in DynamoDB
-- File storage in AWS S3 with encryption
-- Party-document linking and relationships
-- Document categorization and type management
-
-### File Operations
-- Single file upload to S3
-- Multipart upload for large files
-- Presigned URL generation for downloads
-- File integrity verification with SHA-256 hashing
-- Associated with document
-
-### Search Capabilities
-- Search customers by identity information
-- Search documents by various criteria
-- Cross-reference search across multiple parties
-- Party-document relationship queries
-
-### Digital Signatures & Verification
-- Document hash computation (SHA-256)
-- Digital signature creation using AWS KMS
-- Signature verification
-- Document integrity verification
-- Public key retrieval
-
-## AWS Services Used
-
-- **DynamoDB**: NoSQL database for storing customer and document metadata
-- **S3**: Object storage for document files with server-side encryption
-- **KMS**: Key Management Service for digital signatures and encryption
-
-## API Endpoints
-
-### Customer Endpoints
-- `GET /api/customers` - Get all customers
-- `GET /api/customers/{id}` - Get customer by ID
-- `GET /api/customers/search?identity={id}` - Search by identity
-- `POST /api/customers` - Create customer
-- `PUT /api/customers/{id}` - Update customer
-- `DELETE /api/customers/{id}` - Delete customer
-- `POST /api/customers/validate` - Validate identity
-
-### Document Endpoints
-- `GET /api/documents` - Get all documents
-- `GET /api/documents/{id}` - Get document by ID
-- `POST /api/documents` - Create document
-- `PUT /api/documents/{id}/parties` - Link party to document
-- `DELETE /api/documents/{id}/parties/{customerId}` - Unlink party
-
-### Upload Endpoints
-- `POST /api/upload/single` - Upload single file
-- `POST /api/upload/initiate` - Initiate multipart upload
-- `PUT /api/upload/{key}/part/{partNumber}` - Upload file part
-- `POST /api/upload/{key}/complete` - Complete multipart upload
-
-### Download Endpoints
-- `GET /api/download/{fileId}` - Download file directly
-- `GET /api/download/{fileId}/presigned` - Get presigned download URL
-
-### Search Endpoints
-- `GET /api/search/identity/{documentId}` - Search by document ID
-- `GET /api/search/business/{registrationNumber}` - Search by business registration
-- `GET /api/search/passport/{passportId}` - Search by passport
-- `POST /api/search/cross-reference` - Cross-reference search
-
-### Verification Endpoints
-- `GET /api/verification/{fileId}` - Get verification info
-- `POST /api/verification/{documentId}/sign` - Sign document hash
-- `POST /api/verification/{documentId}/verify` - Verify signature
-- `POST /api/verification/{documentId}/integrity` - Verify file integrity
-
-## Configuration
-
-Update `appsettings.json` with your AWS configuration:
-
-```json
-{
-  "Aws": {
-    "Region": "us-east-1",
-    "AccessKey": "your-access-key",
-    "SecretKey": "your-secret-key",
-    "DynamoDb": {
-      "CustomersTableName": "VaultNotary-Customers",
-      "DocumentsTableName": "VaultNotary-Documents",
-      "PartyDocumentsTableName": "VaultNotary-PartyDocuments"
-    },
-    "S3": {
-      "BucketName": "your-bucket-name",
-      "FileKeyPrefix": "files/",
-      "PresignedUrlExpirationHours": 24
-    },
-    "Kms": {
-      "AsymmetricKeyId": "your-asymmetric-key-id",
-      "SymmetricKeyId": "your-symmetric-key-id"
-    }
-  }
-}
+```
+VaultNotary.Backend/
+├── src/
+│   ├── VaultNotary.Domain/           # Core business entities and rules
+│   │   ├── Entities/                # Core domain models
+│   │   ├── Repositories/            # Repository interfaces
+│   │   └── Services/                # Domain service interfaces
+│   │
+│   ├── VaultNotary.Application/     # Use cases and application logic
+│   │   ├── DTOs/                    # Data transfer objects
+│   │   ├── Services/                # Application services
+│   │   └── Validators/              # Input validation
+│   │
+│   ├── VaultNotary.Infrastructure/  # External concerns implementation
+│   │   ├── Data/                    # Database context
+│   │   ├── Repositories/            # Repository implementations
+│   │   ├── Services/                # External service implementations
+│   │   └── Jobs/                    # Background job processing
+│   │
+│   └── VaultNotary.Web/             # API controllers and middleware
+│       ├── Controllers/             # REST API endpoints
+│       ├── Authorization/           # Auth0 integration
+│       └── Middleware/              # Custom middleware
+│
+└── tests/                           # Comprehensive test suites
+    ├── VaultNotary.UnitTests/       # Unit tests
+    └── VaultNotary.IntegrationTests/ # Integration tests
 ```
 
-## Running the Application
+## 🚀 Getting Started
 
-1. Install .NET 9.0 SDK
-2. Configure AWS credentials and services
-3. Update `appsettings.json` with your AWS configuration
-4. Run the application:
+### Prerequisites
+
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [PostgreSQL](https://www.postgresql.org/) (local or AWS RDS)
+- [Docker](https://www.docker.com/) (optional, for containerized deployment)
+- AWS Account (for S3, KMS, and RDS)
+
+### Local Development Setup
+
+1. **Clone and navigate to backend:**
+   ```bash
+   git clone <repository-url>
+   cd vaultNotary/backend
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   dotnet restore
+   ```
+
+3. **Configure environment:**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your local configuration
+   ```
+
+4. **Database setup:**
+   ```bash
+   # Apply migrations
+   dotnet ef database update --project src/VaultNotary.Infrastructure --startup-project src/VaultNotary.Web
+   ```
+
+5. **Run the application:**
    ```bash
    dotnet run --project src/VaultNotary.Web
    ```
 
-## Security Features
+The API will be available at `https://localhost:5001` with Swagger documentation at `/swagger`.
 
-- AWS KMS for encryption and digital signatures
-- S3 server-side encryption for file storage
-- JWT authentication support (ready for implementation)
-- CORS configuration
-- Input validation and error handling
+## 🔧 Configuration
 
-## Database Schema
+### Environment Variables
 
-### Customers Table (DynamoDB)
-- **PK**: customerId
-- **SK**: customerId
-- **GSI1**: documentId (CMND/CCCD)
-- **GSI2**: passportId
-- **GSI3**: businessRegistrationNumber
+| Variable | Description | Required | Default |
+|----------|-------------|----------|---------|
+| `ASPNETCORE_ENVIRONMENT` | Application environment | Yes | `Development` |
+| `ConnectionStrings__DefaultConnection` | PostgreSQL connection string | Yes | - |
+| `Aws__Region` | AWS region | Yes | `ap-southeast-1` |
+| `Aws__AccessKey` | AWS access key (use IAM roles in production) | Yes* | - |
+| `Aws__SecretKey` | AWS secret key (use IAM roles in production) | Yes* | - |
+| `Aws__S3__BucketName` | S3 bucket for file storage | Yes | - |
+| `Aws__Kms__SymmetricKeyId` | KMS key ID for encryption | Yes | - |
+| `Auth0__Domain` | Auth0 domain | Yes | - |
+| `Auth0__Audience` | Auth0 API identifier | Yes | - |
 
-### Documents Table (DynamoDB)
-- **PK**: documentId
-- **SK**: documentId
-- **GSI1**: sha256Hash
-- **GSI2**: notaryDate
+*Use IAM roles in production instead of access keys.
 
-### Party-Document Links Table (DynamoDB)
-- **PK**: documentId
-- **SK**: partyRole#customerId
-- **GSI1**: customerId#documentId
-- **GSI2**: documentId#partyRole
+### Sample Configuration
 
-## Technology Stack
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Database=vaultnotary;Username=postgres;Password=yourpassword"
+  },
+  "Aws": {
+    "Region": "ap-southeast-1",
+    "S3": {
+      "BucketName": "your-s3-bucket",
+      "PresignedUrlExpirationHours": 24
+    },
+    "Kms": {
+      "SymmetricKeyId": "your-kms-key-id"
+    }
+  },
+  "Auth0": {
+    "Domain": "your-domain.auth0.com",
+    "Audience": "https://your-api-identifier"
+  }
+}
+```
 
-- .NET 9.0
-- ASP.NET Core Web API
-- AWS SDK for .NET
-- Clean Architecture
-- Dependency Injection
-- Repository Pattern
+## 📚 API Documentation
+
+### Core Endpoints
+
+#### Customers
+- `GET /api/customers` - List customers with pagination
+- `POST /api/customers` - Create new customer
+- `GET /api/customers/{id}` - Get customer by ID
+- `PUT /api/customers/{id}` - Update customer
+- `DELETE /api/customers/{id}` - Delete customer
+
+#### Documents
+- `GET /api/documents` - List documents with filtering
+- `POST /api/documents` - Create new document
+- `GET /api/documents/{id}` - Get document details
+- `PUT /api/documents/{id}` - Update document
+- `DELETE /api/documents/{id}` - Delete document
+
+#### File Operations
+- `POST /api/upload` - Upload files with encryption
+- `GET /api/download/{fileId}` - Download encrypted files
+- `POST /api/upload/presigned-url` - Get presigned S3 URLs
+
+#### Search
+- `POST /api/search/customers` - Advanced customer search
+- `POST /api/search/documents` - Document search with filters
+
+### Authentication & Authorization
+
+All endpoints require Auth0 JWT authentication. Include the token in the Authorization header:
+
+```bash
+Authorization: Bearer <your-jwt-token>
+```
+
+Required scopes:
+- `read:documents` - View documents and customers
+- `write:documents` - Create and modify documents and customers
+
+## 🔒 Security Features
+
+### File Security
+- **Encryption at Rest**: All files encrypted using AWS KMS
+- **Secure Storage**: Files stored in private S3 buckets
+- **Hash Verification**: SHA-256 hashing for integrity checks
+- **Access Control**: Presigned URLs with time-limited access
+
+### Authentication
+- **Auth0 Integration**: JWT-based authentication
+- **Permission-based Authorization**: Granular access control
+- **Rate Limiting**: API rate limiting middleware
+- **CORS Protection**: Configured CORS policies
+
+### Data Protection
+- **Input Validation**: Comprehensive input sanitization
+- **SQL Injection Protection**: Parameterized queries via Entity Framework
+- **XSS Protection**: Built-in ASP.NET Core protections
+
+## 🗄️ Database Schema
+
+### Key Entities
+
+#### Customer
+```sql
+CREATE TABLE Customers (
+    Id UUID PRIMARY KEY,
+    FullName VARCHAR(255) NOT NULL,
+    Gender INTEGER NOT NULL,
+    Address TEXT NOT NULL,
+    Phone VARCHAR(20),
+    Email VARCHAR(255),
+    Type INTEGER NOT NULL, -- 0: Individual, 1: Organization
+    DocumentId VARCHAR(50), -- CMND/CCCD
+    PassportId VARCHAR(50),
+    BusinessRegistrationNumber VARCHAR(50),
+    BusinessName VARCHAR(255),
+    CreatedAt TIMESTAMP NOT NULL,
+    UpdatedAt TIMESTAMP NOT NULL
+);
+```
+
+#### Document
+```sql
+CREATE TABLE Documents (
+    Id UUID PRIMARY KEY,
+    Title VARCHAR(255) NOT NULL,
+    Type VARCHAR(100) NOT NULL,
+    Status INTEGER NOT NULL,
+    CreatedAt TIMESTAMP NOT NULL,
+    UpdatedAt TIMESTAMP NOT NULL,
+    NotaryDate TIMESTAMP,
+    NotaryLocation VARCHAR(255),
+    Hash VARCHAR(64),
+    S3Key VARCHAR(500),
+    OriginalFileName VARCHAR(255),
+    ContentType VARCHAR(100),
+    FileSizeBytes BIGINT
+);
+```
+
+## 🧪 Testing
+
+### Running Tests
+
+```bash
+# Run all tests
+dotnet test
+
+# Run unit tests only
+dotnet test tests/VaultNotary.UnitTests/
+
+# Run integration tests only
+dotnet test tests/VaultNotary.IntegrationTests/
+
+# Run with coverage
+dotnet test --collect:"XPlat Code Coverage"
+```
+
+### Test Categories
+
+- **Unit Tests**: Domain logic, services, and utilities
+- **Integration Tests**: API endpoints, database operations, AWS services
+- **Performance Tests**: Load testing for critical endpoints
+
+## 🐳 Docker Deployment
+
+### Build Image
+```bash
+docker build -t vaultnotary-backend -f src/VaultNotary.Web/Dockerfile .
+```
+
+### Run Container
+```bash
+docker run -p 5000:80 \
+  -e ASPNETCORE_ENVIRONMENT=Production \
+  -e ConnectionStrings__DefaultConnection="your-connection-string" \
+  vaultnotary-backend
+```
+
+### Docker Compose
+```yaml
+version: '3.8'
+services:
+  vaultnotary-api:
+    build:
+      context: .
+      dockerfile: src/VaultNotary.Web/Dockerfile
+    ports:
+      - "5000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=${DATABASE_CONNECTION_STRING}
+    depends_on:
+      - postgres
+```
+
+## 🚀 Production Deployment
+
+### AWS ECS Deployment
+
+1. **Build and push image:**
+   ```bash
+   aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin <account-id>.dkr.ecr.ap-southeast-1.amazonaws.com
+   docker build -t vaultnotary .
+   docker tag vaultnotary:latest <account-id>.dkr.ecr.ap-southeast-1.amazonaws.com/vaultnotary:latest
+   docker push <account-id>.dkr.ecr.ap-southeast-1.amazonaws.com/vaultnotary:latest
+   ```
+
+2. **Update ECS task definition with environment variables**
+
+3. **Deploy using ECS service**
+
+### Environment-Specific Considerations
+
+#### Development
+- Local PostgreSQL database
+- AWS credentials via environment variables
+- Detailed logging enabled
+- Swagger UI enabled
+
+#### Production
+- AWS RDS PostgreSQL
+- IAM roles for AWS access (no hardcoded keys)
+- Structured logging to CloudWatch
+- Performance monitoring enabled
+- Health checks configured
+
+## 📊 Monitoring & Observability
+
+### Logging
+- **Serilog**: Structured logging framework
+- **Log Levels**: Information, Warning, Error, Debug
+- **Sinks**: Console (dev), File (dev), CloudWatch (prod)
+
+### Health Checks
+- Database connectivity
+- AWS services availability
+- Auth0 configuration validation
+
+### Metrics
+- Request/response metrics
+- Database query performance
+- File operation statistics
+- Authentication/authorization events
+
+## 🤝 Development Guidelines
+
+### Code Standards
+- Follow C# coding conventions
+- Use dependency injection
+- Implement comprehensive error handling
+- Write unit tests for all business logic
+- Document public APIs with XML comments
+
+### Git Workflow
+1. Create feature branch from `main`
+2. Implement feature with tests
+3. Run full test suite
+4. Create pull request
+5. Code review and merge
+
+### Performance Guidelines
+- Use async/await for I/O operations
+- Implement pagination for list endpoints
+- Cache frequently accessed data
+- Optimize database queries
+- Monitor memory usage
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+**Database Connection Errors:**
+```bash
+# Check connection string format
+# Ensure PostgreSQL is running
+# Verify network connectivity
+```
+
+**AWS Service Errors:**
+```bash
+# Verify IAM permissions
+# Check AWS region configuration
+# Validate S3 bucket access
+# Test KMS key permissions
+```
+
+**Authentication Issues:**
+```bash
+# Verify Auth0 domain and audience
+# Check JWT token format
+# Validate required scopes
+```
+
+## 📈 Performance Optimization
+
+- **Database**: Indexed queries, connection pooling
+- **Caching**: In-memory caching for frequently accessed data
+- **API**: Response compression, rate limiting
+- **File Operations**: Async file handling, chunked uploads
+
+## 🔄 Backup & Recovery
+
+- **Database**: Automated RDS backups
+- **Files**: S3 versioning enabled
+- **Configuration**: Infrastructure as Code (CloudFormation)
+- **Secrets**: AWS Secrets Manager integration
+
+## 📞 Support
+
+For technical support or questions:
+- Create an issue in the repository
+- Check existing documentation in `/docs`
+- Review integration tests for usage examples
+
+---
+
+**Built with ❤️ using .NET 8 and Clean Architecture principles**
