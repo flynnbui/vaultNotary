@@ -351,37 +351,6 @@ docker-compose -f docker-compose.prod.yml up -d
 - ✅ Performance benchmarks met
 - ✅ Code review approved
 
-## 🤝 Contributing
-
-### Development Guidelines
-- Follow established coding conventions
-- Write comprehensive tests
-- Update documentation
-- Follow security best practices
-- Use semantic commit messages
-
-### Pull Request Template
-```markdown
-## Description
-Brief description of changes
-
-## Type of Change
-- [ ] Bug fix
-- [ ] New feature
-- [ ] Breaking change
-- [ ] Documentation update
-
-## Testing
-- [ ] Unit tests added/updated
-- [ ] Integration tests added/updated
-- [ ] Manual testing completed
-
-## Security
-- [ ] Security implications considered
-- [ ] No secrets committed
-- [ ] Input validation implemented
-```
-
 ## 📈 Roadmap
 
 ### Phase 1 (Current)
